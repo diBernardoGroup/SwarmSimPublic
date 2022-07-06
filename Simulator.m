@@ -1,11 +1,11 @@
-function [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, finalGNormal, stopTime] = Simulator(x0, LinkNumber, GainRadialDefault, GainNormalDefault, regularity_thresh, compactness_thresh, Tmax, sigma, drawON, getMetrics, IntFunctionStruct, AgentsRemoval, NoiseTest, MaxSensingRadius, alpha, beta, dynamicLattice)
+function [T_r, success, final_e_theta, final_e_L, finalGRadial, finalGNormal, stopTime] = Simulator(x0, LinkNumber, GainRadialDefault, GainNormalDefault, regularity_thresh, compactness_thresh, Tmax, sigma, drawON, getMetrics, IntFunctionStruct, MaxSensingRadius, alpha, beta, dynamicLattice, AgentsRemoval)
 %
 %Simulator Executes a complete simulation of the swarm.
 %   This function is called by a launcher script (Launcher, BruteForceTuning, ...).
 %
-%   [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, finalGNormal, stopTime] =...
+%   [T_r, success, final_e_theta, final_e_L, finalGRadial, finalGNormal, stopTime] =...
 %   ... Simulator(x0, LinkNumber, GainRadialDefault, GainNormalDefault, regularity_thresh, compactness_thresh,...
-%   ... Tmax, sigma, drawON, getMetrics, IntFunctionStruct, AgentsRemoval, NoiseTest, MaxSensingRadius, alpha, beta, dynamicLattice)
+%   ... Tmax, sigma, drawON, getMetrics, IntFunctionStruct, MaxSensingRadius, alpha, beta, dynamicLattice, AgentsRemoval)
 %
 %   Inputs:
 %       x0 are the initial positions of the agents (Nx2 matrix)
@@ -32,7 +32,6 @@ function [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, final
 %       success is true if the metrics are below the respective thresholda (bool)
 %       final_e_theta final value of the regularity metrics (scalar)
 %       final_e_L final value of the compactness metrics (scalar)
-%       final_e_d final value of the lenght metrics (scalar)
 %       finalGRadial final value of the radial gain (scalar)
 %       finalGNormal final value of the normal gain (scalar)
 %       stopTime final simulation instant (scalar)
@@ -42,6 +41,9 @@ function [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, final
 %   Authors:    Andrea Giusti and Gian Carlo Maffettone
 %   Date:       2022
 %
+
+%% Check input parameters
+assert(LinkNumber==6 | LinkNumber==4, "LinkNumber must be equal to 4 (square lattice) or 6 (triangular lattice)")
 
 %% Instantiate Simulation Window
 Max = 10;   % amplitude of the simulation plane
@@ -81,9 +83,9 @@ x=x0;
 N=size(x,1);
 
 %Set spin for simulations with Spears' algorithm
-s=ones(N, 1);  
+spin=ones(N, 1);  
 if strcmp(IntFunctionStruct.function,'Spears') && (LinkNumber==4 || LinkNumber == 3)
-    s(1:2:N, 1)=0;
+    spin(1:2:N, 1)=0;
 end
 
 if AgentsRemoval
@@ -122,7 +124,7 @@ while t<=Tmax && ~stopCondition
     end
     
     % First Order Dynamics
-    [v, links, ~, G_radial, G_normal, ~]= VFcontroller(x, [], 0, G_radial, G_normal, zeros(N,1), 0, 0, min(RMax,MaxSensingRadius), RMin, SensingNumber, InteractionFactor, LinkNumber, deltaT, DeadZoneThresh, IntFunctionStruct, s, MaxSensingRadius, alpha, beta);
+    [v, links, ~, G_radial, G_normal, ~]= VFcontroller(x, [], 0, G_radial, G_normal, zeros(N,1), 0, 0, min(RMax,MaxSensingRadius), RMin, SensingNumber, InteractionFactor, LinkNumber, deltaT, DeadZoneThresh, IntFunctionStruct, spin, MaxSensingRadius, alpha, beta);
     x = SingleIntegrator(x, v, deltaT, vMax, sigma);
     
     if t>=TSample(count+1)
@@ -152,19 +154,19 @@ while t<=Tmax && ~stopCondition
         
         % plot swarm
         if drawON
-            plotSwarm(x, [], t, RMin,RMax, true, s);
+            plotSwarm(x, [], t, RMin,RMax, true, spin);
         end
         
         %random kill (remove a percentage of randomly selected agents)
         if t>Tmax/2-deltaT && size(x,1)==N && AgentsRemoval
-            [x, s]=randomKill(x, s, 0.3);
+            [x, spin]=randomKill(x, spin, 0.3);
         end
     end
     
     if ismember(t,screenTimes) && AgentsRemoval
         xSaved(savedIndex) = {x};
         savedIndex = savedIndex + 1;
-        %plotSwarm(x, [], t, MinSensingRadius,MaxSensingRadius, true, s);
+        %plotSwarm(x, [], t, MinSensingRadius,MaxSensingRadius, true, spin);
     end
     
     t=t+deltaT;
@@ -177,12 +179,11 @@ final_e_L = mean(e_L(count-ceil(1/deltaSample):count,1));
 finalGRadial = mean(G_radial_vec(count-ceil(1/deltaSample):count),1);
 finalGNormal = mean(G_normal_vec(count-ceil(1/deltaSample):count,1));
 
-final_e_d = getAvgLinkLengthError(x, 1, RMin, RMax);
 
 %% PLOTS
 
 if drawON
-    plotSwarm(x,[],t-deltaT,RMin,RMax,false, s);
+    plotSwarm(x,[],t-deltaT,RMin,RMax,false, spin);
      
     figure %METRICS
     subplot(2,1,1)

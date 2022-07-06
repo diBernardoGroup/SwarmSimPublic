@@ -65,9 +65,8 @@ drawON=false;
 getMetrics=true; %getMetrics=false discard settling times and stop times
 
 % robustness tests
-AgentsRemoval=false;
-NoiseTest=false;
-dynamicLattice=false;
+AgentsRemoval = false;      % randomly remove agents during the simulation
+dynamicLattice = false;     % change lattice during the simulation
 
 
 %% Preallocate
@@ -108,7 +107,7 @@ for i_times=1:Nconfig
     tic
     parfor k_times=1:Ntimes
         x0=squeeze(x0Data(k_times,:,:));
-        [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, finalGNormal, stopTime] = Simulator(x0, LinkNumber, G_radial, G_normal, regularity_thresh, compactness_thresh, Tmax, sigma, drawON, getMetrics, IntFunctionStruct, AgentsRemoval, NoiseTest, MaxSensingRadius, alpha, beta, dynamicLattice);
+        [T_r, success, final_e_theta, final_e_L, finalGRadial, finalGNormal, stopTime] = Simulator(x0, LinkNumber, G_radial, G_normal, regularity_thresh, compactness_thresh, Tmax, sigma, drawON, getMetrics, IntFunctionStruct, MaxSensingRadius, alpha, beta, dynamicLattice, AgentsRemoval);
 
         e_L(k_times)=final_e_L;
         e_theta(k_times)=final_e_theta;

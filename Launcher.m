@@ -42,9 +42,8 @@ sigma = 0;  % standard deviation of noise
 MaxSensingRadius=inf;   % sensing radius of the agents (R_s)
 
 % robustness tests
-AgentsRemoval=false;
-NoiseTest=false;
-dynamicLattice = false;
+AgentsRemoval=false;        % randomly remove agents during the simulation
+dynamicLattice = false;     % change lattice during the simulation
 
 %output options
 drawON=true;        % draw swarm during simulation (if N is large slows down the simulation)
@@ -59,7 +58,7 @@ x0=randCircle(N, 2);                 % initial conditions drawn from a uniform d
 
 
 %% Run Simulation
-[T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, finalGNormal, stopTime] = Simulator(x0, LinkNumber, G_radial, G_normal, regularity_thresh, compactness_thresh, Tmax, sigma, drawON, getMetrics, RadialIntFunction, AgentsRemoval, NoiseTest, MaxSensingRadius, alpha, beta, dynamicLattice);
+[T_r, success, final_e_theta, final_e_L, finalGRadial, finalGNormal, stopTime] = Simulator(x0, LinkNumber, G_radial, G_normal, regularity_thresh, compactness_thresh, Tmax, sigma, drawON, getMetrics, RadialIntFunction, MaxSensingRadius, alpha, beta, dynamicLattice, AgentsRemoval);
 
 
 %% PLOTS

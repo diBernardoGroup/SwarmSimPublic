@@ -30,6 +30,7 @@ clear
 %% Parameters
 N=20;               % number of agents, max 20 (N)
 LinkNumber=4;       % number of links (6=triangular lattice, 4=square lattice, 3=hexagonal lattice) (L)
+
 dynLattice = false; % change lattice during the experiment
 
 % descrption of the radial interaction function
