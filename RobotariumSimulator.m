@@ -28,8 +28,8 @@ clc
 clear
 
 %% Parameters
-N=20;               % number of agents, max 20 (N)
-LinkNumber=4;       % number of links (6=triangular lattice, 4=square lattice, 3=hexagonal lattice) (L)
+N=20;           % number of agents, max 20 (N)
+LinkNumber=4;   %number of links (6=triangular lattice, 4=square lattice) (L)
 
 dynLattice = false; % change lattice during the experiment
 
@@ -130,13 +130,14 @@ for t = 1:iterations
     
     %% Compute control actions
         
-    if t < t_aggregation
-        % aggregation
+    if t < t_aggregation        % aggregation
         dxi = -K * x(1:2,:)';
-    else
-        % lattice formation
+        
+    else                        % lattice formation
         lines = drawLines(x(1:2,:)',RMin/ScaleFactor,RMax/ScaleFactor);
-        [dxi, ~, ~, ~, ~, ~]= VFcontroller(x(1:2,:)'*ScaleFactor, [], 0, G_radial_vec, G_normal_vec, zeros(N,1), 0, 0, min(RMax,MaxSensingRadius), RMin, SensingNumber, InteractionFactor, LinkNumber, deltaT, DeadZoneThresh, IntFunctionStruct, s, MaxSensingRadius, alpha, beta);
+        
+        % Compute Control Actions
+        [dxi, ~, ~, ~, ~]= VFcontroller(x(1:2,:)'*ScaleFactor, G_radial_vec, G_normal_vec, min(RMax,MaxSensingRadius), RMin, SensingNumber, InteractionFactor, LinkNumber, deltaT, DeadZoneThresh, IntFunctionStruct, s, MaxSensingRadius, alpha, beta);
     end
     
     dxi = dxi'/ScaleFactor; % conversion to robotarium units

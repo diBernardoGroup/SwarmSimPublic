@@ -25,7 +25,7 @@ Ntimes=4; % How many simulations are launched for each configuration
 % default parameters
 
 N=100;          %number of agents (N)
-LinkNumber=4;   %number of links (6=triangular lattice, 4=square lattice, 3=hexagonal lattice) (L)
+LinkNumber=4;   %number of links (6=triangular lattice, 4=square lattice) (L)
 
 % descrption of the radial interaction function
 IntFunctionStruct=struct('function','Lennard-Jones','parameters',[0.15, 5]);
