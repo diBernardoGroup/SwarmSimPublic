@@ -15,7 +15,7 @@ clc
 
 %% Parameters
 N=100;          %number of agents (N)
-LinkNumber=4;   %number of links (6=triangular lattice, 4=square lattice, 3=hexagonal lattice) (L)
+LinkNumber=4;   %number of links (6=triangular lattice, 4=square lattice) (L)
 
 % descrption of the radial interaction function
 RadialIntFunction=struct('function','Lennard-Jones','parameters',[0.15, 5]);
@@ -35,11 +35,11 @@ beta = 0;
 regularity_thresh=0.2;      % threshold value for regularity metrics (e^*_theta)
 compactness_thresh=0.3;     % threshold value for compactness metrics (e^*_L)
 
-Tmax=30;    % maximum simulation time (simulation is stopped earlier if steady state is reached)
+Tmax=10;    % maximum simulation time (simulation is stopped earlier if steady state is reached)
 
 sigma = 0;  % standard deviation of noise
 
-MaxSensingRadius=inf;   % sensing radius of the agents (R_s)
+MaxSensingRadius=inf;       % sensing radius of the agents (R_s)
 
 % robustness tests
 AgentsRemoval=false;        % randomly remove agents during the simulation

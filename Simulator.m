@@ -10,7 +10,7 @@ function [T_r, success, final_e_theta, final_e_L, finalGRadial, finalGNormal, st
 %   Inputs:
 %       x0 are the initial positions of the agents (Nx2 matrix)
 %       LinkNumber is the desired number of links per agent (6=triangular
-%           lattice, 4=square lattice, 3=hexagonal lattice) (scalar)
+%           lattice, 4=square lattice) (scalar)
 %       GainRadialDefault is the default value of G_radial (scalar)
 %       GainNormalDefault is the default value of G_normal (scalar)
 %       regularity_thresh is the threshold value for regularity metrics (e^*_theta) (scalar)
@@ -44,6 +44,16 @@ function [T_r, success, final_e_theta, final_e_L, finalGRadial, finalGNormal, st
 
 %% Check input parameters
 assert(LinkNumber==6 | LinkNumber==4, "LinkNumber must be equal to 4 (square lattice) or 6 (triangular lattice)")
+assert(size(x0,2)==2, "x0 must be a Nx2 matrix")
+assert(regularity_thresh>0, "regularity_thresh must be a positive number")
+assert(compactness_thresh>0, "compactness_thresh must be a positive number")
+assert(Tmax>=0, "Tmax must be a non negative number")
+assert(sigma>=0, "sigma must be a non negative number")
+assert(MaxSensingRadius>=0, "MaxSensingRadius must be a non negative number")
+assert(islogical(drawON), "drawON must be a logical value")
+assert(islogical(getMetrics), "getMetrics must be a logical value")
+assert(islogical(dynamicLattice), "dynamicLattice must be a logical value")
+assert(islogical(AgentsRemoval), "AgentsRemoval must be a logical value")
 
 %% Instantiate Simulation Window
 Max = 10;   % amplitude of the simulation plane
@@ -67,8 +77,10 @@ SensingNumber = inf;    % max number of neighbours to interact with
 DeadZoneThresh=regularity_thresh; % amplitude of the dead zone in gain adaptation law
 
 %% simulation parameters
-InteractionFactor = 1; % fraction of agents to interact with [0,1] 
+InteractionFactor = 1; % fraction of agents to interact with ]0,1] 
 %(if InteractionFactor<1 a subset of agents is randomly selected by each agent at each update step to interact with)
+if (InteractionFactor~=1); warning("InteractionFactor is NOT set to 1"); end
+
 deltaT = 0.01;      % forward Euler integration step
 deltaSample = 0.25; % time step for metrics acquisition
 screenTimes=[0 Tmax/2-deltaT Tmax/2 Tmax]; % specify time instants to get simulation frames
@@ -123,8 +135,10 @@ while t<=Tmax && ~stopCondition
         end
     end
     
-    % First Order Dynamics
-    [v, links, ~, G_radial, G_normal, ~]= VFcontroller(x, [], 0, G_radial, G_normal, zeros(N,1), 0, 0, min(RMax,MaxSensingRadius), RMin, SensingNumber, InteractionFactor, LinkNumber, deltaT, DeadZoneThresh, IntFunctionStruct, spin, MaxSensingRadius, alpha, beta);
+    % Compute Control Actions
+    [v, links, ~, G_radial, G_normal] = VFcontroller(x, G_radial, G_normal, min(RMax,MaxSensingRadius), RMin, SensingNumber, InteractionFactor, LinkNumber, deltaT, DeadZoneThresh, IntFunctionStruct, spin, MaxSensingRadius, alpha, beta);
+
+    % Simulate First Order Dynamics
     x = SingleIntegrator(x, v, deltaT, vMax, sigma);
     
     if t>=TSample(count+1)
@@ -236,7 +250,7 @@ if AgentsRemoval
         xticks([-10 -5 0 5 10])
         set(gca,'FontSize',14)
         hold on
-        plotSwarm(cell2mat(xSaved(i)),[],screenTimes(i),RMin,RMax,false, ones(size(cell2mat(xSaved(i)),1),1));
+        plotSwarm(cell2mat(xSaved(i)),[],screenTimes(i),RMin,RMax,false, ones(size(cell2mat(xSaved(i)),1),1) );
     end
     figure
     for i=1:length(xSaved)
@@ -246,7 +260,7 @@ if AgentsRemoval
         xticks([-10 -5 0 5 10])
         set(gca,'FontSize',14)
         hold on
-        plotSwarm(cell2mat(xSaved(i)),[],screenTimes(i),RMin,RMax,false, ones(size(cell2mat(xSaved(i)),1),1));
+        plotSwarm(cell2mat(xSaved(i)),[],screenTimes(i),RMin,RMax,false, ones(size(cell2mat(xSaved(i)),1),1) );
     end
     for i=1:length(xSaved)
         figure

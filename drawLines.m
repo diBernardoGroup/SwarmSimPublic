@@ -18,6 +18,8 @@ function [p] = drawLines(x,Rmin,Rmax)
 %   Date:       2022
 %
 
+p=[];
+
  for i=1:length(x)
     for j=i:length(x)
         if norm(x(i,:)-x(j,:))>Rmin && norm(x(i,:)-x(j,:))<Rmax

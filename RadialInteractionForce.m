@@ -17,12 +17,8 @@ function [f] = RadialInteractionForce(x, IntFunction)
 %   Date:       2022
 %
 
-%f=0;                               % interazione nulla
-%f=(5/x - 1)/x;                     % repulsione-attrazione
-%f = -x * (a - b * exp(-x^2/c));    % repulsione-attrazione
-%f=exp(-x);                         % repulsione esponenziale
-%f=-1/x^2;                          % attrazione gravitazionale
 
+%% evaluate radial interaction function
 switch IntFunction.function
     case 'Lennard-Jones'
         a=IntFunction.parameters(1);    
@@ -57,6 +53,8 @@ switch IntFunction.function
         f=(44571*exp(-(249*x)/100))/1000 - (2*exp(-40*(x - 1823/1000).^2).*(80*x - 3646/25))/5 - 589./(10*x.^11) + 60./x.^13;
         f=f/3;
         %f= min(f,1);                % saturation
-
+    
+    otherwise
+        error("IntFunction.function must be a valid string ['Lennard-Jones', 'Spears', 'Modified-LJ', 'Morse']")
 end
 end

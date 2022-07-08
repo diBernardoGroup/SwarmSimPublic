@@ -1,24 +1,20 @@
-function [v, links, angErr, GainRadial, GainNormal, GainRand] = VFcontroller(x, xL, GainEnv, oldGainRadial, oldGainNormal, oldGainRand, GainLead, GainLeadNormal, RMax, RMin, SensingNumber, InteractionFactor, LinkNumber, deltaT, DeadZoneThresh, IntFunctionStruct, spin, MaxSensingRadius, alpha, beta)
+function [v, links, angErr, GainRadial, GainNormal] = VFcontroller(x, oldGainRadial, oldGainNormal, RMax, RMin, SensingNumber, InteractionFactor, LinkNumber, deltaT, DeadZoneThresh, IntFunctionStruct, spin, MaxSensingRadius, alpha, beta)
 %
 %VFcontroller implements the virtual forces controller and computes the
 %   velocities (control input) of the agents.
 %   This function is called by Simulator.
 %
-%   [v, links, angErr, GainRadial, GainNormal, GainRand] = ...
-%   ... VFcontroller(x, xL, GainEnv, oldGainRadial, oldGainNormal, oldGainRand, GainLead, GainLeadNormal,...
-%   ... RMax, RMin, SensingNumber, InteractionFactor, LinkNumber, deltaT, DeadZoneThresh,...
-%   ... IntFunctionStruct, spin, MaxSensingRadius, alpha, beta)
+%   [v, links, angErr, GainRadial, GainNormal] = ...
+%   ... VFcontroller(x, oldGainRadial, oldGainNormal, RMax, RMin,...
+%   ... SensingNumber, InteractionFactor, LinkNumber, deltaT, DeadZoneThresh,...
+%   ... IntFunctionStruct, spin, MaxSensingRadius, alpha, beta) 
 %
 %   Inputs:
 %       x are the positions of the agents (Nx2 matrix)
-%       xL are the positions of the leaders (NLx2 matrix)
 %       LinkNumber is the desired number of links per agent (scalar)
 %       oldGainRadial is the last value of G_radial (vector)
 %       oldGainNormal is the last value of G_normal (vector)
 %       oldGainRand is the last value of G_random (vector)
-%       GainEnv is the value of evironmental gain (scalar)
-%       GainLead is the gain of the radial interaction with the leaders (scalar)
-%       GainLeadNormal is the gain of the normal interaction with the leaders (scalar)
 %       RMax and RMin are the distances that define the adjacency set (scalar)
 %       SensingNumber is the maximum number of neighbours agents can sense (integer)
 %       InteractionFactor is the fraction of agents to interact with (sclar)
@@ -36,7 +32,6 @@ function [v, links, angErr, GainRadial, GainNormal, GainRand] = VFcontroller(x, 
 %       angErr average angular error of each agent (vector)
 %       GainRadial updated values of the radial gain (vector)
 %       GainNormal updated values of the normal gain (vector)
-%       GainRand updated values of the random gain (vector)
 %
 %   See also: Simulator
 %
@@ -44,7 +39,17 @@ function [v, links, angErr, GainRadial, GainNormal, GainRand] = VFcontroller(x, 
 %   Date:       2022
 %
 
-
+%% Check input parameters
+assert(LinkNumber==6 | LinkNumber==4, "LinkNumber must be equal to 4 (square lattice) or 6 (triangular lattice)")
+assert(size(x,2)==2, "x must be a Nx2 matrix")
+assert(deltaT>=0, "deltaT must be a non negative number")
+assert(RMax>=RMin, "RMax must be >=RMin")
+assert(RMin>=0, "RMin must be a non negative number")
+assert(ceil(SensingNumber)==floor(SensingNumber), "SensingNumber must be an integer number")
+assert(InteractionFactor>0 && InteractionFactor<=1, "InteractionFactor must be in ]0; 1]")
+assert(MaxSensingRadius>=0, "MaxSensingRadius must be a non negative number")
+assert(DeadZoneThresh>=0, "DeadZoneThresh must be a non negative number")
+assert(all(spin==0 | spin==1), "spin must be equal to 0 or 1")
 
 %% Instantiate Variables
     N=size(x,1);
@@ -53,7 +58,6 @@ function [v, links, angErr, GainRadial, GainNormal, GainRand] = VFcontroller(x, 
     angErr = zeros(N,1);
     GainRadial = zeros(N,1);
     GainNormal = zeros(N,1);
-    GainRand = zeros(N,1);
     R= [0 1; -1 0];         % 90deg rotation matrix
     
 %% for each agent...
@@ -76,15 +80,10 @@ function [v, links, angErr, GainRadial, GainNormal, GainRand] = VFcontroller(x, 
         % compute the adjacency set
         [xNeighbours, NeigIndices] = getNeighbours(x(i,:), xRand, RMin, RMax);
         
-        %% evaluate the phase (only for the hexagonal lattce)
-        phase=0;
-        if LinkNumber==3
-            phase=getPhase(x(i,:), xNeighbours, LinkNumber);
-        end
         
         %% links and angular error
         links(i)=size(xNeighbours,1);
-        angErr(i)=getAngleError(x(i,:), phase, xNeighbours, LinkNumber);
+        angErr(i)=getAngleError(x(i,:), 0, xNeighbours, LinkNumber);
         
         %% compute gains with adaptation law
         [GainRadial(i), GainNormal(i)]=adaptationLaw(alpha, beta, oldGainRadial(i), oldGainNormal(i), LinkNumber-links(i), angErr(i), deltaT, DeadZoneThresh, LinkNumber);
@@ -105,7 +104,7 @@ function [v, links, angErr, GainRadial, GainNormal, GainRand] = VFcontroller(x, 
         end
         
         % compute angular errors (theta_ij^err)
-        angErrNeigh = getAngularErrNeigh(x(i,:), phase, xNeighbours, LinkNumber);
+        angErrNeigh = getAngularErrNeigh(x(i,:), 0, xNeighbours, LinkNumber);
         
         % compute radial action (u_i,r)
         indices=find(distances > 0 & distances <= MaxSensingRadius);
