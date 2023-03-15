@@ -23,40 +23,20 @@ clc
 
 Ntimes=2;       % How many times simulator is launched on each config (couple of gains)
 
-N=100;          %number of agents (N)
-LinkNumber=4;   %number of links (6=triangular lattice, 4=square lattice) (L)
+defaultParam;   % load default parameters
+
+LinkNumber=4;   % number of links (6=triangular lattice, 4=square lattice, 3=hexagonal lattice) (L)
 
 % descrption of the radial interaction function
 IntFunctionStruct=struct('function','Lennard-Jones','parameters',[0.15, 5]);
 
-% adaptation gains
-alpha = 0;
-beta = 0;
-
-% thresholds
-regularity_thresh=0.2;      % threshold value for regularity metrics (e^*_theta)
-compactness_thresh=0.3;     % threshold value for compactness metrics (e^*_L)
-length_thresh=0.1;          % threshold value for error in the lenght of the links
-
-Tmax=200;    % maximum simulation time (simulation is stopped earlier if steady state is reached)
-
-sigma = 0;   % standard deviation of noise
-
-MaxSensingRadius=inf;   % sensing radius of the agents (R_s)
-
-%output options
-drawON=false;       % draw swarm during simulation (set to false for extensive simulations)
-getMetrics=true;    % acquire metrics during the simulation (getMetrics=false discard settling times and stop times)
-
-% robustness tests
-AgentsRemoval = false;      % randomly remove agents during the simulation
-dynamicLattice = false;     % change lattice during the simulation
+Tmax=30;    % maximum simulation time (simulation is stopped earlier if steady state is reached)
 
 %ranges of values of control gains
 G_r_min = 0;
-G_r_max = 30;
+G_r_max = 10;
 G_n_min = 0;
-G_n_max = 30;
+G_n_max = 10;
 
 %grid of values
 step=1;
@@ -66,12 +46,14 @@ G_n_vec = [G_n_min:step:G_n_max];
 % values to import from each simulation
 e_theta = zeros(1, Ntimes);
 e_L = zeros(1, Ntimes);
+e_d = zeros(1, Ntimes);
 Tr_vec = zeros(1, Ntimes);
 success_vec = zeros(1, Ntimes);
 stopTime_vec = zeros(1, Ntimes);
 
 e_theta_mean = zeros(length(G_r_vec), length(G_n_vec));
 e_L_mean = zeros(length(G_r_vec), length(G_n_vec));
+e_d_mean = zeros(length(G_r_vec), length(G_n_vec));
 Tr_mean = zeros(length(G_r_vec), length(G_n_vec));
 success_mean = zeros(length(G_r_vec), length(G_n_vec));
 stopTime_mean = zeros(length(G_r_vec), length(G_n_vec));
@@ -97,11 +79,12 @@ for i_times= 1:length(G_r_vec)
             x0=squeeze(x0Data(k_times,:,:));
                 
             %Gr-Gn tuning
-            [T_r, success, final_e_theta, final_e_L, finalGRadial, finalGNormal, stopTime] = Simulator(x0, LinkNumber, G_r, G_n, regularity_thresh, compactness_thresh, Tmax, sigma, drawON, getMetrics, IntFunctionStruct, MaxSensingRadius, alpha, beta, dynamicLattice, AgentsRemoval);
-            
+            [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, finalGNormal, stopTime] = Simulator(x0, LinkNumber, G_r, G_n, regularity_thresh, compactness_thresh, Tmax, sigma, drawON, getMetrics, IntFunctionStruct, AgentsRemoval, NoiseTest, MaxSensingRadius, alpha, beta, dynamicLattice, Rmax);
+         
             %import data from the simulation
             e_theta(k_times) = final_e_theta;
             e_L(k_times) = final_e_L;
+            e_d(k_times) = final_e_d;
             Tr_vec (k_times) = T_r;
             success_vec(k_times) = success;
             stopTime_vec(k_times) = stopTime;
@@ -110,6 +93,7 @@ for i_times= 1:length(G_r_vec)
         
         e_theta_mean(i_times, j_times) = mean(e_theta);
         e_L_mean(i_times, j_times) = mean(e_L);
+        e_d_mean(i_times, j_times) = mean(e_d);
         Tr_mean(i_times, j_times) = mean(Tr_vec, 'omitnan');
         success_mean(i_times, j_times) = mean(success_vec);
         stopTime_mean(i_times, j_times) = mean(stopTime_vec, 'omitnan');
@@ -121,6 +105,7 @@ window=1;
 filtered_Tr=movmean2(Tr_mean,window);
 filtered_e_theta=movmean2(e_theta_mean,window);
 filtered_e_L=movmean2(e_L_mean,window);
+filtered_e_d=movmean2(e_d_mean,window);
 filtered_succ=movmean2(success_mean,window);
 
 % find optimal gains

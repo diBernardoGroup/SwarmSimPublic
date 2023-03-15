@@ -26,7 +26,18 @@ function line= plotWithShade(x,yLine,yShadeBottom,yShadeTop, color, alpha)
     yShadeTop=yShadeTop(~isnan(yLine));
     x=x(~isnan(yLine));
     
-    if length(yLine)>30
+    number_of_points=length(x);
+    
+    if size(yShadeBottom,1) == 1
+        yShadeBottom=yShadeBottom';
+        yShadeTop=yShadeTop';
+    end
+    
+    assert(length(yLine)==number_of_points, "yLine must have the same length of x")
+    assert(length(yShadeBottom)==number_of_points, "yShadeBottom must have the same length of x")
+    assert(length(yShadeTop)==number_of_points, "yShadeTop must have the same length of x")
+    
+    if number_of_points>30
        mark= 'none';
     else
        mark= 'o';

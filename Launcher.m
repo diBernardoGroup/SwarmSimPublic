@@ -2,7 +2,7 @@
 %Launcher Set the parameters and launch a single simulation of the swarm.
 %   Also robustness tests can be run, see AgentsRemoval, NoiseTest and dynamicLattice
 %
-%   See also: BruteForceTuning, SequentialLauncher
+%   See also: BruteForceTuning, SequentialLauncher, StabilityAnalysis
 %   
 %   Authors:    Andrea Giusti and Gian Carlo Maffettone
 %   Date:       2022
@@ -14,36 +14,19 @@ clear
 clc
 
 %% Parameters
-N=100;          %number of agents (N)
-LinkNumber=4;   %number of links (6=triangular lattice, 4=square lattice) (L)
 
-% descrption of the radial interaction function
+defaultParam;   % load default parameters
+
+LinkNumber=4;   % number of links (6=triangular lattice, 4=square lattice, 3=hexagonal lattice) (L)
+
 RadialIntFunction=struct('function','Lennard-Jones','parameters',[0.15, 5]);
-%RadialIntFunction=struct('function','Spears','parameters', [2 35]);  %from Spears2004
-%RadialIntFunction=struct('function','Morse','parameters',[0.2, 2]);
-%RadialIntFunction=struct('function','Modified-LJ','parameters',[]);  %from Torquato2009
 
 % control gains
 G_radial= 15;   % default value for square lattice 15 (G_r)
 G_normal = 8;   % default value for square lattice  8 (G_n)
 
-% adaptation gains
-alpha = 0;      
-beta = 0;
 
-% thresholds
-regularity_thresh=0.2;      % threshold value for regularity metrics (e^*_theta)
-compactness_thresh=0.3;     % threshold value for compactness metrics (e^*_L)
-
-Tmax=10;    % maximum simulation time (simulation is stopped earlier if steady state is reached)
-
-sigma = 0;  % standard deviation of noise
-
-MaxSensingRadius=inf;       % sensing radius of the agents (R_s)
-
-% robustness tests
-AgentsRemoval=false;        % randomly remove agents during the simulation
-dynamicLattice = false;     % change lattice during the simulation
+Tmax=30;    % maximum simulation time (simulation is stopped earlier if steady state is reached)
 
 %output options
 drawON=true;        % draw swarm during simulation (if N is large slows down the simulation)
@@ -58,7 +41,7 @@ x0=randCircle(N, 2);                 % initial conditions drawn from a uniform d
 
 
 %% Run Simulation
-[T_r, success, final_e_theta, final_e_L, finalGRadial, finalGNormal, stopTime] = Simulator(x0, LinkNumber, G_radial, G_normal, regularity_thresh, compactness_thresh, Tmax, sigma, drawON, getMetrics, RadialIntFunction, MaxSensingRadius, alpha, beta, dynamicLattice, AgentsRemoval);
+[T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, finalGNormal, stopTime] = Simulator(x0, LinkNumber, G_radial, G_normal, regularity_thresh, compactness_thresh, Tmax, sigma, drawON, getMetrics, RadialIntFunction, AgentsRemoval, NoiseTest, MaxSensingRadius, alpha, beta, dynamicLattice, Rmax);
 
 
 %% PLOTS

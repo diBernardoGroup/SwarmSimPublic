@@ -20,85 +20,60 @@ clc
 
 %% Parameters
 
-Ntimes=4; % How many simulations are launched for each configuration
+Ntimes=10; % How many simulations are launched for each configuration
 
-% default parameters
+defaultParam;   % load default parameters
 
-N=100;          %number of agents (N)
-LinkNumber=4;   %number of links (6=triangular lattice, 4=square lattice) (L)
+seed=0;        % seed for random generator, if negative it is not set
 
-% descrption of the radial interaction function
-IntFunctionStruct=struct('function','Lennard-Jones','parameters',[0.15, 5]);
-
-regularity_thresh=0.2;      % threshold value for regularity metrics (e^*_theta)
-compactness_thresh=0.3;     % threshold value for compactness metrics (e^*_L)
-
-Tmax=200;    % maximum simulation time (simulation is stopped earlier if steady state is reached)
-
-sigma = 0;   % standard deviation of noise
-
-% control gains
-G_radial= 15;   % default value for square lattice 15 (G_r)
-G_normal = 8;   % default value for square lattice  8 (G_n)
-
-% adaptation gains
-alpha = 0;      
-beta = 0;
-
-MaxSensingRadius=inf;   % sensing radius of the agents (R_s)
-
-seed=0;         % seed of the random generator (comment out to have new results on each execution)
-
-initRadius=2;   % radius of the circle to drow the initial positions
-
-% variable parameters
+%% variable parameters
 % one or multiple parameters can be modified at the same time
 % all the modified parameters must have the same number of values
 % the values specified here overwrite the default ones
 % IntFunctionStruct cannot be modified
-parameters.names={'N','initRadius'};
-parameters.values={[25 50 100],[sqrt(25/25) sqrt(50/25) sqrt(100/25)]};
-
-%% Options
-% output options
-drawON=false;
-getMetrics=true; %getMetrics=false discard settling times and stop times
-
-% robustness tests
-AgentsRemoval = false;      % randomly remove agents during the simulation
-dynamicLattice = false;     % change lattice during the simulation
+parameters.names={'initRadius'};
+parameters.values={[sqrt(25/25) sqrt(50/25) sqrt(100/25)]};
 
 
 %% Preallocate
 Nparameters=length(parameters.names);
 Nconfig=length(parameters.values{1});
 
-e_L=zeros(1,Ntimes);    
-e_theta=zeros(1,Ntimes);
-Tr_vec=zeros(1,Ntimes);
-success_vec=zeros(1,Ntimes);
-stopTime_vec = zeros(1, Ntimes);
-GNormal_vec = zeros(1, Ntimes);
+e_L=nan(1,Ntimes);    
+e_theta=nan(1,Ntimes);
+Tr_vec=nan(1,Ntimes);
+success_vec=nan(1,Ntimes);
+stopTime_vec = nan(1, Ntimes);
+GNormal_vec = nan(1, Ntimes);
+e_d_max_vec = nan(1, Ntimes);
+V_vec = nan(1, Ntimes);
+rigid_vec = nan(1, Ntimes);
 
-e_L_mean=zeros(Nconfig,3);
-e_theta_mean=zeros(Nconfig,3);
-Tr_mean=zeros(1,Nconfig);
-success_mean=zeros(1,Nconfig);
-stopTime_max = zeros(1,Nconfig);
-GNormal_mean = zeros(Nconfig,3);
+e_L_mean=nan(Nconfig,3);
+e_theta_mean=nan(Nconfig,3);
+Tr_mean=nan(1,Nconfig);
+success_mean=nan(1,Nconfig);
+stopTime_max = nan(1,Nconfig);
+GNormal_mean = nan(Nconfig,3);
+V_mean=nan(Nconfig,3);
+e_d_max_mean=nan(Nconfig,3);
+rigid_mean=nan(Nconfig,3);
+xFinalData=nan(Nconfig,Ntimes,N,2);
 
 %% Simulation
 % for each configuration...
 for i_times=1:Nconfig
     
-    disp('Simulation ' + string(i_times) + ' of ' + Nconfig)
+    disp('Simulation ' + string(i_times) + ' of ' + Nconfig + ':')
     
     for j=1:Nparameters
         assignin('base',parameters.names{j}, parameters.values{j}(i_times));
     end
     
     % create initial conditions
-    rng(seed,'twister'); % reproducible results
+    if seed>=0
+        rng(seed,'twister'); % reproducible results
+    end
     x0Data=nan(Ntimes,N,2);
     for k_times=  1:Ntimes
         x0Data(k_times,:,:)=randCircle(N, initRadius);
@@ -107,14 +82,23 @@ for i_times=1:Nconfig
     tic
     parfor k_times=1:Ntimes
         x0=squeeze(x0Data(k_times,:,:));
-        [T_r, success, final_e_theta, final_e_L, finalGRadial, finalGNormal, stopTime] = Simulator(x0, LinkNumber, G_radial, G_normal, regularity_thresh, compactness_thresh, Tmax, sigma, drawON, getMetrics, IntFunctionStruct, MaxSensingRadius, alpha, beta, dynamicLattice, AgentsRemoval);
+        [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, finalGNormal, stopTime, xVec] = Simulator(x0, LinkNumber, G_radial, G_normal, regularity_thresh, compactness_thresh, Tmax, sigma, drawON, getMetrics, RadialIntFunction, AgentsRemoval, NoiseTest, MaxSensingRadius, alpha, beta, dynamicLattice, Rmax);
 
         e_L(k_times)=final_e_L;
         e_theta(k_times)=final_e_theta;
-        Tr_vec(k_times)=T_r;
+        if(size(T_r)==[1,2]); Tr_vec(k_times)=T_r; end
         success_vec(k_times)=success;
         stopTime_vec(k_times) = stopTime;
         GNormal_vec(k_times) = finalGNormal;
+        
+        x=xVec(:,:,end);
+        xFinalData(i_times,k_times,:,:)=x;
+    
+        D = buildIncidenceMatrix(x, Rmax);
+        m(k_times)=size(D,2);
+        M = buildRigidityMatrix(x, D);
+        rigid_vec(k_times) = rank(M)==2*N-3;
+        e_d_max_vec(k_times) = getMaxLinkLengthError(x, 1, 0, Rmax);   % max distance from the deisred link length.
     end
     
     %Average and Variance
@@ -125,6 +109,9 @@ for i_times=1:Nconfig
     stopTime_max(i_times) = max(stopTime_vec,[], 'includenan');
     GNormal_mean(i_times,:)=[mean(GNormal_vec), min(GNormal_vec), max(GNormal_vec)];
 
+    e_d_max_mean(i_times,:)=[mean(e_d_max_vec), min(e_d_max_vec), max(e_d_max_vec)];
+    rigid_mean(i_times,:)=[mean(rigid_vec), min(rigid_vec), max(rigid_vec)];
+    
     toc
 end
 
@@ -184,6 +171,30 @@ if Nparameters==1
         xlabel(parameters.names{1})
         set(gca,'FontSize',14)
         box
+        
+        figure %e_d_max and rigidity
+        set(0, 'DefaultFigureRenderer', 'painters');
+        subplot(2,1,1)
+        %title('V','FontSize',16)
+        hold on
+        line=plotWithShade(parameters.values{1},e_d_max_mean(:,1),e_d_max_mean(:,2),e_d_max_mean(:,3), 'b', 0.1);
+        xticks(parameters.values{1})
+        legend([line],{'$e$'},'Interpreter','latex','FontSize',22)
+        legend boxoff
+        set(gca,'FontSize',14)
+        box on
+        grid
+        
+        subplot(2,1,2)
+        rigidity_line=plot(parameters.values{1},rigid_mean(:,1),'Marker','o','Color','r','LineWidth',2,'MarkerSize',6);
+        xticks(parameters.values{1})
+        legend([rigidity_line],{'$\rho$'},'Interpreter','latex','FontSize',22)
+        legend boxoff
+        xlabel(parameters.names{1})
+        set(gca,'FontSize',14)
+        box on
+        grid
+        
     else
          figure %METRICS with Gain
          set(0, 'DefaultFigureRenderer', 'painters');

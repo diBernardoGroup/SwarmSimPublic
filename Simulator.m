@@ -1,16 +1,16 @@
-function [T_r, success, final_e_theta, final_e_L, finalGRadial, finalGNormal, stopTime] = Simulator(x0, LinkNumber, GainRadialDefault, GainNormalDefault, regularity_thresh, compactness_thresh, Tmax, sigma, drawON, getMetrics, IntFunctionStruct, MaxSensingRadius, alpha, beta, dynamicLattice, AgentsRemoval)
+function [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, finalGNormal, stopTime, xVec] = Simulator(x0, LinkNumber, GainRadialDefault, GainNormalDefault, regularity_thresh, compactness_thresh, Tmax, sigma, drawON, getMetrics, IntFunctionStruct, AgentsRemoval, NoiseTest, MaxSensingRadius, alpha, beta, dynamicLattice, RMax)
 %
 %Simulator Executes a complete simulation of the swarm.
 %   This function is called by a launcher script (Launcher, BruteForceTuning, ...).
 %
-%   [T_r, success, final_e_theta, final_e_L, finalGRadial, finalGNormal, stopTime] =...
+%   [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, finalGNormal, stopTime] =...
 %   ... Simulator(x0, LinkNumber, GainRadialDefault, GainNormalDefault, regularity_thresh, compactness_thresh,...
-%   ... Tmax, sigma, drawON, getMetrics, IntFunctionStruct, MaxSensingRadius, alpha, beta, dynamicLattice, AgentsRemoval)
+%   ... Tmax, sigma, drawON, getMetrics, IntFunctionStruct, AgentsRemoval, NoiseTest, MaxSensingRadius, alpha, beta, dynamicLattice)
 %
 %   Inputs:
 %       x0 are the initial positions of the agents (Nx2 matrix)
 %       LinkNumber is the desired number of links per agent (6=triangular
-%           lattice, 4=square lattice) (scalar)
+%           lattice, 4=square lattice, 3=hexagonal lattice) (scalar)
 %       GainRadialDefault is the default value of G_radial (scalar)
 %       GainNormalDefault is the default value of G_normal (scalar)
 %       regularity_thresh is the threshold value for regularity metrics (e^*_theta) (scalar)
@@ -32,6 +32,7 @@ function [T_r, success, final_e_theta, final_e_L, finalGRadial, finalGNormal, st
 %       success is true if the metrics are below the respective thresholda (bool)
 %       final_e_theta final value of the regularity metrics (scalar)
 %       final_e_L final value of the compactness metrics (scalar)
+%       final_e_d final value of the lenght metrics (scalar)
 %       finalGRadial final value of the radial gain (scalar)
 %       finalGNormal final value of the normal gain (scalar)
 %       stopTime final simulation instant (scalar)
@@ -109,6 +110,7 @@ end
 %% Preallocate variables
 count=0;                                    % sampling iteration
 TSample = 0:deltaSample:Tmax;               % sampling time instants
+xVec=nan([size(x0),size(TSample,1)+1]);         % positions of the swarm
 e_L=nan(size(TSample,2),3);                 % compactness metrics of the swarm
 e_theta=nan(size(TSample,2),3);             % regularity metrics of the swarm
 G_normal_vec=nan(size(TSample,2),3);        % average, min, and max values of the normal gain
@@ -117,8 +119,9 @@ vMean=nan(size(TSample,2),3);               % average speed
 G_radial = GainRadialDefault* ones(N,1);    % radial gains (G_r,i)
 G_normal = GainNormalDefault* ones(N,1);    % normal gains (G_n,i)
 
+xVec(:,:,1)=x0;
 
-disp(['Simulating ',IntFunctionStruct.function,' N=',num2str(N),' LinkNumber=',num2str(LinkNumber)])
+disp(['- Simulating ',IntFunctionStruct.function,' N=',num2str(N),' LinkNumber=',num2str(LinkNumber)])
 
 %% Run Simulation
 stopCondition=false;
@@ -145,6 +148,8 @@ while t<=Tmax && ~stopCondition
         count= count+1;
              
         if getMetrics || t>Tmax-2
+            xVec(:,:,count+1)=x;
+            
             linkError=abs((LinkNumber-links))/LinkNumber;
             e_L(count,:)=[mean(linkError), quantile(linkError, 0.1), quantile(linkError, 0.9)];
             e_theta(count,1)=getAvgAngularErr_Spears(x, LinkNumber, RMin, RMax)*LinkNumber/pi;
@@ -193,6 +198,7 @@ final_e_L = mean(e_L(count-ceil(1/deltaSample):count,1));
 finalGRadial = mean(G_radial_vec(count-ceil(1/deltaSample):count),1);
 finalGNormal = mean(G_normal_vec(count-ceil(1/deltaSample):count,1));
 
+final_e_d = getAvgLinkLengthError(x, 1, RMin, RMax);
 
 %% PLOTS
 
