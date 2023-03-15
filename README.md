@@ -17,7 +17,7 @@ Features:
   - Interface with Robotarium code to perform advanced simulations and real life experiments (see RobotariumSimulator). For more details and to use the Robotarium refer to https://www.robotarium.gatech.edu.
   - Plot functions to visualise the results.
 
-Copyrights: If you use this code for research purposes and want to mention it in one of your publications, please cite [REF].
+Copyrights: If you use this code for research purposes and want to mention it in one of your publications, please cite [Giusti2022].
 
 In the Media folder, there is a video supplement for [Giusti2022].
 
