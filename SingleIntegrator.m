@@ -1,4 +1,4 @@
-function [xnew] = SingleIntegrator(x, v, deltaT, vMax, sigma)
+function [xnew] = SingleIntegrator(x, v, deltaT, vMax)
 %
 %SingleIntegrator implements the first order dynamics of the agents.
 %   Forward Euler with fixed time step integration is used.
@@ -26,6 +26,6 @@ function [xnew] = SingleIntegrator(x, v, deltaT, vMax, sigma)
     v(indices,:)= v(indices,:) * vMax ./ velocities(indices);
     
     % integration
-    xnew = x + v.*deltaT + sigma * sqrt(deltaT) * randn(size(x));
+    xnew = x + v.*deltaT;
 end
 

@@ -31,7 +31,7 @@ function [p,p_lines,pL] = plotSwarmInit(x,time,RMin,RMax)
     hold on
     
 
-    plotSwarm(x,[],time,0,RMax,false, ones(size(x,1), 1));
+    plotSwarm(x,[],time, RMin,RMax,false, ones(size(x,1), 1));
 
 end
 

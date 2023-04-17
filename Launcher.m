@@ -17,16 +17,14 @@ clc
 
 defaultParam;   % load default parameters
 
-LinkNumber=4;   % number of links (6=triangular lattice, 4=square lattice, 3=hexagonal lattice) (L)
-
-RadialIntFunction=struct('function','Lennard-Jones','parameters',[0.15, 5]);
-
-% control gains
-G_radial= 15;   % default value for square lattice 15 (G_r)
-G_normal = 8;   % default value for square lattice  8 (G_n)
-
-
+N=100;
 Tmax=30;    % maximum simulation time (simulation is stopped earlier if steady state is reached)
+
+%Dynamics=struct('model','FirstOrder', 'sigma',0.1);
+Dynamics=struct('model','LevyWalk', 'alpha',0);
+
+GlobalIntFunction=struct('function','None');
+LocalIntFunction=struct('function','None');
 
 %output options
 drawON=true;        % draw swarm during simulation (if N is large slows down the simulation)
@@ -39,15 +37,19 @@ x0=randCircle(N, 2);                 % initial conditions drawn from a uniform d
 %x0 = normrnd(0,0.1*sqrt(N),N,2);    % initial conditions drawn from a normal distribution
 %x0 = perfectLactice(N, LinkNumber); % initial conditions on a correct lattice
 
+%v0 = normrnd(0,0.001*sqrt(N),N,2);
+v0 = zeros(size(x0));
 
 %% Run Simulation
-[T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, finalGNormal, stopTime] = Simulator(x0, LinkNumber, G_radial, G_normal, regularity_thresh, compactness_thresh, Tmax, sigma, drawON, getMetrics, RadialIntFunction, AgentsRemoval, NoiseTest, MaxSensingRadius, alpha, beta, dynamicLattice, Rmax);
+%[T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, finalGNormal, stopTime] = Simulator(x0, LinkNumber, G_radial, G_normal, regularity_thresh, compactness_thresh, Tmax, sigma, drawON, getMetrics, GlobalIntFunction, AgentsRemoval, NoiseTest, MaxSensingRadius, alpha, beta, dynamicLattice, Rmax);
+[xVec, vVec, stopTime] = Simulator(x0, v0, Tmax, Dynamics, drawON, getMetrics, GlobalIntFunction, LocalIntFunction);
 
 
 %% PLOTS
+if ~strcmp(GlobalIntFunction.function,'None')
     figure % RADIAL INTERACTION FUNCTION
     hold on
-    fplot(@(x) RadialInteractionForce(x, RadialIntFunction),[0, 3])
+    fplot(@(x) RadialInteractionForce(x, GlobalIntFunction),[0, 3])
     plot([1], [0], 'r.','MarkerSize', 40)
     yticks([-1 0 1])
     xticks([0:3])
@@ -56,6 +58,7 @@ x0=randCircle(N, 2);                 % initial conditions drawn from a uniform d
     title('f_r(d)')
     xlabel('d')
     set(gca,'FontSize',14)
+end
 
 %     figure % NORMAL INTERACTION FORCE
 %     hold on

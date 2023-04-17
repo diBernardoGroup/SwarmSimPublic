@@ -1,4 +1,4 @@
-function [v, links, angErr, GainRadial, GainNormal] = VFcontroller(x, oldGainRadial, oldGainNormal, RMax, RMin, SensingNumber, InteractionFactor, LinkNumber, deltaT, DeadZoneThresh, IntFunctionStruct, spin, MaxSensingRadius, alpha, beta)
+function [v, links] = VFcontroller(x, SensingNumber, InteractionFactor, deltaT, GlobalIntFunction, LocalIntFunction)
 %
 %VFcontroller implements the virtual forces controller and computes the
 %   velocities (control input) of the agents.
@@ -39,25 +39,22 @@ function [v, links, angErr, GainRadial, GainNormal] = VFcontroller(x, oldGainRad
 %   Date:       2022
 %
 
-%% Check input parameters
-assert(LinkNumber==6 | LinkNumber==4, "LinkNumber must be equal to 4 (square lattice) or 6 (triangular lattice)")
-assert(size(x,2)==2, "x must be a Nx2 matrix")
-assert(deltaT>=0, "deltaT must be a non negative number")
-assert(RMax>=RMin, "RMax must be >=RMin")
-assert(RMin>=0, "RMin must be a non negative number")
-assert(ceil(SensingNumber)==floor(SensingNumber), "SensingNumber must be an integer number")
-assert(InteractionFactor>0 && InteractionFactor<=1, "InteractionFactor must be in ]0; 1]")
-assert(MaxSensingRadius>=0, "MaxSensingRadius must be a non negative number")
-assert(DeadZoneThresh>=0, "DeadZoneThresh must be a non negative number")
-assert(all(spin==0 | spin==1), "spin must be equal to 0 or 1")
+% %% Check input parameters
+% assert(LinkNumber==6 | LinkNumber==4, "LinkNumber must be equal to 4 (square lattice) or 6 (triangular lattice)")
+% assert(size(x,2)==2, "x must be a Nx2 matrix")
+% assert(deltaT>=0, "deltaT must be a non negative number")
+% assert(RMax>=RMin, "RMax must be >=RMin")
+% assert(RMin>=0, "RMin must be a non negative number")
+% assert(ceil(SensingNumber)==floor(SensingNumber), "SensingNumber must be an integer number")
+% assert(InteractionFactor>0 && InteractionFactor<=1, "InteractionFactor must be in ]0; 1]")
+% assert(MaxSensingRadius>=0, "MaxSensingRadius must be a non negative number")
+% assert(DeadZoneThresh>=0, "DeadZoneThresh must be a non negative number")
+% assert(all(spin==0 | spin==1), "spin must be equal to 0 or 1")
 
 %% Instantiate Variables
     N=size(x,1);
     v= zeros(N,2);
     links = zeros(N,1);
-    angErr = zeros(N,1);
-    GainRadial = zeros(N,1);
-    GainNormal = zeros(N,1);
     R= [0 1; -1 0];         % 90deg rotation matrix
     
 %% for each agent...
@@ -78,42 +75,41 @@ assert(all(spin==0 | spin==1), "spin must be equal to 0 or 1")
         end
         
         % compute the adjacency set
-        [xNeighbours, NeigIndices] = getNeighbours(x(i,:), xRand, RMin, RMax);
-        
+        if isfield(LocalIntFunction,'DistanceRange')
+            [xNeighbours, NeigIndices] = getNeighbours(x(i,:), xRand, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2));
+        else
+            xNeighbours=[];
+            NeigIndices=[];
+        end
         
         %% links and angular error
-        links(i)=size(xNeighbours,1);
-        angErr(i)=getAngleError(x(i,:), 0, xNeighbours, LinkNumber);
-        
-        %% compute gains with adaptation law
-        [GainRadial(i), GainNormal(i)]=adaptationLaw(alpha, beta, oldGainRadial(i), oldGainNormal(i), LinkNumber-links(i), angErr(i), deltaT, DeadZoneThresh, LinkNumber);
-        
+        links(i)=size(xNeighbours,1);                
         
         %% compute interactions with neighbours
         % compute the distances from the neighbours (||r_ij||)
         distances=vecnorm(x(i,:)-xRand, 2, 2); 
         
         % Renormalize distances if using Spear'spin algorithm (sqaure or hexagonal lattice)
-        if strcmp(IntFunctionStruct.function,'Spears') && (LinkNumber==4 || LinkNumber == 3)
+        if strcmp(GlobalIntFunction.function,'Spears') && (LocalIntFunction.LinkNumber==4 || LocalIntFunction.LinkNumber == 3)
             same_spin = find(spin == spin(i));
             if LinkNumber == 4
                 distances(same_spin) = distances(same_spin)/sqrt(2);
             else
                 distances(same_spin) = distances(same_spin)/sqrt(3);
             end
+        end      
+        
+        % compute global action (u_i,r)
+        if ~strcmp(GlobalIntFunction.function,'None')
+            indices=find(distances > 0 & distances <= GlobalIntFunction.MaxSensingRadius);
+            v(i,:)= v(i,:) + GlobalIntFunction.Gain * sum((x(i,:)-xRand(indices,:))./distances(indices) .* RadialInteractionForce(distances(indices), GlobalIntFunction)/InteractionFactor);
         end
         
-        % compute angular errors (theta_ij^err)
-        angErrNeigh = getAngularErrNeigh(x(i,:), 0, xNeighbours, LinkNumber);
-        
-        % compute radial action (u_i,r)
-        indices=find(distances > 0 & distances <= MaxSensingRadius);
-        v(i,:)= v(i,:) + GainRadial(i) * sum((x(i,:)-xRand(indices,:))./distances(indices) .* RadialInteractionForce(distances(indices), IntFunctionStruct)/InteractionFactor);
-
-        % compute normal action (u_i,n)
-        if size(NeigIndices,1) > 0
-            v(i,:)= v(i,:) + GainNormal(i) * sum((x(i,:)-xRand(NeigIndices,:))./distances(NeigIndices) * R .* NormalInteractionForce(angErrNeigh, LinkNumber)/InteractionFactor);
+        % compute local action (u_i,n)
+        if ~strcmp(LocalIntFunction.function,'None')
+            if size(NeigIndices,1) > 0
+                v(i,:)= v(i,:) + LocalIntFunction.Gain * sum((x(i,:)-xRand(NeigIndices,:))./distances(NeigIndices) * R .* NormalInteractionForce(angErrNeigh, LocalIntFunction.LinkNumber)/InteractionFactor);
+            end
         end
-        
     end
 end
