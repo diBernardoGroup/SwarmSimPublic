@@ -18,6 +18,11 @@ G_normal = 0;   % default value for square lattice  8 (G_n)
 
 MaxSensingRadius=inf;   % sensing radius of the agents (R_s)
 
+Simulation=struct();
+Simulation.Tmax =   60;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
+Simulation.deltaT = 0.5;   % sampling time step
+Simulation.dT =     0.01;   % integration time step
+
 % descrption of the radial and normal interaction functions
 GlobalIntFunction=struct('function','Lennard-Jones','parameters',[0.5, 12], 'MaxSensingRadius', MaxSensingRadius, 'Gain', G_radial);
 %GlobalIntFunction=struct('function','Spears','parameters', [2 35]);  %from Spears2004
@@ -33,11 +38,6 @@ beta = 0;
 % thresholds
 regularity_thresh=0.2;      % threshold value for regularity metrics (e^*_theta)
 compactness_thresh=0.3;     % threshold value for compactness metrics (e^*_L)
-
-Tmax=10;    % maximum simulation time (simulation is stopped earlier if steady state is reached)
-
-sigma = 0;  % standard deviation of noise in agents' dynamics
-
 
 Rmax= (sqrt(3)+1)/2;    % maximum lenght of a link (R_a). Must be in [1; sqrt(3)]
 delta=(Rmax-1) * 0.5;   % maximum displacement of the initial positions. delta<=(Rmax-1)/2 preserves all the links

@@ -20,8 +20,8 @@ function [p] = drawLines(x,Rmin,Rmax)
 
 p=[];
 
- for i=1:length(x)
-    for j=i:length(x)
+ for i=1:size(x,1)
+    for j=i:size(x,1)
         if norm(x(i,:)-x(j,:))>Rmin && norm(x(i,:)-x(j,:))<Rmax
             p(i,j)=plot([x(i,1) x(j,1)],[x(i,2) x(j,2)], 'k', 'Linewidth', 1);
         end

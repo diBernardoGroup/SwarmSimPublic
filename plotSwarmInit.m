@@ -20,16 +20,19 @@ function [p,p_lines,pL] = plotSwarmInit(x,time,RMin,RMax)
 %   Date:       2022
 %
 
-    Max = 7;   % amplitude of the simulation plane
+    Max = 10;   % amplitude of the simulation plane
     Min = -Max;
 
     axis('equal',[Min Max Min Max])
     yticks([-10 -5 0 5 10])
     xticks([-10 -5 0 5 10])
     set(gca,'FontSize',14)
-    set(gcf,'Position',[100 100 300 300])
+    set(gcf,'Position',[100 100 500 500])
     hold on
     
+    if all(size(x) == [2,1])
+       x=x'; 
+    end
 
     plotSwarm(x,[],time, RMin,RMax,false, ones(size(x,1), 1));
 

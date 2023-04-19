@@ -1,46 +1,7 @@
-function [xVec, vVec, stopTime] = Simulator(x0, v0, Tmax, Dynamics, drawON, getMetrics, GlobalIntFunction, LocalIntFunction)
+function [xVec, vVec, stopTime] = Simulator(x0, v0, Simulation, Dynamics, drawON, getMetrics, GlobalIntFunction, LocalIntFunction)
 %
 %Simulator Executes a complete simulation of the swarm.
 %   This function is called by a launcher script (Launcher, BruteForceTuning, ...).
-%
-%   [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, finalGNormal, stopTime] =...
-%   ... Simulator(x0, LinkNumber, GainRadialDefault, GainNormalDefault, regularity_thresh, compactness_thresh,...
-%   ... Tmax, sigma, drawON, getMetrics, IntFunctionStruct, AgentsRemoval, NoiseTest, MaxSensingRadius, alpha, beta, dynamicLattice)
-%
-%   Inputs:
-%       x0 are the initial positions of the agents (Nx2 matrix)
-%       LinkNumber is the desired number of links per agent (6=triangular
-%           lattice, 4=square lattice, 3=hexagonal lattice) (scalar)
-%       GainRadialDefault is the default value of G_radial (scalar)
-%       GainNormalDefault is the default value of G_normal (scalar)
-%       regularity_thresh is the threshold value for regularity metrics (e^*_theta) (scalar)
-%       compactness_thresh is the threshold value for compactness metrics (e^*_L) (scalar)
-%       Tmax is the maximum simulation time (scalar)
-%       sigma is the standard deviation of noise (scalar)
-%       drawON draw swarm during simulation (bool)
-%       getMetrics acquire metrics during the simulation (getMetrics=false
-%           discard settling times and stop times) (bool)
-%       IntFunctionStruct description and parameters of the radial
-%           interaction function (struct)
-%       MaxSensingRadius is the sensing radius of the agents (R_s)
-%       alpha and beta are the adaptation gains for the adaptive control (scalar)
-%       dynamicLattice change lattice during the simulation (bool)
-%       AgentsRemoval randomly remove agents during the simulation (bool)
-%
-%   Outputs:
-%       T_r is the settling time (scalar)
-%       success is true if the metrics are below the respective thresholda (bool)
-%       final_e_theta final value of the regularity metrics (scalar)
-%       final_e_L final value of the compactness metrics (scalar)
-%       final_e_d final value of the lenght metrics (scalar)
-%       finalGRadial final value of the radial gain (scalar)
-%       finalGNormal final value of the normal gain (scalar)
-%       stopTime final simulation instant (scalar)
-%
-%   See also: Launcher, BruteForceTuning, SequentialLauncher
-%
-%   Authors:    Andrea Giusti and Gian Carlo Maffettone
-%   Date:       2022
 %
 
 % %% Check input parameters
@@ -69,8 +30,6 @@ if drawON
     hold on
 end
 
-vMax = 5; % maximum speed of the agents
-
 SensingNumber = inf;    % max number of neighbours to interact with
 
 
@@ -78,10 +37,6 @@ SensingNumber = inf;    % max number of neighbours to interact with
 InteractionFactor = 1; % fraction of agents to interact with ]0,1] 
 %(if InteractionFactor<1 a subset of agents is randomly selected by each agent at each update step to interact with)
 if (InteractionFactor~=1); warning("InteractionFactor is NOT set to 1"); end
-
-deltaT = 0.01;      % forward Euler integration step
-deltaSample = 0.25; % time step for metrics acquisition
-screenTimes=[0 Tmax/2-deltaT Tmax/2 Tmax]; % specify time instants to get simulation frames
 
 % % steady state detection
 % stopSamples=ceil(10/deltaSample);               % number of consecutive samples to detect steady state 
@@ -95,7 +50,7 @@ N=size(x,1);
 
 %% Preallocate variables
 count=0;                                    % sampling iteration
-TSample = 0:deltaSample:Tmax;               % sampling time instants
+TSample = 0:Simulation.deltaT:Simulation.Tmax;               % sampling time instants
 xVec=nan([size(TSample,1)+1,size(x0)]);         % positions of the swarm
 vVec=nan([size(TSample,1)+1,size(x0)]);         % velocity of the swarm
 
@@ -103,23 +58,23 @@ xVec(1,:,:)=x0;
 vVec(1,:,:)=v0;
 v=v0;
 
-disp(['- Simulating ',GlobalIntFunction.function,' N=',num2str(N)])
+disp(['- Simulating ',Dynamics.model, ' with ',GlobalIntFunction.function,' interaction, N=',num2str(N)])
 
 %% Run Simulation
 stopCondition=false;
 t=0;
 stopTime=nan;
 
-while t<=Tmax && ~stopCondition
+while t<=Simulation.Tmax && ~stopCondition
 
     
     % Compute Control Actions
     %[v, links, ~, G_radial, G_normal] = VFcontroller(x, G_radial, G_normal, min(RMax,MaxSensingRadius), RMin, SensingNumber, InteractionFactor, LinkNumber, deltaT, DeadZoneThresh, GlobalIntFunction, spin, MaxSensingRadius, alpha, beta);
-    [vInteractions] = VFcontroller(x, SensingNumber, InteractionFactor, deltaT, GlobalIntFunction, LocalIntFunction);
+    forces = VFcontroller(x, SensingNumber, InteractionFactor, Simulation.dT, GlobalIntFunction, LocalIntFunction);
     
     % Simulate Agents' Dynamics
     %x = SingleIntegrator(x, v, deltaT, vMax);
-    [x, v] = Integrate(x, vInteractions, Dynamics, deltaT, vMax);
+    [x, v, Dynamics] = Integrate(x, v, forces, Dynamics, Simulation.dT);
     
     if t>=TSample(count+1)
         count= count+1;
@@ -146,7 +101,7 @@ while t<=Tmax && ~stopCondition
         
         % plot swarm
         if drawON
-            plotTrajectory(xVec, false, 'b');
+            plotTrajectory(xVec, false, [0,0.7,0.9]);
             if isfield(LocalIntFunction, 'DistanceRange')
                 plotSwarm(x, [], t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), true, ones(N,1));
             else
@@ -157,14 +112,14 @@ while t<=Tmax && ~stopCondition
     end
     
     
-    t=t+deltaT;
+    t=t+Simulation.dT;
 end
 
 %% PLOTS
 
 % plot swarm
 if drawON
-    plotTrajectory(xVec, false, 'b');
+    plotTrajectory(xVec, false, [0,0.7,0.9]);
     if isfield(LocalIntFunction, 'DistanceRange')
         plotSwarm(x, [], t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), false, ones(N,1));
     else
