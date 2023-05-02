@@ -53,7 +53,7 @@ function [v, links] = VFcontroller(x, SensingNumber, InteractionFactor, deltaT, 
 
 %% Instantiate Variables
     N=size(x,1);
-    v= zeros(N,2);
+    v= zeros(size(x));
     links = zeros(N,1);
     R= [0 1; -1 0];         % 90deg rotation matrix
     

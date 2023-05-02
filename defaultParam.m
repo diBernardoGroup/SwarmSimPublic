@@ -14,16 +14,16 @@ LinkNumber=4;   %number of links (6=triangular lattice, 4=square lattice, 3=hexa
 
 % control gains
 G_radial= 1;   % default value for square lattice 15 (G_r)
-G_normal = 0.5;   % default value for square lattice  8 (G_n)
+G_normal = 0;   % default value for square lattice  8 (G_n)
 
 MaxSensingRadius=inf;   % sensing radius of the agents (R_s)
 
 Simulation=struct();
-Simulation.Tmax =   60;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
+Simulation.Tmax =   10;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
 Simulation.deltaT = 0.5;    % sampling time step
 Simulation.dT =     0.01;   % integration time step
 Simulation.drawON=true;    % draw swarm during simulation (if N is large slows down the simulation)
-Simulation.drawTraj=false;  % draw trajectories of the agents (if N is large slows down the simulation)
+Simulation.drawTraj=true;  % draw trajectories of the agents (if N is large slows down the simulation)
 Simulation.getMetrics=true; % acquire metrics during the simulation (getMetrics=false discard settling times and stop times)
 
 
@@ -34,8 +34,8 @@ GlobalIntFunction=struct('function','Lennard-Jones','parameters',[0.5, 12], 'Max
 %GlobalIntFunction=struct('function','Modified-LJ','parameters',[]);  %from Torquato2009
 %GlobalIntFunction=struct('function','None');
 
-LocalIntFunction=struct('function','Linear', 'LinkNumber',LinkNumber, 'DistanceRange', [0.6, 1.1], 'Gain', G_normal);
-%LocalIntFunction=struct('function','None');
+%LocalIntFunction=struct('function','Linear', 'LinkNumber',LinkNumber, 'DistanceRange', [0.6, 1.1], 'Gain', G_normal);
+LocalIntFunction=struct('function','None', 'DistanceRange', [0, 1.1]);
 
 % adaptation gains
 alpha = 0;      

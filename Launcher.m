@@ -15,7 +15,6 @@ clear
 %% Parameters
 outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/stability of geometric lattices/simulations';
 
-
 defaultParam;   % load default parameters
 
 N=10;
@@ -23,10 +22,10 @@ N=10;
 avgSpeed0=1;
 sigmaSpeed0=0.5;
 
-Dynamics=struct('model','FirstOrder', 'sigma',0, 'vMax', 5);
+%Dynamics=struct('model','FirstOrder', 'sigma',0, 'vMax', 5);
 %Dynamics=struct('model','SecondOrder', 'sigma',0.1, 'vMax', inf);
 %Dynamics=struct('model','CoupledSDEs', 'rateSpeed', 1, 'avgSpeed', avgSpeed0, 'sigmaSpeed', 1, 'rateOmega', 1, 'sigmaOmega', @(x)2*max(1-x/3,0), 'omega', zeros(N,1));
-%Dynamics=struct('model','LevyWalk', 'alpha',0.005, 'sigma', 0.25);
+Dynamics=struct('model','LevyWalk', 'alpha',0.005, 'sigma', 0.25);
 
 smoothing = false;      
 
@@ -34,14 +33,14 @@ smoothing = false;
 %rng(1,'twister'); % set the randomn seed to have reproducible results
 
 %x0=randCircle(N, 2);                 % initial conditions drawn from a uniform disc
-%x0 = normrnd(0,0.1*sqrt(N),N,2);    % initial conditions drawn from a normal distribution
+x0 = normrnd(0,0.1*sqrt(N),N,3);    % initial conditions drawn from a normal distribution
 %x0 = perfectLactice(N, LinkNumber); % initial conditions on a correct lattice
-x0 = perfectLactice(N, LinkNumber) + randCircle(N, 0.6); % initial conditions on a deformed lattice
+%x0 = perfectLactice(N, LinkNumber) + randCircle(N, 0.6); % initial conditions on a deformed lattice
 
-speeds0 = abs(normrnd(avgSpeed0,sigmaSpeed0,N,1));
-theta0 = 2*pi*rand(N,1)-pi;
-v0 = speeds0 .* [cos(theta0), sin(theta0)];
-%v0 = zeros(size(x0));
+% speeds0 = abs(normrnd(avgSpeed0,sigmaSpeed0,N,1));
+% theta0 = 2*pi*rand(N,1)-pi;
+% v0 = speeds0 .* [cos(theta0), sin(theta0)];
+v0 = zeros(size(x0));
 
 %% Run Simulation
 [xVec] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction);
@@ -69,10 +68,10 @@ close all
 
 % create folder, save data and parameters
 counter=1;
-while exist(fullfile(outputDir,[Dynamics.model,num2str(counter)]),'dir')
+while exist(fullfile(outputDir,[datestr(now, 'yyyy_mm_dd_'),Dynamics.model,'_',num2str(counter)]),'dir')
     counter=counter+1;
 end
-path=fullfile(outputDir, [Dynamics.model,num2str(counter)]);
+path=fullfile(outputDir, [datestr(now, 'yyyy_mm_dd_'),Dynamics.model,'_',num2str(counter)]);
 mkdir(path)
 save(fullfile(path, 'data'))
 
@@ -81,19 +80,25 @@ fprintf(fileID,'Date: %s\n',datestr(now, 'dd/mm/yy'));
 fprintf(fileID,'Time: %s\n\n',datestr(now, 'HH:MM'));
 fprintf(fileID,'Parameters:\n\n');
 fprintf(fileID,'N= %d\n',N);
+fprintf(fileID,'D= %d\n',size(x0,2));
 fprintStruct(fileID,Simulation)
+fprintf(fileID,'Dynamics:\n');
 fprintStruct(fileID,Dynamics)
+fprintf(fileID,'GlobalIntFunction:\n');
+fprintStruct(fileID,GlobalIntFunction)
+fprintf(fileID,'GlobalIntFunction:\n');
+fprintStruct(fileID,LocalIntFunction)
 fprintf(fileID,'smoothing= %s\n',mat2str(smoothing));
 fclose(fileID);
 
 % TRAJECTORIES
 figure
-if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9]); end
 if isfield(LocalIntFunction, 'DistanceRange')
     plotSwarmInit(squeeze(xVec(end,:,:)), Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2));
 else
     plotSwarmInit(squeeze(xVec(end,:,:)), Simulation.Tmax, inf, inf);
 end
+if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9]); end
 saveas(gcf, fullfile(path, 'trajectories'))
 saveas(gcf, fullfile(path, 'trajectories'),'png')
 

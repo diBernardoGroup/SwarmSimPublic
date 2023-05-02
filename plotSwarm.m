@@ -28,10 +28,18 @@ function [p,p_lines,pL] = plotSwarm(x,xL,time,RMin,RMax,thenDelete, spin)
     p_lines=drawLines(x,RMin,RMax);
     
     spin1 = find(spin==1);
-    p1 = plot(x(spin1,1), x(spin1,2),'b.','MarkerSize', 20);
     spin0 = find(spin==0);
-    p2 = plot(x(spin0,1), x(spin0,2),'r.','MarkerSize', 20);
+
+    if size(x,2) == 2
+        p1 = plot(x(spin1,1), x(spin1,2),'b.','MarkerSize', 20);
+        p2 = plot(x(spin0,1), x(spin0,2),'r.','MarkerSize', 20);
+    else
+        p1 = plot3(x(spin1,1), x(spin1,2), x(spin1,3),'b.','MarkerSize', 20);
+        p2 = plot3(x(spin0,1), x(spin0,2), x(spin0,3),'r.','MarkerSize', 20);
+    end
+    
     p = [p1 ; p2];
+
     
     if(size(xL,1)>0); pL = plot(xL(:,1), xL(:,2),'r.','MarkerSize', 20); end
 
