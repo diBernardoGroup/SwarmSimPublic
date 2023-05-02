@@ -1,4 +1,4 @@
-function [xVec, vVec, stopTime] = Simulator(x0, v0, Simulation, Dynamics, drawON, getMetrics, GlobalIntFunction, LocalIntFunction)
+function [xVec, vVec, stopTime] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction)
 %
 %Simulator Executes a complete simulation of the swarm.
 %   This function is called by a launcher script (Launcher, BruteForceTuning, ...).
@@ -21,7 +21,7 @@ function [xVec, vVec, stopTime] = Simulator(x0, v0, Simulation, Dynamics, drawON
 Max = 10;   % amplitude of the simulation plane
 Min = -Max;
 
-if drawON
+if Simulation.drawON
     figure;
     axis('equal',[Min Max Min Max])
     yticks([-10 -5 0 5 10])
@@ -82,7 +82,7 @@ while t<=Simulation.Tmax && ~stopCondition
         xVec(count+1,:,:)=x;
         vVec(count+1,:,:)=v;
             
-        if getMetrics || t>Tmax-2
+        if Simulation.getMetrics || t>Tmax-2
             
             
 %             % steady-state detection (with vibration exclusion)
@@ -100,8 +100,8 @@ while t<=Simulation.Tmax && ~stopCondition
         end
         
         % plot swarm
-        if drawON
-            plotTrajectory(xVec, false, [0,0.7,0.9]);
+        if Simulation.drawON
+            if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9]); end
             if isfield(LocalIntFunction, 'DistanceRange')
                 plotSwarm(x, [], t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), true, ones(N,1));
             else
@@ -118,8 +118,8 @@ end
 %% PLOTS
 
 % plot swarm
-if drawON
-    plotTrajectory(xVec, false, [0,0.7,0.9]);
+if Simulation.drawON
+    if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9]); end
     if isfield(LocalIntFunction, 'DistanceRange')
         plotSwarm(x, [], t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), false, ones(N,1));
     else

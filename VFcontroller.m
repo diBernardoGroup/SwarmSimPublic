@@ -108,6 +108,8 @@ function [v, links] = VFcontroller(x, SensingNumber, InteractionFactor, deltaT, 
         % compute local action (u_i,n)
         if ~strcmp(LocalIntFunction.function,'None')
             if size(NeigIndices,1) > 0
+                % compute angular errors (theta_ij^err)
+                angErrNeigh = getAngularErrNeigh(x(i,:), 0, xNeighbours, LocalIntFunction.LinkNumber);
                 v(i,:)= v(i,:) + LocalIntFunction.Gain * sum((x(i,:)-xRand(NeigIndices,:))./distances(NeigIndices) * R .* NormalInteractionForce(angErrNeigh, LocalIntFunction.LinkNumber)/InteractionFactor);
             end
         end
