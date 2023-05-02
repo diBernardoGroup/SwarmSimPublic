@@ -17,25 +17,26 @@ outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFederi
 
 defaultParam;   % load default parameters
 
-N=10;
+D=3; %number of dimensions [2 or 3]
+N=64;
 
 avgSpeed0=1;
 sigmaSpeed0=0.5;
 
-%Dynamics=struct('model','FirstOrder', 'sigma',0, 'vMax', 5);
+Dynamics=struct('model','FirstOrder', 'sigma',0, 'vMax', inf);
 %Dynamics=struct('model','SecondOrder', 'sigma',0.1, 'vMax', inf);
 %Dynamics=struct('model','CoupledSDEs', 'rateSpeed', 1, 'avgSpeed', avgSpeed0, 'sigmaSpeed', 1, 'rateOmega', 1, 'sigmaOmega', @(x)2*max(1-x/3,0), 'omega', zeros(N,1));
-Dynamics=struct('model','LevyWalk', 'alpha',0.005, 'sigma', 0.25);
+%Dynamics=struct('model','LevyWalk', 'alpha',0.005, 'sigma', 0.25);
 
 smoothing = false;      
 
 %% Create Initial Conditions
 %rng(1,'twister'); % set the randomn seed to have reproducible results
 
-%x0=randCircle(N, 2);                 % initial conditions drawn from a uniform disc
-x0 = normrnd(0,0.1*sqrt(N),N,3);    % initial conditions drawn from a normal distribution
-%x0 = perfectLactice(N, LinkNumber); % initial conditions on a correct lattice
-%x0 = perfectLactice(N, LinkNumber) + randCircle(N, 0.6); % initial conditions on a deformed lattice
+x0=randCircle(N, 2, D);                 % initial conditions drawn from a uniform disc
+%x0 = normrnd(0,0.1*sqrt(N),N,D);    % initial conditions drawn from a normal distribution
+%x0 = perfectLactice(N, LinkNumber, D); % initial conditions on a correct lattice
+%x0 = perfectLactice(N, LinkNumber, D) + randCircle(N, delta, D); % initial conditions on a deformed lattice
 
 % speeds0 = abs(normrnd(avgSpeed0,sigmaSpeed0,N,1));
 % theta0 = 2*pi*rand(N,1)-pi;

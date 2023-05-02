@@ -10,7 +10,7 @@
 %% Default Parameters
 
 N=50;          %number of agents (N)
-LinkNumber=4;   %number of links (6=triangular lattice, 4=square lattice, 3=hexagonal lattice) (L)
+LinkNumber=12;   %number of links (6=triangular lattice, 4=square lattice, 3=hexagonal lattice) (L)
 
 % control gains
 G_radial= 1;   % default value for square lattice 15 (G_r)

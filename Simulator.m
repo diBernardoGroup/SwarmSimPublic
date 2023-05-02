@@ -58,7 +58,7 @@ xVec(1,:,:)=x0;
 vVec(1,:,:)=v0;
 v=v0;
 
-disp(['- Simulating ',Dynamics.model, ' with ',GlobalIntFunction.function,' interaction, N=',num2str(N)])
+disp(['- Simulating ',num2str(N),' ',Dynamics.model, ' agents  in ', num2str(size(x0,2)),'D space with ',GlobalIntFunction.function,' interaction'])
 
 %% Run Simulation
 stopCondition=false;
