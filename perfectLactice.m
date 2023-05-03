@@ -30,9 +30,13 @@ arguments
     max_iterations double {mustBeInteger, mustBePositive} = 10^3
 end
 
-if enf_rigidity; enf_connectivity=true; end
+if enf_rigidity && ~enf_connectivity 
+    enf_connectivity=true; 
+    warning('A graph cannot be rigid and disconeected. enf_connectivity has been set to true.')
+end
 
 if D==2
+    assert(ismember(L,[3,4,6]),'If D=2 then L must belong to [3,4,6].')
     assert(floor(sqrt(lattice_size))==ceil(sqrt(lattice_size)),'If D=2 then lattice_size must be a square number.')
     
     l=sqrt(lattice_size);
@@ -69,6 +73,7 @@ if D==2
     end
     
 elseif D==3
+    assert(ismember(L,[6,12]),'If D=3 then L must belong to [6,12].')
     assert(floor(nthroot(lattice_size,3))==ceil(nthroot(lattice_size,3)),'If D=3 then lattice_size must be a cubic number.')
     
     l=nthroot(lattice_size,3);
@@ -93,7 +98,7 @@ elseif D==3
                 for j=1:l
                     for k=1:l
                         index=sub2ind([l,l,l],i,j,k);
-                        x(index,:)=[(i-1)+mod(j,2)/2+mod(k,2)/2, (j-1)*sqrt(3)/2+mod(k,2)*sqrt(3)/4, (k-1)*sqrt(3)/2];
+                        x(index,:)=[(i-1)+mod(j,2)/2+mod(k,2)/2, (j-1)*sqrt(3)/2+mod(k,2)/sqrt(12), (k-1)*sqrt(2/3)];
                     end
                 end
             end
