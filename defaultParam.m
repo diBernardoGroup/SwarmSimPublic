@@ -12,13 +12,13 @@
 outputDir='';
 
 N=50;          %number of agents (N)
-LinkNumber=12;   %number of links (6=triangular lattice, 4=square lattice, 3=hexagonal lattice) (L)
+LinkNumber=6;   %number of links (6=triangular lattice, 4=square lattice, 3=hexagonal lattice) (L)
 
 % control gains
 G_radial= 1;   % default value for square lattice 15 (G_r)
 G_normal = 0;   % default value for square lattice  8 (G_n)
 
-Rmax= (sqrt(3)+1)/2;    % maximum lenght of a link (R_a). Must be in [1; sqrt(3)]
+Rmax= (sqrt(2)+1)/2;    % maximum lenght of a link (R_a). Must be in [1; sqrt(3)]
 delta=(Rmax-1) * 0.5;   % maximum displacement of the initial positions. delta<=(Rmax-1)/2 preserves all the links
 MaxSensingRadius=inf;   % sensing radius of the agents (R_s)
 
@@ -30,8 +30,13 @@ Simulation.drawON=false;    % draw swarm during simulation (if N is large slows 
 Simulation.drawTraj=true;  % draw trajectories of the agents (if N is large slows down the simulation)
 Simulation.getMetrics=true; % acquire metrics during the simulation (getMetrics=false discard settling times and stop times)
 
+%% Dynamic model of the agents
+Dynamics=struct('model','FirstOrder', 'sigma',0, 'vMax', inf);
+%Dynamics=struct('model','SecondOrder', 'sigma',0.1, 'vMax', inf);
+%Dynamics=struct('model','CoupledSDEs', 'rateSpeed', 1, 'avgSpeed', avgSpeed0, 'sigmaSpeed', 1, 'rateOmega', 1, 'sigmaOmega', @(x)2*max(1-x/3,0), 'omega', zeros(N,1));
+%Dynamics=struct('model','LevyWalk', 'alpha',0.005, 'sigma', 0.25);
 
-% descrption of the radial and normal interaction functions
+%% Global and Local interaction functions
 GlobalIntFunction=struct('function','Lennard-Jones','parameters',[0.5, 12], 'MaxSensingRadius', MaxSensingRadius, 'Gain', G_radial);
 %GlobalIntFunction=struct('function','Spears','parameters', [2 35]);  %from Spears2004
 %GlobalIntFunction=struct('function','Morse','parameters',[0.2, 2]);

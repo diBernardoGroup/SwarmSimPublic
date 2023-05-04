@@ -154,8 +154,8 @@ set(gcf,'Position',[100 100 560 420*0.6])
 hold on
 line=plotWithShade(timeInstants, mean(e_d_max), min(e_d_max), max(e_d_max), 'b', 0.2);
 yline(Rmax-1,'--','LineWidth',2)
-yticks([0:0.1:0.3, Rmax-1, 0.4:0.1:1])
-set(gca,'YTickLabel',{[0:0.1:0.3], 'R_a-R', [0.4:0.1:1]})
+yticks(sort([0:0.1:1, Rmax-1]))
+%set(gca,'YTickLabel',{[0:0.1:0.3], 'R_a-R', [0.4:0.1:1]})
 %title('$e_{d,max}$', 'Interpreter','latex','FontSize',22)
 %title('$\max_{i\in\mathcal{E}} |\Vert \mathbf{r}_{i} \Vert - R |$', 'Interpreter','latex','FontSize',22)
 %legend([line],{'$e$'},'Interpreter','latex','FontSize',22)
@@ -181,7 +181,7 @@ figure % rigidity
 set(gca,'FontSize',14)
 set(gcf,'Position',[100 100 560 420*0.6])
 hold on
-plot(timeInstants,mean(rigidity))
+plot(timeInstants,mean(rigidity),'r')
 axis([-inf inf -0.05 1.05])
 title('$\rho$', 'Interpreter','latex','FontSize',22)
 xlabel('t', 'Interpreter','latex','FontSize',22)

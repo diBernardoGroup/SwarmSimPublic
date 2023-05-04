@@ -91,23 +91,7 @@ if outputDir
     path=fullfile(outputDir, [datestr(now, 'yyyy_mm_dd_'),Dynamics.model,'_',num2str(counter)]);
     mkdir(path)
     save(fullfile(path, 'data'))
-    
-    fileID = fopen(fullfile(path, 'parameters.txt'),'wt');
-    fprintf(fileID,'Launcher\n\n');
-    fprintf(fileID,'Date: %s\n',datestr(now, 'dd/mm/yy'));
-    fprintf(fileID,'Time: %s\n\n',datestr(now, 'HH:MM'));
-    fprintf(fileID,'Parameters:\n\n');
-    fprintf(fileID,'N= %d\n',N);
-    fprintf(fileID,'D= %d\n',size(x0,2));
-    fprintStruct(fileID,Simulation)
-    fprintf(fileID,'Dynamics:\n');
-    fprintStruct(fileID,Dynamics)
-    fprintf(fileID,'GlobalIntFunction:\n');
-    fprintStruct(fileID,GlobalIntFunction)
-    fprintf(fileID,'LocalIntFunction:\n');
-    fprintStruct(fileID,LocalIntFunction)
-    fprintf(fileID,'smoothing= %s\n',mat2str(smoothing));
-    fclose(fileID);
+ 
 end
 
 % SWARM
@@ -220,8 +204,8 @@ set(gcf,'Position',[100 100 560 420*0.6])
 hold on
 line=plot(timeInstants, e_d_max, 'b');
 yline(Rmax-1,'--','LineWidth',2)
-yticks([0:0.1:0.3, Rmax-1, 0.4:0.1:1])
-set(gca,'YTickLabel',{[0:0.1:0.3], 'R_a-R', [0.4:0.1:1]})
+yticks(sort([0:0.1:1, Rmax-1]))
+%set(gca,'YTickLabel',{[0:0.1:0.3], 'R_a-R', [0.4:0.1:1]})
 %title('$e_{d,max}$', 'Interpreter','latex','FontSize',22)
 %title('$\max_{i\in\mathcal{E}} |\Vert \mathbf{r}_{i} \Vert - R |$', 'Interpreter','latex','FontSize',22)
 %legend([line],{'$e$'},'Interpreter','latex','FontSize',22)
@@ -246,7 +230,7 @@ figure % rigidity
 set(gca,'FontSize',14)
 set(gcf,'Position',[100 100 560 420*0.6])
 hold on
-plot(timeInstants,rigidity)
+plot(timeInstants,rigidity,'r')
 axis([-inf inf -0.05 1.05])
 title('$\rho$', 'Interpreter','latex','FontSize',22)
 xlabel('t', 'Interpreter','latex','FontSize',22)
