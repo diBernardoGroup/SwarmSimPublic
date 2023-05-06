@@ -20,12 +20,13 @@ clc
 
 %% Parameters
 
-Ntimes=3;              % How many simulations are launched for each configuration
+Ntimes=2;               % How many simulations are launched for each configuration
+
+D=3;                    % number of dimensions [2 or 3]
 
 defaultParam;           % load default parameters
 
-D=2; %number of dimensions [2 or 3]
-N=20;
+N=100;
 
 seed=0;        % seed for random generator, if negative it is not set
 
@@ -39,12 +40,15 @@ smoothing = false;
 % parameters.names={'initRadius'};
 % parameters.values={[sqrt(25/25) sqrt(50/25) sqrt(100/25)]};
 parameters.names={'delta'};
-parameters.values={[0:0.25:1]};
+parameters.values={[0:0.1:1]};
 
 %% Preallocate
 Nparameters=length(parameters.names);
 Nconfig=length(parameters.values{1});
 
+timeInstants = 0:Simulation.deltaT:Simulation.Tmax;
+
+xVec=nan(length(timeInstants),N,D);
 e_L=nan(Nconfig,Ntimes);
 e_theta=nan(Nconfig,Ntimes);
 Tr_vec=nan(Nconfig,Ntimes);
@@ -58,8 +62,8 @@ rigid_vec = nan(Nconfig, Ntimes);
 %% Simulation
 % for each configuration...
 for i_times=1:Nconfig
-    
-    disp('Simulation ' + string(i_times) + ' of ' + Nconfig + ':')
+    tic
+    disp('Simulations batch ' + string(i_times) + ' of ' + Nconfig + ':')
     
     for j=1:Nparameters
         assignin('base',parameters.names{j}, parameters.values{j}(i_times));
@@ -69,21 +73,19 @@ for i_times=1:Nconfig
     if seed>=0
         rng(seed,'twister'); % reproducible results
     end
-    x0Data=nan(Ntimes,N,2);
+    x0Data=nan(Ntimes,N,D);
     for k_times=  1:Ntimes
         %x0Data(k_times,:,:)=randCircle(N, 2, D);                               % initial conditions drawn from a uniform disc
-        %x0Data(k_times,:,:) = normrnd(0,0.1*sqrt(N),N,2);                   % initial conditions drawn from a normal distribution
-        %x0Data(k_times,:,:) = perfectLactice(N, LinkNumber, true, true, (sqrt(N)+1)^2);        % initial conditions on a correct lattice
-        x0Data(k_times,:,:) = perfectLactice(N, LinkNumber, D) + randCircle(N, delta, D); % initial conditions on a deformed lattice
+        %x0Data(k_times,:,:) = normrnd(0,0.1*sqrt(N),N,D);                   % initial conditions drawn from a normal distribution
+        %x0Data(k_times,:,:) = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D );        % initial conditions on a correct lattice
+        x0Data(k_times,:,:) = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D ) + randCircle(N, delta, D); % initial conditions on a deformed lattice
         
         v0 = zeros(N,D);
     end
     
-    tic
-    for k_times=1:Ntimes
-        x0=squeeze(x0Data(k_times,:,:));
+    parfor k_times=1:Ntimes
         
-        [xVec(k_times,:,:,:)] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction);
+        [xVec] = Simulator(squeeze(x0Data(k_times,:,:)), v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction);
         
         %         e_L(k_times)=final_e_L;
         %         e_theta(k_times)=final_e_theta;
@@ -92,13 +94,13 @@ for i_times=1:Nconfig
         %         stopTime_vec(k_times) = stopTime;
         %         GNormal_vec(k_times) = finalGNormal;
         
-        x=squeeze(xVec(k_times,end,:,:));
+        x_f=squeeze(xVec(end,:,:));
         
-        B = buildIncidenceMatrix(x, Rmax);
+        B = buildIncidenceMatrix(x_f, Rmax);
         m(i_times,k_times)=size(B,2);
-        M = buildRigidityMatrix(x, B);
-        rigid_vec(i_times,k_times) = rank(M)==2*N-3;
-        e_d_max_vec(i_times,k_times) = getMaxLinkLengthError(x, 1, 0, Rmax);   % max distance from the deisred link length.
+        M = buildRigidityMatrix(x_f, B);
+        rigid_vec(i_times,k_times) = rank(M)==D*N-D*(D+1)/2;
+        e_d_max_vec(i_times,k_times) = getMaxLinkLengthError(x_f, 1, 0, Rmax);   % max distance from the deisred link length.
     end
     toc
 end
@@ -136,6 +138,7 @@ if outputDir
     end
     path=fullfile(outputDir, [datestr(now, 'yyyy_mm_dd_'),Dynamics.model,'_',num2str(counter)]);
     mkdir(path)
+    disp('Saving data in ' + string(path))
     save(fullfile(path, 'data'))
     
     fileID = fopen(fullfile(path, 'parameters.txt'),'wt');
@@ -145,7 +148,7 @@ if outputDir
     fprintf(fileID,'Ntimes= %d\n\n',Ntimes);
     fprintf(fileID,'Parameters:\n\n');
     fprintf(fileID,'N= %d\n',N);
-    fprintf(fileID,'D= %d\n\n',size(x0,2));
+    fprintf(fileID,'D= %d\n\n',D);
     fprintf(fileID,'Simulation parameters:\n');
     fprintStruct(fileID,Simulation)
     fprintf(fileID,'Changing parameters:\n');
@@ -200,6 +203,8 @@ if Nparameters==1
         subplot(2,1,1)
         hold on
         line=plotWithShade(parameters.values{1}, mean(e_d_max_vec,2), min(e_d_max_vec,[],2), max(e_d_max_vec,[],2), 'b', 0.1); %e_d_max_mean(:,1),e_d_max_mean(:,2),e_d_max_mean(:,3), 'b', 0.1);
+        yline(Rmax-1,'--','LineWidth',2)
+        yticks(sort([0:0.1:1, Rmax-1]))
         xticks(parameters.values{1})
         set(gca,'FontSize',14)
         ylabel('$e$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
@@ -211,8 +216,10 @@ if Nparameters==1
         subplot(2,1,2)
         rigidity_line=plot(parameters.values{1}, mean(rigid_vec,2),'Marker','o','Color','r','LineWidth',2,'MarkerSize',6);
         xticks(parameters.values{1})
+        yticks([0:0.25:1])
         xlabel(parameters.names{1})
         set(gca,'FontSize',14)
+        xlabel('$\delta$', 'Interpreter','latex','FontSize',22)
         ylabel('$\rho$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
         %legend([rigidity_line],{'$\rho$'},'Interpreter','latex','FontSize',22)
         %legend boxoff

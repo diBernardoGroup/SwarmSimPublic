@@ -14,28 +14,29 @@ clear
 
 %% Parameters
 
+D=2; %number of dimensions [2 or 3]
+
 defaultParam;   % load default parameters
 
-D=3; %number of dimensions [2 or 3]
-N=20;
+N=4;
 
 % avgSpeed0=1;
 % sigmaSpeed0=0.5;
 
-Dynamics=struct('model','FirstOrder', 'sigma',0, 'vMax', inf);
-%Dynamics=struct('model','SecondOrder', 'sigma',0.1, 'vMax', inf);
-%Dynamics=struct('model','CoupledSDEs', 'rateSpeed', 1, 'avgSpeed', avgSpeed0, 'sigmaSpeed', 1, 'rateOmega', 1, 'sigmaOmega', @(x)2*max(1-x/3,0), 'omega', zeros(N,1));
-%Dynamics=struct('model','LevyWalk', 'alpha',0.005, 'sigma', 0.25);
+Simulation.drawON=true;    % draw swarm during simulation (if N is large slows down the simulation)
 
 smoothing = false;
+
+%delta=0.3;
 
 %% Create Initial Conditions
 %rng(1,'twister'); % set the randomn seed to have reproducible results
 
 %x0=randCircle(N, 2, D);                 % initial conditions drawn from a uniform disc
 %x0 = normrnd(0,0.1*sqrt(N),N,D);    % initial conditions drawn from a normal distribution
-x0 = perfectLactice(N, LinkNumber, D); % initial conditions on a correct lattice
+%x0 = perfectLactice(N, LinkNumber, D); % initial conditions on a correct lattice
 %x0 = perfectLactice(N, LinkNumber, D) + randCircle(N, delta, D); % initial conditions on a deformed lattice
+x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D ) + randCircle(N, delta, D); % initial conditions on a deformed lattice
 
 % speeds0 = abs(normrnd(avgSpeed0,sigmaSpeed0,N,1));
 % theta0 = 2*pi*rand(N,1)-pi;
@@ -83,6 +84,7 @@ end
 close all
 
 % create folder, save data and parameters
+
 if outputDir
     counter=1;
     while exist(fullfile(outputDir,[datestr(now, 'yyyy_mm_dd_'),Dynamics.model,'_',num2str(counter)]),'dir')
@@ -90,8 +92,26 @@ if outputDir
     end
     path=fullfile(outputDir, [datestr(now, 'yyyy_mm_dd_'),Dynamics.model,'_',num2str(counter)]);
     mkdir(path)
+    disp('Saving data in ' + string(path))
     save(fullfile(path, 'data'))
- 
+    
+    fileID = fopen(fullfile(path, 'parameters.txt'),'wt');
+    fprintf(fileID,'StabilityAnalysis\n\n');
+    fprintf(fileID,'Date: %s\n',datestr(now, 'dd/mm/yy'));
+    fprintf(fileID,'Time: %s\n\n',datestr(now, 'HH:MM'));
+    fprintf(fileID,'Ntimes= %d\n\n',Ntimes);
+    fprintf(fileID,'Parameters:\n\n');
+    fprintf(fileID,'N= %d\n',N);
+    fprintf(fileID,'D= %d\n',D);
+    fprintStruct(fileID,Simulation)
+    fprintf(fileID,'Dynamics:\n');
+    fprintStruct(fileID,Dynamics)
+    fprintf(fileID,'GlobalIntFunction:\n');
+    fprintStruct(fileID,GlobalIntFunction)
+    fprintf(fileID,'LocalIntFunction:\n');
+    fprintStruct(fileID,LocalIntFunction)
+    fprintf(fileID,'smoothing= %s\n',mat2str(smoothing));
+    fclose(fileID);
 end
 
 % SWARM
@@ -107,23 +127,28 @@ if outputDir
     saveas(gcf, fullfile(path, 'trajectories'),'png')
 end
 
-% if ~strcmp(GlobalIntFunction.function,'None') % RADIAL INTERACTION FUNCTION
-%     figure
-%     hold on
-%     fplot(@(x) RadialInteractionForce(x, GlobalIntFunction),[0, 3])
-%     plot([1], [0], 'r.','MarkerSize', 40)
-%     yticks([-1 0 1])
-%     xticks([0:3])
-%     ylim([-0.2 1.2])
-%     grid on
-%     title('f_r(d)')
-%     xlabel('d')
-%     set(gca,'FontSize',14)
-%     if outputDir
-%     saveas(gcf,fullfile(path, 'radial_inter_func'))
-%     saveas(gcf,fullfile(path, 'radial_inter_func'),'png')
-%     end
-% end
+if ~strcmp(GlobalIntFunction.function,'None') % RADIAL INTERACTION FUNCTION
+    figure
+    set(gcf,'Position',[100 500 560 420*0.6])
+    hold on
+    fplot(@(x) RadialInteractionForce(x, GlobalIntFunction),[0, 2], 'LineWidth', 1.5)
+    plot([1], [0], 'r.','MarkerSize', 25)
+    yticks([-1:2])
+    xticks(sort([0:0.5:3,Rmax]))
+    %ylim([-0.2 1.2])
+    ylim([-0.6, 2])
+    grid on
+    %title('f_r(d)')
+    %xlabel('d')
+    set(gca,'FontSize',14)
+    ylabel('$f(z)$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
+    xlabel('$z$', 'Interpreter','latex','FontSize',22)    
+    box
+    if outputDir
+    saveas(gcf,fullfile(path, 'radial_inter_func'))
+    saveas(gcf,fullfile(path, 'radial_inter_func'),'png')
+    end
+end
 
 %     figure % NORMAL INTERACTION FORCE
 %     hold on
@@ -218,13 +243,13 @@ if outputDir
     saveas(gcf,fullfile(path, 'e_d_max'),'png')
 end
 
-%     figure % m
-%     plot(timeInstants,m)
-%     title('m', 'Interpreter','latex','FontSize',22)
-%     xlabel('t', 'Interpreter','latex','FontSize',22)
-%     set(gca,'FontSize',14)
-%     box
-%     grid
+figure % m
+plot(timeInstants,m)
+title('m', 'Interpreter','latex','FontSize',22)
+xlabel('t', 'Interpreter','latex','FontSize',22)
+set(gca,'FontSize',14)
+box
+grid
 
 figure % rigidity
 set(gca,'FontSize',14)

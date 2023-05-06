@@ -15,34 +15,40 @@ clc
 
 %% Parameters
 
-Ntimes=3;              % How many simulations are launched for each configuration
+Ntimes=10;              % How many simulations are launched for each configuration
+
+D=3;                    % number of dimensions [2 or 3]
 
 defaultParam;           % load default parameters
 
-D=3; %number of dimensions [2 or 3]
-N=20;
+N=100;
 
 % avgSpeed0=1;
 % sigmaSpeed0=0.5;
 
-Dynamics=struct('model','FirstOrder', 'sigma',0, 'vMax', inf);
-%Dynamics=struct('model','SecondOrder', 'sigma',0.1, 'vMax', inf);
-%Dynamics=struct('model','CoupledSDEs', 'rateSpeed', 1, 'avgSpeed', avgSpeed0, 'sigmaSpeed', 1, 'rateOmega', 1, 'sigmaOmega', @(x)2*max(1-x/3,0), 'omega', zeros(N,1));
-%Dynamics=struct('model','LevyWalk', 'alpha',0.005, 'sigma', 0.25);
-
 smoothing = false;
 
-rng(0,'twister');       % set the randomn seed to have reproducible results
+delta=0.1;
 
+seed=0;             % set the randomn seed to a non negative value to have reproducible results
+
+%% Preallocate
+timeInstants = 0:Simulation.deltaT:Simulation.Tmax;
+xVec = nan(Ntimes,length(timeInstants),N,D);
+if seed>=0
+    rng(seed,'twister');
+end
 
 %% Run Simulation
 disp(['Running ',num2str(Ntimes),' simulations:'])
 for rep=1:Ntimes
+    
     %% Create Initial Conditions
     %x0=randCircle(N, 2, D);                               % initial conditions drawn from a uniform disc
     %x0 = normrnd(0,0.1*sqrt(N),N,2);                   % initial conditions drawn from a normal distribution
     %x0 = perfectLactice(N, LinkNumber, true, true, (sqrt(N)+1)^2);        % initial conditions on a correct lattice
-    x0 = perfectLactice(N, LinkNumber, D) + randCircle(N, delta, D); % initial conditions on a deformed lattice
+    %x0 = perfectLactice(N, LinkNumber, D) + randCircle(N, delta, D); % initial conditions on a deformed lattice
+    x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D ) + randCircle(N, delta, D); % initial conditions on a deformed lattice
     
     v0 = zeros(size(x0));
     
@@ -50,8 +56,6 @@ for rep=1:Ntimes
     [xVec(rep,:,:,:)] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction);
     
     %% ANALYSIS
-    
-    timeInstants = 0:Simulation.deltaT:Simulation.Tmax;
     
     % metrics
     for i=1:length(timeInstants) % for each time instant...
@@ -80,6 +84,7 @@ if outputDir
     end
     path=fullfile(outputDir, [datestr(now, 'yyyy_mm_dd_'),Dynamics.model,'_',num2str(counter)]);
     mkdir(path)
+    disp('Saving data in ' + string(path))
     save(fullfile(path, 'data'))
     
     fileID = fopen(fullfile(path, 'parameters.txt'),'wt');
@@ -89,7 +94,7 @@ if outputDir
     fprintf(fileID,'Ntimes= %d\n\n',Ntimes);
     fprintf(fileID,'Parameters:\n\n');
     fprintf(fileID,'N= %d\n',N);
-    fprintf(fileID,'D= %d\n',size(x0,2));
+    fprintf(fileID,'D= %d\n',D);
     fprintStruct(fileID,Simulation)
     fprintf(fileID,'Dynamics:\n');
     fprintStruct(fileID,Dynamics)
@@ -98,24 +103,35 @@ if outputDir
     fprintf(fileID,'LocalIntFunction:\n');
     fprintStruct(fileID,LocalIntFunction)
     fprintf(fileID,'smoothing= %s\n',mat2str(smoothing));
+    fprintf(fileID,'seed= %d\n',seed);
+    fprintf(fileID,'delta= %.2f\n',delta);
     fclose(fileID);
 end
 
 % SWARM
-if isfield(LocalIntFunction, 'DistanceRange')
-    figure
-    plotSwarmInit(squeeze(xVec(1,1,:,:)), 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2))
-    figure
-    plotSwarmInit(squeeze(xVec(1,ceil(length(timeInstants)/2),:,:)), Simulation.Tmax/2, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2))
-    figure
-    plotSwarmInit(squeeze(xVec(1,length(timeInstants),:,:)), Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2))
-else
-    figure
-    plotSwarmInit(squeeze(xVec(1,1,:,:)), 0, inf, inf)
-    figure
-    plotSwarmInit(squeeze(xVec(1,ceil(length(timeInstants)/2),:,:)), Simulation.Tmax/2, inf, inf)
-    figure
-    plotSwarmInit(squeeze(xVec(1,length(timeInstants),:,:)), Simulation.Tmax, inf, inf)
+figure
+tiledlayout(2,Ntimes, 'TileSpacing','tight', 'Padding','tight');
+for rep=1:Ntimes
+    if isfield(LocalIntFunction, 'DistanceRange')
+        nexttile(rep)
+        plotSwarmInit(squeeze(xVec(rep,1,:,:)), 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2))
+        xticks([]); yticks([])
+        nexttile(Ntimes+rep)
+        plotSwarmInit(squeeze(xVec(rep,length(timeInstants),:,:)), Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2))
+        xticks([]); yticks([])
+    else
+        nexttile
+        plotSwarmInit(squeeze(xVec(rep,1,:,:)), 0, inf, inf)
+        xticks([]); yticks([])
+        nexttile
+        plotSwarmInit(squeeze(xVec(rep,length(timeInstants),:,:)), Simulation.Tmax, inf, inf)
+        xticks([]); yticks([])
+    end
+end
+set(gcf,'Position',[100 500 200*Ntimes 300*2])
+if outputDir
+    saveas(gcf,fullfile(path, 'x'))
+    saveas(gcf,fullfile(path, 'x'),'png')
 end
 
 %     figure % RADIAL INTERACTION FUNCTION
@@ -169,13 +185,13 @@ if outputDir
 end
 
 
-%     figure % m
-%     plot(linspace(0,min(stopTime,Tmax,'omitnan'),time_instants),m)
-%     title('m', 'Interpreter','latex','FontSize',22)
-%     xlabel('t', 'Interpreter','latex','FontSize',22)
-%     set(gca,'FontSize',14)
-%     box
-%     grid
+figure % m
+plotWithShade(timeInstants,mean(m), min(m), max(m), 'r', 0.2);
+set(gca,'FontSize',14)
+ylabel('$m$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
+xlabel('t', 'Interpreter','latex','FontSize',22)
+box
+grid
 
 figure % rigidity
 set(gca,'FontSize',14)
@@ -183,7 +199,7 @@ set(gcf,'Position',[100 100 560 420*0.6])
 hold on
 plot(timeInstants,mean(rigidity),'r')
 axis([-inf inf -0.05 1.05])
-title('$\rho$', 'Interpreter','latex','FontSize',22)
+ylabel('$\rho$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
 xlabel('t', 'Interpreter','latex','FontSize',22)
 box
 grid
