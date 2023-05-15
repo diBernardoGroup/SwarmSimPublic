@@ -115,17 +115,17 @@ tiledlayout(2,swarms_to_show, 'TileSpacing','tight', 'Padding','tight');
 for rep=1:swarms_to_show
     if isfield(LocalIntFunction, 'DistanceRange')
         nexttile(rep)
-        plotSwarmInit(squeeze(xVec(rep,1,:,:)), 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2))
+        plotSwarmInit(squeeze(xVec(rep,1,:,:)), 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2));
         xticks([]); yticks([])
         nexttile(swarms_to_show+rep)
-        plotSwarmInit(squeeze(xVec(rep,length(timeInstants),:,:)), Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2))
+        plotSwarmInit(squeeze(xVec(rep,length(timeInstants),:,:)), Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2));
         xticks([]); yticks([])
     else
         nexttile
-        plotSwarmInit(squeeze(xVec(rep,1,:,:)), 0, inf, inf)
+        plotSwarmInit(squeeze(xVec(rep,1,:,:)), 0, inf, inf);
         xticks([]); yticks([])
         nexttile
-        plotSwarmInit(squeeze(xVec(rep,length(timeInstants),:,:)), Simulation.Tmax, inf, inf)
+        plotSwarmInit(squeeze(xVec(rep,length(timeInstants),:,:)), Simulation.Tmax, inf, inf);
         xticks([]); yticks([])
     end
 end

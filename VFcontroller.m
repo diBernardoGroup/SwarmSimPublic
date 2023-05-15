@@ -4,6 +4,8 @@ function [v, links] = VFcontroller(x, GlobalIntFunction, LocalIntFunction, delta
 %   virtual forces (control input) acting on the agents.
 %   This function is called by Simulator.
 %
+%   [v, links] = VFcontroller(x, GlobalIntFunction, LocalIntFunction, deltaT, InteractionFactor)
+%
 %   Inputs:
 %       x                   Positions of the agents                 (NxD matrix)
 %       GlobalIntFunction                                           (struct = struct('function','None'))
