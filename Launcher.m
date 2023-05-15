@@ -14,11 +14,11 @@ clear
 
 %% Parameters
 
-D=2; %number of dimensions [2 or 3]
+D=3; %number of dimensions [2 or 3]
 
 defaultParam;   % load default parameters
 
-N=4;
+N=8;
 
 % avgSpeed0=1;
 % sigmaSpeed0=0.5;
@@ -27,14 +27,14 @@ Simulation.drawON=true;    % draw swarm during simulation (if N is large slows d
 
 smoothing = false;
 
-%delta=0.3;
+delta=0.3;
 
 %% Create Initial Conditions
 %rng(1,'twister'); % set the randomn seed to have reproducible results
 
 %x0=randCircle(N, 2, D);                 % initial conditions drawn from a uniform disc
 %x0 = normrnd(0,0.1*sqrt(N),N,D);    % initial conditions drawn from a normal distribution
-%x0 = perfectLactice(N, LinkNumber, D); % initial conditions on a correct lattice
+%x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D); % initial conditions on a correct lattice
 %x0 = perfectLactice(N, LinkNumber, D) + randCircle(N, delta, D); % initial conditions on a deformed lattice
 x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D ) + randCircle(N, delta, D); % initial conditions on a deformed lattice
 
@@ -99,7 +99,6 @@ if outputDir
     fprintf(fileID,'StabilityAnalysis\n\n');
     fprintf(fileID,'Date: %s\n',datestr(now, 'dd/mm/yy'));
     fprintf(fileID,'Time: %s\n\n',datestr(now, 'HH:MM'));
-    fprintf(fileID,'Ntimes= %d\n\n',Ntimes);
     fprintf(fileID,'Parameters:\n\n');
     fprintf(fileID,'N= %d\n',N);
     fprintf(fileID,'D= %d\n',D);

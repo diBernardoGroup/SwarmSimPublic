@@ -1,4 +1,4 @@
-function [p,p_lines,pL] = plotSwarmInit(x,time,RMin,RMax)
+function [p,p_lines,pL] = plotSwarmInit(x,time,RMin,RMax,Lim,tickStep,showGrid,gradColor)
 %
 %plotSwarm set the correct axis and draws the agents and the links of the swarm.
 %
@@ -20,21 +20,36 @@ function [p,p_lines,pL] = plotSwarmInit(x,time,RMin,RMax)
 %   Date:       2022
 %
 
-    Max = 10;   % amplitude of the simulation plane
-    Min = -Max;
+arguments
+    x
+    time
+    RMin
+    RMax
+    Lim=10
+    tickStep=Lim/2
+    showGrid=false
+    gradColor= false
+end
+
+    Max = Lim;   % amplitude of the simulation plane
+    Min = -Lim;
 
     axis('equal',[Min Max Min Max])
-    yticks([-10 -5 0 5 10])
-    xticks([-10 -5 0 5 10])
+    yticks([Min:tickStep:Max])
+    xticks([Min:tickStep:Max])
+    xticklabels('')
+    yticklabels('')
+    zticklabels('')
     set(gca,'FontSize',14)
     set(gcf,'Position',[100 100 500 500])
     hold on
+    if showGrid; grid on; end
     
     if all(size(x) == [2,1])
        x=x'; 
     end
 
-    plotSwarm(x,[],time, RMin,RMax,false, ones(size(x,1), 1));
+    plotSwarm(x,[],time, RMin,RMax,false, ones(size(x,1), 1), gradColor);
 
 end
 

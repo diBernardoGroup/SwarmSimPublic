@@ -30,8 +30,8 @@ arguments
     max_iterations double {mustBeInteger, mustBePositive} = 10^3
 end
 
-if enf_rigidity && ~enf_connectivity 
-    enf_connectivity=true; 
+if enf_rigidity && ~enf_connectivity
+    enf_connectivity=true;
     warning('A graph cannot be rigid and disconeected. enf_connectivity has been set to true.')
 end
 
@@ -102,47 +102,60 @@ elseif D==3
                     end
                 end
             end
-          
+            
     end
 end
 
 % sample the required number of agents
-if length(x) > N
-    indeces_to_keep = randsample(length(x), N);
-    x_selected=x(indeces_to_keep,:);
-else
-    x_selected=x;
+indeces_to_keep = randsample(length(x), N);
+x_selected=x(indeces_to_keep,:);
+
+numbers=[1:length(x)];
+
+% enforce connectivity
+if enf_connectivity
+    [x_selected, indeces_to_keep, connectivity] = enforceConnectivity(indeces_to_keep, x, max_iterations);
 end
 
 % enforce rigidity
 counter = 0;
-B = buildIncidenceMatrix(x_selected, 1.2);
+B = buildIncidenceMatrix(x_selected, 1.2, false);
 M = buildRigidityMatrix(x_selected, B);
 rigidity = rank(M)==D*N-D*(D+1)/2;
 while enf_rigidity && rigidity==false && counter<max_iterations
-    % resample agents
-    indeces_to_keep = randsample(length(x), N);
+    % resample agents with fewer links
+    [~,agents_to_resample]=mink(sum(abs(B')),ceil(N/5));
+    agents_to_keep = setdiff(indeces_to_keep, indeces_to_keep(agents_to_resample));
+    indeces_to_keep(agents_to_resample) = randsample(setdiff(numbers,agents_to_keep), length(agents_to_resample));
     x_selected=x(indeces_to_keep,:);
+    B = buildIncidenceMatrix(x_selected, 1.2, false);
+    
+    % enforce connectivity and at least D links per agent
+    counter2=0;
+    while (~connectivity || min(sum(abs(B')))<D) && counter2<ceil(max_iterations/100)+10
+        [x_selected, indeces_to_keep, connectivity] = enforceConnectivity(indeces_to_keep, x, ceil(max_iterations/100)+10);
+        B = buildIncidenceMatrix(x_selected, 1.2, false);
+        peripheric_agents = find(sum(abs(B'))<min([D,sum(abs(B'))+1]));
+        central_agents = setdiff(indeces_to_keep, indeces_to_keep(peripheric_agents));
+        indeces_to_keep(peripheric_agents) = randsample(setdiff(numbers,central_agents), length(peripheric_agents));
+        [x_selected, indeces_to_keep, connectivity] = enforceConnectivity(indeces_to_keep, x, ceil(max_iterations/100)+10);
+        B = buildIncidenceMatrix(x_selected, 1.2, false);
+        counter2 = counter2+1;
+    end
     % check rigidity
-    B = buildIncidenceMatrix(x_selected, 1.2);
     M = buildRigidityMatrix(x_selected, B);
     rigidity = rank(M)==D*N-D*(D+1)/2;
     counter = counter+1;
+    % display(['Minimal number of links achived in iterations ', num2str(counter2)])
 end
 
 % enforce connectivity
-counter = 0;
-B = buildIncidenceMatrix(x_selected, 1.2);
-connectivity = rank(B)==N-1;
-while enf_connectivity && connectivity==false && counter<max_iterations
-    % resample agents
-    indeces_to_keep = randsample(length(x), N);
-    x_selected=x(indeces_to_keep,:);
-    % check connectivity
-    B = buildIncidenceMatrix(x_selected, 1.2);
-    connectivity = rank(B)==N-1;
-    counter = counter+1;
+if enf_connectivity && ~connectivity
+    [x_selected, indeces_to_keep, connectivity] = enforceConnectivity(indeces_to_keep, x, max_iterations);
 end
+
+% recenter the lattice
+x_selected=x_selected-mean(x_selected);
 
 % checks
 if enf_connectivity && connectivity==false
@@ -152,9 +165,9 @@ if enf_rigidity && rigidity==false
     warning("Rigidity not achived")
 end
 
-% recenter the lattice
-x_selected=x_selected-mean(x_selected);
+assert(all(size(x_selected)==[N,D]))
+assert(length(indeces_to_keep) == length(unique(indeces_to_keep)))
 
-assert(size(x_selected,1)==N)
+%display(['Rigidity achived in iterations ', num2str(counter)])
 end
 

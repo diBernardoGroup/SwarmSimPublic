@@ -1,4 +1,4 @@
-function [p,p_lines,pL] = plotSwarm(x,xL,time,RMin,RMax,thenDelete, spin)
+function [p,p_lines,pL] = plotSwarm(x,xL,time,RMin,RMax,thenDelete, spin, gradColor)
 %
 %plotSwarm draws the agents and the links of the swarm.
 %   The figure should be already open and set with the correct axis limits.
@@ -24,30 +24,48 @@ function [p,p_lines,pL] = plotSwarm(x,xL,time,RMin,RMax,thenDelete, spin)
 %   Date:       2022
 %
 
-    title("t="+time+" s")
-    p_lines=drawLines(x,RMin,RMax);
-    
-    spin1 = find(spin==1);
-    spin0 = find(spin==0);
+arguments
+    x
+    xL
+    time
+    RMin
+    RMax
+    thenDelete= false
+    spin= ones(size(x,1), 1)
+    gradColor= false
+end
 
-    if size(x,2) == 2
-        p1 = plot(x(spin1,1), x(spin1,2),'b.','MarkerSize', 20);
-        p2 = plot(x(spin0,1), x(spin0,2),'r.','MarkerSize', 20);
+title("t="+time+" s")
+p_lines=drawLines(x,RMin,RMax,gradColor);
+
+spin1 = find(spin==1);
+spin0 = find(spin==0);
+
+if size(x,2) == 2
+    p1 = plot(x(spin1,1), x(spin1,2),'b.','MarkerSize', 20);
+    p2 = plot(x(spin0,1), x(spin0,2),'r.','MarkerSize', 20);
+else
+    if gradColor
+        p1 = scatter3(x(spin1,1), x(spin1,2), x(spin1,3), 60, x(spin1,3), 'filled');
+        p2 = scatter3(x(spin0,1), x(spin0,2), x(spin0,3), 60,'r', 'filled');
+        cmap=[0 0 1].*[0.6:0.01:1]';
+        colormap(gca,cmap)
     else
-        p1 = plot3(x(spin1,1), x(spin1,2), x(spin1,3),'b.','MarkerSize', 20);
-        p2 = plot3(x(spin0,1), x(spin0,2), x(spin0,3),'r.','MarkerSize', 20);
-    end
-    
-    p = [p1 ; p2];
+        p1 = scatter3(x(spin1,1), x(spin1,2), x(spin1,3),60,'b', 'filled');
+        p2 = scatter3(x(spin0,1), x(spin0,2), x(spin0,3),60,'r', 'filled');
+    end  
+end
 
-    
-    if(size(xL,1)>0); pL = plot(xL(:,1), xL(:,2),'r.','MarkerSize', 20); end
+p = [p1 ; p2];
 
-    if(thenDelete)
-        drawnow
-        delete(p)
-        delete(p_lines)
-        if(size(xL,1)>0); delete(pL); end
-    end
+
+if(size(xL,1)>0); pL = plot(xL(:,1), xL(:,2),'r.','MarkerSize', 20); end
+
+if(thenDelete)
+    drawnow
+    delete(p)
+    delete(p_lines)
+    if(size(xL,1)>0); delete(pL); end
+end
 end
 

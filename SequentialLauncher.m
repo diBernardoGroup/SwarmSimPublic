@@ -20,7 +20,7 @@ clc
 
 %% Parameters
 
-Ntimes=2;               % How many simulations are launched for each configuration
+Ntimes=20;               % How many simulations are launched for each configuration
 
 D=3;                    % number of dimensions [2 or 3]
 
@@ -40,7 +40,7 @@ smoothing = false;
 % parameters.names={'initRadius'};
 % parameters.values={[sqrt(25/25) sqrt(50/25) sqrt(100/25)]};
 parameters.names={'delta'};
-parameters.values={[0:0.1:1]};
+parameters.values={[0:0.05:0.5,0.6:0.1:1]};
 
 %% Preallocate
 Nparameters=length(parameters.names);
@@ -74,13 +74,12 @@ for i_times=1:Nconfig
         rng(seed,'twister'); % reproducible results
     end
     x0Data=nan(Ntimes,N,D);
-    for k_times=  1:Ntimes
-        %x0Data(k_times,:,:)=randCircle(N, 2, D);                               % initial conditions drawn from a uniform disc
+    v0 = zeros(N,D);
+    parfor k_times=  1:Ntimes
+        %x0Data(k_times,:,:) = randCircle(N, 2, D);                               % initial conditions drawn from a uniform disc
         %x0Data(k_times,:,:) = normrnd(0,0.1*sqrt(N),N,D);                   % initial conditions drawn from a normal distribution
         %x0Data(k_times,:,:) = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D );        % initial conditions on a correct lattice
         x0Data(k_times,:,:) = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D ) + randCircle(N, delta, D); % initial conditions on a deformed lattice
-        
-        v0 = zeros(N,D);
     end
     
     parfor k_times=1:Ntimes
@@ -160,6 +159,7 @@ if outputDir
     fprintf(fileID,'LocalIntFunction:\n');
     fprintStruct(fileID,LocalIntFunction)
     fprintf(fileID,'smoothing= %s\n',mat2str(smoothing));
+    fprintf(fileID,'seed= %d\n',seed);
     fclose(fileID);
 end
 

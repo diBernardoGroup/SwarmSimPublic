@@ -15,7 +15,7 @@ clc
 
 %% Parameters
 
-Ntimes=10;              % How many simulations are launched for each configuration
+Ntimes=4;              % How many simulations are launched for each configuration
 
 D=3;                    % number of dimensions [2 or 3]
 
@@ -110,13 +110,14 @@ end
 
 % SWARM
 figure
-tiledlayout(2,Ntimes, 'TileSpacing','tight', 'Padding','tight');
-for rep=1:Ntimes
+swarms_to_show=min([Ntimes, 6]);
+tiledlayout(2,swarms_to_show, 'TileSpacing','tight', 'Padding','tight');
+for rep=1:swarms_to_show
     if isfield(LocalIntFunction, 'DistanceRange')
         nexttile(rep)
         plotSwarmInit(squeeze(xVec(rep,1,:,:)), 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2))
         xticks([]); yticks([])
-        nexttile(Ntimes+rep)
+        nexttile(swarms_to_show+rep)
         plotSwarmInit(squeeze(xVec(rep,length(timeInstants),:,:)), Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2))
         xticks([]); yticks([])
     else
@@ -128,7 +129,7 @@ for rep=1:Ntimes
         xticks([]); yticks([])
     end
 end
-set(gcf,'Position',[100 500 200*Ntimes 300*2])
+set(gcf,'Position',[100 500 200*swarms_to_show 300*2])
 if outputDir
     saveas(gcf,fullfile(path, 'x'))
     saveas(gcf,fullfile(path, 'x'),'png')

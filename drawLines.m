@@ -1,4 +1,4 @@
-function [p] = drawLines(x,Rmin,Rmax)
+function [p] = drawLines(x,Rmin,Rmax, gradColor)
 %
 %drawLines draws the links of the swarm.
 %   The figure should be already open and set with the correct axis limits.
@@ -18,6 +18,13 @@ function [p] = drawLines(x,Rmin,Rmax)
 %   Date:       2022
 %
 
+arguments
+    x
+    Rmin
+    Rmax
+    gradColor=false
+end
+
 p=[];
 
 for i=1:size(x,1)
@@ -26,7 +33,11 @@ for i=1:size(x,1)
             if size(x,2) == 2
                 p(i,j)=plot([x(i,1) x(j,1)],[x(i,2) x(j,2)], 'k', 'Linewidth', 1);
             else
-                p(i,j)=plot3([x(i,1) x(j,1)],[x(i,2) x(j,2)],[x(i,3) x(j,3)], 'k', 'Linewidth', 1);
+                if gradColor
+                    p(i,j)=surface([[x(i,1) x(j,1)];[x(i,1) x(j,1)]],[[x(i,2) x(j,2)];[x(i,2) x(j,2)]],[[x(i,3) x(j,3)];[x(i,3) x(j,3)]],[[x(i,3) x(j,3)];[x(i,3) x(j,3)]],'facecol','no','edgecol','interp','linew',1);
+                else
+                    p(i,j)=plot3([x(i,1) x(j,1)],[x(i,2) x(j,2)],[x(i,3) x(j,3)], 'k', 'Linewidth', 1);
+                end
             end
         end
     end

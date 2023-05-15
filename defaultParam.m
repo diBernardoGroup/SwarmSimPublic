@@ -8,8 +8,8 @@
 %
 
 %% Default Parameters
-outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/stability of geometric lattices/simulations';
-%outputDir='';
+%outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/stability of geometric lattices/simulations';
+outputDir='';
 
 N=100;          %number of agents (N)
 LinkNumber=6*(D-1);   %number of links (6=triangular lattice, 4=square lattice, 3=hexagonal lattice) (L)
