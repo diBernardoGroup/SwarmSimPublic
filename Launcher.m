@@ -44,7 +44,7 @@ x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D ) + 
 v0 = zeros(size(x0));
 
 %% Run Simulation
-[xVec] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction);
+[xVec, uVec] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction);
 
 %% Analysis
 if smoothing
@@ -70,8 +70,8 @@ for i=1:length(timeInstants) % for each time instant...
     
     e_d(i) = getAvgLinkLengthError(x, 1, 0, Rmax);          % avg distance from the deisred link length
     e_d_max(i) = getMaxLinkLengthError(x, 1, 0, Rmax);      % max distance from the deisred link length.
-    % e_d_max<=(Rmax-1)preserves all the links.
-    % e_d_max(0)<= 2*delta
+                                                            % e_d_max<=(Rmax-1)preserves all the links.
+                                                            % e_d_max(0)<= 2*delta
     
     B = buildIncidenceMatrix(x, Rmax);                      % incidence matrix
     m(i)=size(B,2);                                         % number of links
@@ -81,7 +81,6 @@ for i=1:length(timeInstants) % for each time instant...
 end
 
 %% PLOTS
-close all
 
 % create folder, save data and parameters
 
@@ -113,18 +112,18 @@ if outputDir
     fclose(fileID);
 end
 
-% SWARM
-figure
-if isfield(LocalIntFunction, 'DistanceRange')
-    plotSwarmInit(squeeze(xVec(end,:,:)), Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2));
-else
-    plotSwarmInit(squeeze(xVec(end,:,:)), Simulation.Tmax, inf, inf);
-end
-if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9]); end
-if outputDir
-    saveas(gcf, fullfile(path, 'trajectories'))
-    saveas(gcf, fullfile(path, 'trajectories'),'png')
-end
+% % SWARM
+% figure
+% if isfield(LocalIntFunction, 'DistanceRange')
+%     plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena);
+% else
+%     plotSwarmInit(x0, 0, inf, inf, Simulation.arena);
+% end
+% if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9]); end
+% if outputDir
+%     saveas(gcf, fullfile(path, 'trajectories'))
+%     saveas(gcf, fullfile(path, 'trajectories'),'png')
+% end
 
 if ~strcmp(GlobalIntFunction.function,'None') % RADIAL INTERACTION FUNCTION
     figure

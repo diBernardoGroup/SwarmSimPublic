@@ -1,34 +1,40 @@
-function [p,p_lines,pL] = plotSwarmInit(x,time,RMin,RMax,Lim,tickStep,showGrid,gradColor)
+function [p,p_lines] = plotSwarmInit(x,time,RMin,RMax,Lim,tickStep,showGrid,gradColor,thenDelete)
 %
 %plotSwarm set the correct axis and draws the agents and the links of the swarm.
 %
-%   [p,p_lines,pL] = plotSwarmInit(x,time,RMin,RMax)
+%   [p,p_lines] = plotSwarmInit(x,time,RMin,RMax,Lim,tickStep,showGrid,gradColor,thenDelete)
 %
 %   Inputs:
-%       x are the positions of all the agents (Nx2 matrix)
-%       time is the current time instant (scalar)
-%       RMax and RMin are the distances that define the adjacency set (scalar)
+%       x           Positions of all the agents                         (NxD matrix)
+%       time        Current time instant                                (scalar)       
+%       RMin        Min distance to plot link                           (double)
+%       RMax        Min distance to plot link                           (double)
+%       Lim         Size of the window                                  (double = 10)
+%       tickStep    Ticks step size                                     (double = Lim/2)
+%       showGrid    Display grid                                        (logic = false)
+%       gradColor   Use gradient color along the Z axis (3D only)       (logic = false)
+%       thenDelete  Delete graphics, used during simulation             (logic = false)
 %
 %   Outputs:
-%       p plots of the agents
-%       p_lines plots of the links
-%       pL plots of the leaders
+%       p           Plots of the agents
+%       p_lines     Plots of the links
 %
-%   See also: plotSwarm
+%   See also: plotSwarm, plotTrajectory
 %
 %   Authors:    Andrea Giusti and Gian Carlo Maffettone
 %   Date:       2022
 %
 
 arguments
-    x
-    time
-    RMin
-    RMax
-    Lim=10
-    tickStep=Lim/2
-    showGrid=false
-    gradColor= false
+    x           double
+    time        double
+    RMin        double {mustBeNonnegative}
+    RMax        double {mustBeNonnegative}
+    Lim         double {mustBePositive}     = 10
+    tickStep    double {mustBePositive}     = Lim/2
+    showGrid    logical                     = false
+    gradColor   logical                     = false
+    thenDelete  logical                     = false
 end
 
     Max = Lim;   % amplitude of the simulation plane
@@ -49,7 +55,7 @@ end
        x=x'; 
     end
 
-    plotSwarm(x,[],time, RMin,RMax,false, ones(size(x,1), 1), gradColor);
+    [p,p_lines] = plotSwarm(x,[],time, RMin,RMax,thenDelete, ones(size(x,1), 1), gradColor);
 
 end
 

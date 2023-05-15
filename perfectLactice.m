@@ -3,23 +3,28 @@ function x_selected = perfectLactice(N, L, D, enf_connectivity, enf_rigidity, la
 %perfectLactice generates N points arranged on a lattice.
 %   Can be used to generate initial positions of the agents.
 %
-%   x = perfectLactice(N, L, enf_connectivity, enf_rigidity, lattice_size)
+%   x = perfectLactice(N, L, D, enf_connectivity, enf_rigidity, lattice_size, max_iterations)
 %
 %   Inputs:
-%       N is the number of points to generate. N must be a square number. (integer)
-%       L is the number of links per agent (integer)
-%           valid values are 3=hexagonal lattice, 4=sqaure lattice, 6=triangular lattice
-%       enf_connectivity ensures the resulting swarm graph is connected (logical = true)
-%       enf_rigidity ensures the resulting swarm graph is rigid (logical = true)
-%       lattice_size number of points in the lattice, must be square and larger or equal than N (integer = ceil(sqrt(N))^2)
+%       N                   Number of points to generate                                        (integer)
+%       L                   Number of links per agent                                           (integer)
+%           If D=2 valid values are 3=hexagonal lattice, 4=sqaure lattice, 6=triangular lattice
+%           If D=3 valid values are 6=cubic lattice, 12=thetradic-octaedric lattice
+%       D                   Dimension of the space. Must be 2 or 3.                             (integer)
+%       enf_connectivity    Ensure the resulting swarm graph is connected                       (logical = true)
+%       enf_rigidity        Ensure the resulting swarm graph is rigid                           (logical = true)
+%       lattice_size        Number of points in the lattice, must be larger or equal than N     (integer = ceil(sqrt(N))^2)
+%       max_iterations      Maximum number of iterations                                        (positive integer = 10^3)
+%   
 %   Outputs:
-%       x_selected are the positions of the lattice points (Nx2 matrix)
+%       x_selected          Positions of the selected lattice points                            (NxD matrix)
 %
 %   See also: randCircle
 %
 %   Authors:    Andrea Giusti
 %   Date:       2023
 %
+
 arguments
     N double {mustBeInteger, mustBePositive}
     L double {mustBeInteger, mustBePositive, mustBeMember(L,[3,4,6,12])}

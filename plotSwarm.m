@@ -1,38 +1,39 @@
-function [p,p_lines,pL] = plotSwarm(x,xL,time,RMin,RMax,thenDelete, spin, gradColor)
+function [p,p_lines] = plotSwarm(x,xL,time,RMin,RMax,thenDelete, spin, gradColor)
 %
 %plotSwarm draws the agents and the links of the swarm.
-%   The figure should be already open and set with the correct axis limits.
+%   The figure should be already open and set with the correct axis using plotSwarmInit.
 %
-%   [p,p_lines,pL] = plotSwarm(x,xL,time,RMin,RMax,thenDelete, spin)
+%   [p,p_lines,pL] = plotSwarm(x,xL,time,RMin,RMax,thenDelete, spin, gradColor)
 %
 %   Inputs:
-%       x are the positions of all the agents (Nx2 matrix)
-%       xL are the positions of the leaders (NLx2 matrix)
-%       time is the current time instant (scalar)
-%       RMax and RMin are the distances that define the adjacency set (scalar)
-%       thenDelete must be true to make animations (bool)
-%       spin are the spin of the agents (vector of bools)
+%       x           Positions of all the agents                         (NxD matrix)
+%       xL          Positions of the leader agents                      (NLxD matrix)
+%       time        Current time instant                                (scalar)       
+%       RMin        Min distance to plot link                           (double)
+%       RMax        Min distance to plot link                           (double)
+%       thenDelete  Delete graphics, used during simulation             (logic = false)
+%       spin        Spin of the agents                                  (Nx1 matrix = ones(N,1))
+%       gradColor   Use gradient color along the Z axis (3D only)       (logic = false)
 %
 %   Outputs:
-%       p plots of the agents
-%       p_lines plots of the links
-%       pL plots of the leaders
+%       p           Plots of the agents
+%       p_lines     Plots of the links
 %
-%   See also: drawLines
+%   See also: plotSwarmInit, plotTrajectory
 %
 %   Authors:    Andrea Giusti and Gian Carlo Maffettone
 %   Date:       2022
 %
 
 arguments
-    x
-    xL
-    time
-    RMin
-    RMax
-    thenDelete= false
-    spin= ones(size(x,1), 1)
-    gradColor= false
+    x           double
+    xL          double
+    time        double
+    RMin        double {mustBeNonnegative}
+    RMax        double {mustBeNonnegative}
+    thenDelete  logical                     = false
+    spin        double                      = ones(size(x,1), 1)
+    gradColor   logical                     = false
 end
 
 title("t="+time+" s")
@@ -58,14 +59,10 @@ end
 
 p = [p1 ; p2];
 
-
-if(size(xL,1)>0); pL = plot(xL(:,1), xL(:,2),'r.','MarkerSize', 20); end
-
 if(thenDelete)
     drawnow
     delete(p)
     delete(p_lines)
-    if(size(xL,1)>0); delete(pL); end
 end
 end
 

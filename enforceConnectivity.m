@@ -1,15 +1,30 @@
 function [x_selected, indeces_to_keep, connectivity] = enforceConnectivity(indeces_to_keep, x_lattice, max_iterations)
 %
+%enforceConnectivity selects connected points on a lattice.
+%
+%   [x_selected, indeces_to_keep, connectivity] = enforceConnectivity(indeces_to_keep, x_lattice, max_iterations)
+%
+%   Inputs:
+%       indeces_to_keep     Initial selection of points     (N positive integers)
+%       x_lattice           Points of the lattice           (:xD matrix)
+%       max_iterations      Maximum number of iterations    (positive integer = 10^3)
+%     
+%   Outputs:
+%       x_selected          Selected positions                              (NxD matrix)
+%       indeces_to_keep     Selection of points                             (N positive integers)
+%       connectivity        True if the final configuration is connected    (logical)
+%
+%   See also: perfectLactice
 %
 %   Authors:    Andrea Giusti
 %   Date:       2023
+%
 
-
-% arguments
-%     indeces_to_keep 
-%     x_lattice
-%     max_iterations double {mustBeInteger, mustBePositive} = 10^3
-% end
+arguments
+    indeces_to_keep     double {mustBeInteger, mustBePositive}
+    x_lattice           double
+    max_iterations      double {mustBeInteger, mustBePositive} = 10^3
+end
 
 N = length(indeces_to_keep);
 numbers=[1:length(x_lattice)];

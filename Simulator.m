@@ -1,47 +1,61 @@
-function [xVec, vVec, stopTime] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction)
+function [xVec, uVec] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction)
 %
-%Simulator Executes a complete simulation of the swarm.
+%Simulator executes a complete simulation of the swarm.
 %   This function is called by a launcher script (Launcher, BruteForceTuning, ...).
 %
+%   Inputs:
+%       x0                  Initial positions of the agents     (NxD matrix)
+%       v0                  Initial velocities of the agents    (NxD matrix)
+%       Simulation          Simulation parameters               (struct)
+%       Dynamics            Dynamics of the agents              (struct)
+%       GlobalIntFunction   Long distance interaction           (struct = struct('function','None'))
+%       LocalIntFunction    Shorts distance interaction         (struct = struct('function','None'))
+%
+%   Outputs:
+%       xVec                Positions of the agents             (TIMExNxD matrix)
+%       uVec                Virtual forces acting on the agents (TIMExNxD matrix)
+%
+%   See also: Simulator, Launcher
+%
+%   Authors:    Andrea Giusti
+%   Date:       2023
+%
 
-% %% Check input parameters
-% assert(LinkNumber==6 | LinkNumber==4, "LinkNumber must be equal to 4 (square lattice) or 6 (triangular lattice)")
-% assert(size(x0,2)==2, "x0 must be a Nx2 matrix")
-% assert(regularity_thresh>0, "regularity_thresh must be a positive number")
-% assert(compactness_thresh>0, "compactness_thresh must be a positive number")
-% assert(Tmax>=0, "Tmax must be a non negative number")
-% assert(sigma>=0, "sigma must be a non negative number")
-% assert(MaxSensingRadius>=0, "MaxSensingRadius must be a non negative number")
-% assert(islogical(drawON), "drawON must be a logical value")
-% assert(islogical(getMetrics), "getMetrics must be a logical value")
-% assert(islogical(dynamicLattice), "dynamicLattice must be a logical value")
-% assert(islogical(AgentsRemoval), "AgentsRemoval must be a logical value")
-
-%% Instantiate Simulation Window
-Max = 10;   % amplitude of the simulation plane
-Min = -Max;
-
-if Simulation.drawON
-    figure;
-    axis('equal',[Min Max Min Max])
-    yticks([-10 -5 0 5 10])
-    xticks([-10 -5 0 5 10])
-    set(gca,'FontSize',14)
-    hold on
+%% Validate input arguments
+arguments
+    x0                  (:,:) double
+    v0                  (:,:) double
+    Simulation          struct
+    Dynamics            struct
+    GlobalIntFunction   struct = struct('function','None')
+    LocalIntFunction    struct = struct('function','None')
 end
 
-SensingNumber = inf;    % max number of neighbours to interact with
+assert(ismember(size(x0,2), [2,3]), 'x0 must have second dimension equal to 2 or 3!')
+assert(all(size(v0,2)==size(x0,2)), 'v0 must have same dimensions of x0!')
 
-
-%% simulation parameters
-InteractionFactor = 1; % fraction of agents to interact with ]0,1] 
+if ~isfield(Simulation, 'InteractionFactor')
+    Simulation.InteractionFactor = 1; % fraction of agents to interact with ]0,1] 
+end
 %(if InteractionFactor<1 a subset of agents is randomly selected by each agent at each update step to interact with)
-if (InteractionFactor~=1); warning("InteractionFactor is NOT set to 1"); end
+assert(Simulation.InteractionFactor <=1 & Simulation.InteractionFactor >0, 'Simulation.InteractionFactor must be in range ]0;1]')
+if (Simulation.InteractionFactor~=1); warning("Simulation.InteractionFactor is NOT set to 1"); end
 
-% % steady state detection
-% stopSamples=ceil(10/deltaSample);               % number of consecutive samples to detect steady state 
-% regularity_ss_thresh=regularity_thresh/10;      % steady state detection threshold for the regularity metrics
-% compactness_ss_thresh=compactness_thresh/10;    % steady state detection threshold for the compactness metrics
+if ~isfield(GlobalIntFunction, 'SensingNumber')
+    GlobalIntFunction.SensingNumber = inf; % fraction of agents to interact with ]0,1] 
+end
+assert(GlobalIntFunction.SensingNumber>0, 'GlobalIntFunction.SensingNumber must be positive')
+if (GlobalIntFunction.SensingNumber~=inf); warning("SensingNumber is NOT set to inf"); end
+
+%% Instantiate Simulation Window
+
+if Simulation.drawON
+    if isfield(LocalIntFunction, 'DistanceRange')
+        plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, 1, false, false, true);
+    else
+        plotSwarmInit(x0, 0, inf, inf, Simulation.arena, 1, false, false, true);
+    end
+end
 
 %% Inizialization
 x=x0;
@@ -49,68 +63,44 @@ N=size(x,1);
 
 
 %% Preallocate variables
-count=0;                                    % sampling iteration
-TSample = 0:Simulation.deltaT:Simulation.Tmax;               % sampling time instants
+count=0;                                        % sampling iteration
+TSample = 0:Simulation.deltaT:Simulation.Tmax;  % sampling time instants
 xVec=nan([size(TSample,1)+1,size(x0)]);         % positions of the swarm
-vVec=nan([size(TSample,1)+1,size(x0)]);         % velocity of the swarm
+uVec=nan([size(TSample,1)+1,size(x0)]);         % inputs of the swarm
 
 xVec(1,:,:)=x0;
-vVec(1,:,:)=v0;
 v=v0;
 
 disp(['- Simulating ',num2str(N),' ',Dynamics.model, ' agents in ', num2str(size(x0,2)),'D space with ',GlobalIntFunction.function,' interaction'])
 
 %% Run Simulation
-stopCondition=false;
 t=0;
-stopTime=nan;
 
-while t<=Simulation.Tmax && ~stopCondition
-
+while t<=Simulation.Tmax
     
     % Compute Control Actions
-    %[v, links, ~, G_radial, G_normal] = VFcontroller(x, G_radial, G_normal, min(RMax,MaxSensingRadius), RMin, SensingNumber, InteractionFactor, LinkNumber, deltaT, DeadZoneThresh, GlobalIntFunction, spin, MaxSensingRadius, alpha, beta);
-    forces = VFcontroller(x, SensingNumber, InteractionFactor, Simulation.dT, GlobalIntFunction, LocalIntFunction);
+    forces = VFcontroller(x, GlobalIntFunction, LocalIntFunction, Simulation.dT, Simulation.InteractionFactor);
     
     % Simulate Agents' Dynamics
-    %x = SingleIntegrator(x, v, deltaT, vMax);
     [x, v, Dynamics] = Integrate(x, v, forces, Dynamics, Simulation.dT);
     
     if t>=TSample(count+1)
         count= count+1;
         
         xVec(count+1,:,:)=x;
-        vVec(count+1,:,:)=v;
-            
-        if Simulation.getMetrics || t>Tmax-2
-            
-            
-%             % steady-state detection (with vibration exclusion)
-%             if(count>stopSamples)
-%                 if (abs(e_L(count-stopSamples:count,1)-e_L(count,1))< compactness_ss_thresh...
-%                         | abs(e_L(count-stopSamples:count,1)-e_L(count-1,1))< compactness_ss_thresh)...
-%                         & (abs(e_theta(count-stopSamples:count,1)-e_theta(count,1))< regularity_ss_thresh...
-%                         | abs(e_theta(count-stopSamples:count,1)-e_theta(count-1,1))< regularity_ss_thresh)...
-%                         & abs(G_normal_vec(count-stopSamples:count,1)-G_normal_vec(count,1))< G_normal_vec(count,1)*0.03
-%                     stopCondition=true;
-%                     stopTime=t;
-%                 end
-%             end
-            
-        end
+        uVec(count+1,:,:)=forces;
         
         % plot swarm
         if Simulation.drawON
             if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9]); end
             if isfield(LocalIntFunction, 'DistanceRange')
-                plotSwarm(x, [], t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), true, ones(N,1));
+                plotSwarm(x, [], t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), true);
             else
-                plotSwarm(x, [], t, inf, inf, true, ones(N,1));
+                plotSwarm(x, [], t, inf, inf, true);
             end
         end
 
     end
-    
     
     t=t+Simulation.dT;
 end
@@ -121,13 +111,11 @@ end
 if Simulation.drawON
     if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9]); end
     if isfield(LocalIntFunction, 'DistanceRange')
-        plotSwarm(x, [], t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), false, ones(N,1));
+        plotSwarm(x, [], t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), false);
     else
-        plotSwarm(x, [], t, inf, inf, false, ones(N,1));
+        plotSwarm(x, [], t, inf, inf, false);
     end
 end
-
-
 
 end
 

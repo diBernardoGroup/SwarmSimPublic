@@ -23,9 +23,10 @@ delta=(Rmax-1) * 0.5;   % maximum displacement of the initial positions. delta<=
 MaxSensingRadius=3;   % sensing radius of the agents (R_s)
 
 Simulation=struct();
-Simulation.Tmax =   20;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
+Simulation.Tmax =   5;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
 Simulation.deltaT = 0.25;    % sampling time step
 Simulation.dT =     0.01;   % integration time step
+Simulation.arena =  3;      % size of the simulation window
 Simulation.drawON=false;    % draw swarm during simulation (if N is large slows down the simulation)
 Simulation.drawTraj=true;  % draw trajectories of the agents (if N is large slows down the simulation)
 Simulation.getMetrics=true; % acquire metrics during the simulation (getMetrics=false discard settling times and stop times)
@@ -46,6 +47,7 @@ GlobalIntFunction=struct('function','Lennard-Jones','parameters',[0.5, (D-1)*12]
 
 %LocalIntFunction=struct('function','Linear', 'LinkNumber',LinkNumber, 'DistanceRange', [0.6, 1.1], 'Gain', G_normal);
 LocalIntFunction=struct('function','None', 'DistanceRange', [0, Rmax]);
+%LocalIntFunction=struct('function','None');
 
 % adaptation gains
 alpha = 0;      

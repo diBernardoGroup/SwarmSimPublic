@@ -1,6 +1,33 @@
 function [xnew, vnew, Dynamics] = Integrate(x, v, input, Dynamics, deltaT)
 %
+%Integrate Integrates agents' dynamics with Euler–Maruyama method.
+%   This function is called by Simulator.
 %
+%   Inputs:
+%       x                   Previous positions of the agents    (NxD matrix)
+%       v                   Previous velocities of the agents   (NxD matrix)
+%       input               Control inputs of the agents        (NxD matrix)
+%       Dynamics            Dynamics of the agents              (struct)
+%       deltaT              Itegrateion step                    (positive scalar)
+%
+%   Outputs:
+%       xnew                New positions of the agents         (NxD matrix)
+%       vnew                New velocities of the agents        (NxD matrix)
+%       Dynamics            Dynamics of the agents              (struct)
+%
+%   See also: Simulator, Launcher
+%
+%   Authors:    Andrea Giusti
+%   Date:       2023
+%
+
+arguments
+    x                   double
+    v                   double
+    input               double
+    Dynamics            struct  
+    deltaT              double {mustBePositive}
+end
     
     switch Dynamics.model
     case 'FirstOrder'
