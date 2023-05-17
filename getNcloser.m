@@ -1,6 +1,6 @@
-function [xSorted] = GetNcloser(currPos, x, N)
+function [xSorted] = getNcloser(currPos, x, N)
 %
-%GetNcloser gives the positions of the N closest agents.
+%getNcloser gives the positions of the N closest agents.
 %
 %   [xSorted] = GetNcloser(currPos, x, N)
 %

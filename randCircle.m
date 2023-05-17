@@ -7,8 +7,8 @@ function x = randCircle(N, radius, D)
 %
 %   Inputs:
 %       N is the number of points to generate               (integer)
-%       radius is the radius of the circle                  (scalar)
-%       D is the dimension of the space. Must be 2 or 3.    (integer)
+%       radius is the radius of the circle                  (positive scalar)
+%       D is the dimension of the space. Must be 2 or 3.    (integer = 2)
 %
 %   Outputs:
 %       x are the random positions                          (NxD matrix)
@@ -18,6 +18,12 @@ function x = randCircle(N, radius, D)
 %   Authors:    Andrea Giusti and Gian Carlo Maffettone
 %   Date:       2022
 %
+
+arguments
+    N       double {mustBeInteger}
+    radius  double {mustBeNonnegative}
+    D       double {mustBeInteger} = 2
+end
 
 azimuth = 2*pi*rand(N,1);
 r = radius*nthroot(rand(N,1),D);

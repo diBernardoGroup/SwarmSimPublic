@@ -27,7 +27,7 @@ Simulation.drawON=true;    % draw swarm during simulation (if N is large slows d
 
 smoothing = false;
 
-delta=0.3;
+delta=0.1;
 
 %% Create Initial Conditions
 %rng(1,'twister'); % set the randomn seed to have reproducible results

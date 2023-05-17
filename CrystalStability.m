@@ -1,5 +1,5 @@
 %
-%crystalStabilityMulti Allows to generate random triangular configurations and perform local analysis.
+%CrystalStability Allows to generate random triangular configurations and perform local analysis.
 %
 %   See also: Launcher
 %   

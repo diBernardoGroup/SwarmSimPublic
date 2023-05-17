@@ -1,6 +1,5 @@
 %
-%StabilityAnalysis Set the parameters and launch multiple simulations from different initial conditions.
-%   Also robustness tests can be run, see AgentsRemoval, NoiseTest and dynamicLattice
+%MultiLauncher Set the parameters and launch multiple simulations from different initial conditions.
 %
 %   See also: Launcher, SequentialLauncher
 %
@@ -15,7 +14,7 @@ clc
 
 %% Parameters
 
-Ntimes=4;              % How many simulations are launched for each configuration
+Ntimes=10;              % How many simulations are launched for each configuration
 
 D=3;                    % number of dimensions [2 or 3]
 
@@ -88,7 +87,7 @@ if outputDir
     save(fullfile(path, 'data'))
     
     fileID = fopen(fullfile(path, 'parameters.txt'),'wt');
-    fprintf(fileID,'StabilityAnalysis\n\n');
+    fprintf(fileID,'MultiLauncher\n\n');
     fprintf(fileID,'Date: %s\n',datestr(now, 'dd/mm/yy'));
     fprintf(fileID,'Time: %s\n\n',datestr(now, 'HH:MM'));
     fprintf(fileID,'Ntimes= %d\n\n',Ntimes);

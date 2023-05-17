@@ -20,7 +20,7 @@ clc
 
 %% Parameters
 
-Ntimes=20;               % How many simulations are launched for each configuration
+Ntimes=2;               % How many simulations are launched for each configuration
 
 D=3;                    % number of dimensions [2 or 3]
 
@@ -28,7 +28,7 @@ defaultParam;           % load default parameters
 
 N=100;
 
-seed=0;        % seed for random generator, if negative it is not set
+seed=0;                 % seed for random generator, if negative it is not set
 
 smoothing = false;
 
@@ -37,14 +37,23 @@ smoothing = false;
 % all the modified parameters must have the same number of values
 % the values specified here overwrite the default ones
 % IntFunctionStruct cannot be modified
-% parameters.names={'initRadius'};
-% parameters.values={[sqrt(25/25) sqrt(50/25) sqrt(100/25)]};
-parameters.names={'delta'};
-parameters.values={[0:0.05:0.5,0.6:0.1:1]};
+% parameters(1).name='delta';
+% parameters(1).values=[0:0.5:1];
+% parameters(2).name='N';
+% parameters(2).values=[50, 100, 150];
+
+parameters(1).name='delta';
+parameters(1).values=[0:0.5:1];
+parameters(2).name='N';
+parameters(2).values=[50, 100, 150];
 
 %% Preallocate
-Nparameters=length(parameters.names);
-Nconfig=length(parameters.values{1});
+%[p1,p2] = ndgrid(parameters.values)
+%p = [p1(:) p2(:)]
+p=cartesianProduct({parameters.values});
+
+Nparameters=length(parameters);
+Nconfig=size(p, 1);
 
 timeInstants = 0:Simulation.deltaT:Simulation.Tmax;
 
@@ -66,7 +75,8 @@ for i_times=1:Nconfig
     disp('Simulations batch ' + string(i_times) + ' of ' + Nconfig + ':')
     
     for j=1:Nparameters
-        assignin('base',parameters.names{j}, parameters.values{j}(i_times));
+        assignin('base',parameters(j).name, p(i_times,j));
+        %disp([parameters(j).name,'= ', num2str(p(i_times,j)) ])
     end
     
     % create initial conditions
@@ -110,14 +120,14 @@ cost=[vecnorm([mean(e_theta,2)/regularity_thresh, mean(e_L,2)/compactness_thresh
 
 fprintf('\n --- \nNtimes=%d seed=%d \n\nNconf \t|',Ntimes,seed)
 for j_times=1:Nparameters
-    fprintf('%s\t',string(parameters.names{j_times}));
+    fprintf('%s\t',string(parameters(j_times).name));
 end
 fprintf('\t| e_t \t e_L \t T_r \t succ \t cost \n --- \n');
 
 for i_times=1:Nconfig
     fprintf(' %d \t|', i_times)
     for j_times=1:Nparameters
-        fprintf('%.2f\t\t',string(parameters.values{j_times}(i_times)));
+        fprintf('%.2f\t\t',string(p(i_times,j_times)));
     end
     fprintf('| %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n',mean(e_theta(i_times,:)),mean(e_L(i_times,:)),mean(Tr_vec(i_times,:)),mean(success_vec(i_times,:)),mean(cost(i_times,:)));
 end
@@ -166,7 +176,6 @@ end
 % plot if Nparameters==1
 if Nparameters==1
     
-    if alpha==0 && beta==0
         %         figure %METRICS
         %         set(0, 'DefaultFigureRenderer', 'painters');
         %         subplot(2,1,1)
@@ -194,7 +203,7 @@ if Nparameters==1
         %         %legend([e_L_line, e_L_star_line],{'2','3'},'Interpreter','latex','FontSize',22)
         %         legend([e_L_line, e_L_star_line],{'$\bar{e}_L$','$e_L^*$'},'Interpreter','latex','FontSize',22)
         %         legend boxoff
-        %         xlabel(parameters.names{1})
+        %         xlabel(parameters(1).name)
         %         set(gca,'FontSize',14)
         %         box
         
@@ -202,10 +211,10 @@ if Nparameters==1
         set(0, 'DefaultFigureRenderer', 'painters');
         subplot(2,1,1)
         hold on
-        line=plotWithShade(parameters.values{1}, mean(e_d_max_vec,2), min(e_d_max_vec,[],2), max(e_d_max_vec,[],2), 'b', 0.1); %e_d_max_mean(:,1),e_d_max_mean(:,2),e_d_max_mean(:,3), 'b', 0.1);
+        line=plotWithShade(parameters(1).values, mean(e_d_max_vec,2), min(e_d_max_vec,[],2), max(e_d_max_vec,[],2), 'b', 0.1); %e_d_max_mean(:,1),e_d_max_mean(:,2),e_d_max_mean(:,3), 'b', 0.1);
         yline(Rmax-1,'--','LineWidth',2)
         yticks(sort([0:0.1:1, Rmax-1]))
-        xticks(parameters.values{1})
+        xticks(parameters(1).values)
         set(gca,'FontSize',14)
         ylabel('$e$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
         %legend([line],{'$e$'},'Interpreter','latex','FontSize',22)
@@ -214,10 +223,10 @@ if Nparameters==1
         grid
         
         subplot(2,1,2)
-        rigidity_line=plot(parameters.values{1}, mean(rigid_vec,2),'Marker','o','Color','r','LineWidth',2,'MarkerSize',6);
-        xticks(parameters.values{1})
+        rigidity_line=plot(parameters(1).values, mean(rigid_vec,2),'Marker','o','Color','r','LineWidth',2,'MarkerSize',6);
+        xticks(parameters(1).values)
         yticks([0:0.25:1])
-        xlabel(parameters.names{1})
+        xlabel(parameters(1).name)
         set(gca,'FontSize',14)
         xlabel('$\delta$', 'Interpreter','latex','FontSize',22)
         ylabel('$\rho$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
@@ -229,49 +238,6 @@ if Nparameters==1
             saveas(gcf,fullfile(path, 'e_rho'))
             saveas(gcf,fullfile(path, 'e_rho'),'png')
         end
-        
-    else
-        figure %METRICS with Gain
-        set(0, 'DefaultFigureRenderer', 'painters');
-        subplot(3,1,1)
-        title('Metrics','FontSize',16)
-        hold on
-        e_theta_line=plotWithShade(parameters.values{1}, e_theta_mean(:,1), e_theta_mean(:,2), e_theta_mean(:,3), 'b', 0.1);
-        e_theta_star_line=yline(regularity_thresh, 'b--','LineWidth',2);
-        axis([-inf inf 0 0.6])
-        yticks([0 regularity_thresh 0.4 0.6])
-        xticks(parameters.values{1})
-        %legend([e_theta_line, e_theta_star_line],{'0','1'}, 'Interpreter','latex','FontSize',22)
-        legend([e_theta_line, e_theta_star_line],{'$\bar{e}_{\theta}$','$e_{\theta}^*$'},'Interpreter','latex','FontSize',22)
-        legend boxoff
-        set(gca,'FontSize',14)
-        box
-        
-        subplot(3,1,2)
-        e_L_line=plotWithShade(parameters.values{1},e_L_mean(:,1),e_L_mean(:,2),e_L_mean(:,3), 'r', 0.1);
-        e_L_star_line=yline(compactness_thresh,'r--','LineWidth',2);
-        yticks([0 compactness_thresh 0.6 0.9])
-        xticks(parameters.values{1})
-        axis([-inf inf 0 0.6])
-        %legend([e_L_line, e_L_star_line],{'2','3'},'Interpreter','latex','FontSize',22)
-        legend([e_L_line, e_L_star_line],{'$\bar{e}_L$','$e_L^*$'},'Interpreter','latex','FontSize',22)
-        legend boxoff
-        set(gca,'FontSize',14)
-        box
-        
-        subplot(3,1,3)
-        line=plotWithShade(parameters.values{1},GNormal_mean(:,1),GNormal_mean(:,2),GNormal_mean(:,3), 'm', 0.1);
-        xticks(parameters.values{1})
-        yticks([0:2.5:7.5])
-        axis([-inf inf 0 7.5])
-        %legend([line],{'4'},'Interpreter','latex','FontSize',22)
-        legend([line],{'$\bar{G}_n$'},'Interpreter','latex','FontSize',22)
-        legend boxoff
-        xlabel(parameters.names{1})
-        set(gca,'FontSize',14)
-        box
-        set(gcf,'Position',[250 250 500 500])
-    end
     
     %     figure %Success Rate and Cost
     %     subplot(2,1,1)
@@ -292,9 +258,31 @@ if Nparameters==1
     %     axis([-inf inf 0 2])
     %     legend([line, level],{'cost','1'},'Interpreter','latex','FontSize',22)
     %     legend boxoff
-    %     xlabel(parameters.names{1})
+    %     xlabel(parameters(1).name)
     %     set(gca,'FontSize',14)
     %     box
+
+elseif Nparameters==2
+    % average over the initial conditions
+    m_mean = mean(m,2);
+    rigid_mean = mean(rigid_vec,2);
+    e_d_max_mean = mean(e_d_max_vec,2);
+    
+    e_d_max_map = reshape(e_d_max_mean, [length(parameters(1).values), length(parameters(2).values)]);
+
+    figure % e_d_max
+    [~,lplot]=mysurfc(parameters(1).values, parameters(2).values, e_d_max_map);
+    xlabel(parameters(1).name)
+    ylabel(parameters(2).name)
+    title('$e$', 'interpreter', 'latex')
+    hold on
+    %optimplot=scatter3(G_r_vec(row),G_n_vec(col),10*ones(length(col),1), 100,'black','filled');
+    xlim([-inf, inf])
+    ylim([-inf, inf])
+    set(gca, 'XTick', parameters(1).values);
+    set(gca, 'YTick', parameters(2).values);
+    set(gca,'FontSize',14)
+    
 end
 
 

@@ -25,8 +25,8 @@ function [xVec, uVec] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunctio
 
 %% Validate input arguments
 arguments
-    x0                  (:,:) double
-    v0                  (:,:) double
+    x0                  double
+    v0                  double
     Simulation          struct
     Dynamics            struct
     GlobalIntFunction   struct = struct('function','None')
@@ -84,7 +84,7 @@ while t<=Simulation.Tmax
     forces = VFcontroller(x, GlobalIntFunction, LocalIntFunction, Simulation.dT, Simulation.InteractionFactor);
     
     % Simulate Agents' Dynamics
-    [x, v, Dynamics] = Integrate(x, v, forces, Dynamics, Simulation.dT);
+    [x, v, Dynamics] = integrateAgents(x, v, forces, Dynamics, Simulation.dT);
     
     if t>=TSample(count+1)
         count= count+1;

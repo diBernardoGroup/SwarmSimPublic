@@ -1,5 +1,6 @@
 %
 %defaultParam Set the default values of the parameters.
+%   It is called by launcher scripts such as Launcher.
 %
 %   See also: Launcher, SequentialLauncher
 %   
@@ -8,8 +9,8 @@
 %
 
 %% Default Parameters
-%outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/stability of geometric lattices/simulations';
-outputDir='';
+outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/stability of geometric lattices/simulations';
+%outputDir='';
 
 N=100;          %number of agents (N)
 LinkNumber=6*(D-1);   %number of links (6=triangular lattice, 4=square lattice, 3=hexagonal lattice) (L)
@@ -38,8 +39,8 @@ Dynamics=struct('model','FirstOrder', 'sigma',0, 'vMax', inf);
 %Dynamics=struct('model','LevyWalk', 'alpha',0.005, 'sigma', 0.25);
 
 %% Global and Local interaction functions
-GlobalIntFunction=struct('function','Lennard-Jones','parameters',[0.5, (D-1)*12], 'MaxSensingRadius', MaxSensingRadius, 'Gain', G_radial);
-%GlobalIntFunction=struct('function','PowerLaw-FiniteCutoff','parameters',[1, Rmax], 'MaxSensingRadius', MaxSensingRadius, 'Gain', 0.5);
+%GlobalIntFunction=struct('function','Lennard-Jones','parameters',[0.5, (D-1)*12], 'MaxSensingRadius', MaxSensingRadius, 'Gain', G_radial);
+GlobalIntFunction=struct('function','PowerLaw-FiniteCutoff','parameters',[1, Rmax], 'MaxSensingRadius', MaxSensingRadius, 'Gain', 0.5);
 %GlobalIntFunction=struct('function','Spears','parameters', [2 35]);  %from Spears2004
 %GlobalIntFunction=struct('function','Morse','parameters',[0.2, 2]);
 %GlobalIntFunction=struct('function','Modified-LJ','parameters',[]);  %from Torquato2009
