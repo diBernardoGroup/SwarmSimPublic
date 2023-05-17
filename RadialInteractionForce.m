@@ -54,7 +54,12 @@ switch IntFunction.function
         f=f/3;
         %f= min(f,1);                % saturation
     
+    case 'PowerLaw-FiniteCutoff'
+        R=IntFunction.parameters(1);
+        Ra=IntFunction.parameters(2);
+        f = heaviside(R-x).*(1./x-1/R)*R^2*pi/(Ra-R) - heaviside(Ra-x).*heaviside(x-R).*sin((x-R)*pi/(Ra-R));
+    
     otherwise
-        error("IntFunction.function must be a valid string ['Lennard-Jones', 'Spears', 'Modified-LJ', 'Morse']")
+        error("IntFunction.function must be a valid string ['Lennard-Jones', 'Spears', 'Modified-LJ', 'Morse', 'PowerLaw-FiniteCutoff']")
 end
 end
