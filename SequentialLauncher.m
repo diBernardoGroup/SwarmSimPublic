@@ -1,13 +1,14 @@
 %
 %SequentialLauncher allows to set multiple values of the parameters and
-%   launch multiple simulations for each configuration.
+%   launch multiple simulations, from different intial conditions, for each configuration.
+%   If multiple parameters are defined all the combinations are tested.
 %   It is used to study the effect of parameters on the system.
 %
 %   Notes:
 %       Running this script can take long time (up to hours)
 %       For better performances install the parallel computing toolbox
 %
-%   See also: Launcher, BruteForceTuning
+%   See also: Launcher, MultiLauncher
 %
 %   Authors:    Andrea Giusti and Gian Carlo Maffettone
 %   Date:       2022
@@ -26,30 +27,25 @@ D=3;                    % number of dimensions [2 or 3]
 
 defaultParam;           % load default parameters
 
-N=100;
-
 seed=0;                 % seed for random generator, if negative it is not set
 
 smoothing = false;
 
 %% variable parameters
-% one or multiple parameters can be modified at the same time
-% all the modified parameters must have the same number of values
-% the values specified here overwrite the default ones
-% IntFunctionStruct cannot be modified
+% One or multiple parameters can be modified at the same time.
+% Parameters must be existing variables.
+% The values specified here overwrite the default ones.
 % parameters(1).name='delta';
 % parameters(1).values=[0:0.5:1];
 % parameters(2).name='N';
 % parameters(2).values=[50, 100, 150];
 
-parameters(1).name='delta';
-parameters(1).values=[0:0.5:1];
+parameters(1).name='GlobalIntFunction.Gain';
+parameters(1).values=[0.5:1:1.5];
 parameters(2).name='N';
 parameters(2).values=[50, 100, 150];
 
 %% Preallocate
-%[p1,p2] = ndgrid(parameters.values)
-%p = [p1(:) p2(:)]
 p=cartesianProduct({parameters.values});
 
 Nparameters=length(parameters);
@@ -74,9 +70,18 @@ for i_times=1:Nconfig
     tic
     disp('Simulations batch ' + string(i_times) + ' of ' + Nconfig + ':')
     
+    % assign parameters' value
     for j=1:Nparameters
-        assignin('base',parameters(j).name, p(i_times,j));
-        %disp([parameters(j).name,'= ', num2str(p(i_times,j)) ])
+        args = split(parameters(j).name,'.');
+        if length(args) == 1
+            assert(exist(parameters(j).name,'var'), ['Parameter ',parameters(j).name,' not present in the workspace'] )
+        else
+            assert(exist(string(args(1)),'var'), ["Structure "+ string(args(1)) + " not present in the workspace"] )
+            assert(isfield(eval(string(args(1))), string(args(2))), ["Structure "+ string(args(1)) + " do not have field " + string(args(2))])
+        end
+        
+        evalin('base', [parameters(j).name, '=', num2str(p(i_times,j)), ';'] );
+        disp([parameters(j).name,'= ', num2str(p(i_times,j)) ])
     end
     
     % create initial conditions

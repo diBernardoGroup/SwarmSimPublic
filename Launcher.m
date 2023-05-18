@@ -2,7 +2,7 @@
 %Launcher Set the parameters and launch a single simulation of the swarm.
 %   Also robustness tests can be run, see AgentsRemoval, NoiseTest and dynamicLattice
 %
-%   See also: BruteForceTuning, SequentialLauncher, StabilityAnalysis
+%   See also: MultiLauncher, SequentialLauncher
 %
 %   Authors:    Andrea Giusti and Gian Carlo Maffettone
 %   Date:       2022
