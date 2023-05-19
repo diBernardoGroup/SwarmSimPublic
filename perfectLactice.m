@@ -12,7 +12,7 @@ function x_selected = perfectLactice(N, L, D, enf_connectivity, enf_rigidity, la
 %           If D=3 valid values are 6=cubic lattice, 12=thetradic-octaedric lattice
 %       D                   Dimension of the space. Must be 2 or 3.                             (integer)
 %       enf_connectivity    Ensure the resulting swarm graph is connected                       (logical = true)
-%       enf_rigidity        Ensure the resulting swarm graph is rigid                           (logical = true)
+%       enf_rigidity        Ensure the resulting swarm graph is rigid                           (logical = false)
 %       lattice_size        Number of points in the lattice, must be larger or equal than N     (integer = ceil(sqrt(N))^2)
 %       max_iterations      Maximum number of iterations                                        (positive integer = 10^3)
 %   
@@ -30,9 +30,15 @@ arguments
     L double {mustBeInteger, mustBePositive, mustBeMember(L,[3,4,6,12])}
     D double {mustBeInteger, mustBePositive, mustBeMember(D,[2,3])} = 2
     enf_connectivity logical = true
-    enf_rigidity logical = true
+    enf_rigidity logical = false
     lattice_size double {mustBeInteger, mustBePositive, mustBeGreaterThanOrEqual(lattice_size,N)} = ceil(nthroot(N,D))^D
     max_iterations double {mustBeInteger, mustBePositive} = 10^3
+end
+
+if enf_rigidity && D==2
+    assert(L==6,'In 2D rigidity can be achived only by triangular lattice (L=6)')
+elseif enf_rigidity && D==3
+    assert(L==12,'In 3D rigidity can be achived only by thetradic-octaedric lattice (L=12)')
 end
 
 if enf_rigidity && ~enf_connectivity

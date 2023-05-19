@@ -175,7 +175,6 @@ if outputDir
     fprintStruct(fileID,GlobalIntFunction)
     fprintf(fileID,'LocalIntFunction:\n');
     fprintStruct(fileID,LocalIntFunction)
-    fprintf(fileID,'smoothing= %s\n',mat2str(smoothing));
     fprintf(fileID,'seed= %d\n',seed);
     fclose(fileID);
 end

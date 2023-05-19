@@ -14,12 +14,11 @@ clear
 
 %% Parameters
 
-D=3;                        %number of dimensions [2 or 3]
+D=3;                        % number of dimensions [2 or 3]
 
 defaultParam;               % load default parameters
 
 Simulation.drawON=true;     % draw swarm during simulation (if N is large slows down the simulation)
-
 
 delta=0.1;                  % maximum displacement of the initial positions. delta<=(Rmax-1)/2 preserves all the links
 
@@ -53,6 +52,7 @@ timeInstants = 0:Simulation.deltaT:Simulation.Tmax;
 speed = vecnorm(vVec,2,3);
 theta = atan2(vVec(:,:,2), vVec(:,:,1));
 for i=1:length(timeInstants)-1
+    % angular velocity
     omega(i,:) = angleBetweenVectors(squeeze(vVec(i,:,:)),squeeze(vVec(i+1,:,:)))';
 end
 omega(length(timeInstants),:) = angleBetweenVectors(squeeze(vVec(length(timeInstants)-1,:,:)),squeeze(vVec(length(timeInstants),:,:)))';
@@ -68,7 +68,7 @@ for i=1:length(timeInstants) % for each time instant...
                                                             % e_d_max(0)<= 2*delta
     
     B = buildIncidenceMatrix(x, Rmax);                      % incidence matrix
-    m(i)=size(B,2);                                         % number of links
+    links(i)=size(B,2);                                     % number of links of the swarm
     M = buildRigidityMatrix(x, B);                          % rigidity matrix
     
     rigidity(i) = rank(M)==D*N-D*(D+1)/2;                   % check infinitesimal rigidity
@@ -103,6 +103,7 @@ if outputDir
     fprintf(fileID,'LocalIntFunction:\n');
     fprintStruct(fileID,LocalIntFunction)
     fprintf(fileID,'smoothing= %s\n',mat2str(smoothing));
+    fprintf(fileID,'delta= %.2f\n',delta);
     fclose(fileID);
 end
 
@@ -119,11 +120,11 @@ end
 %     saveas(gcf, fullfile(path, 'trajectories'),'png')
 % end
 
-if ~strcmp(GlobalIntFunction.function,'None') % RADIAL INTERACTION FUNCTION
+if ~strcmp(GlobalIntFunction.function,'None') % GLOBAL INTERACTION FUNCTION
     figure
     set(gcf,'Position',[100 500 560 420*0.6])
     hold on
-    fplot(@(x) RadialInteractionForce(x, GlobalIntFunction),[0, 2], 'LineWidth', 1.5)
+    fplot(@(x) globalInteractionForce(x, GlobalIntFunction),[0, 2], 'LineWidth', 1.5)
     plot([1], [0], 'r.','MarkerSize', 25)
     yticks([-1:2])
     xticks(sort([0:0.5:3,Rmax]))
@@ -142,20 +143,21 @@ if ~strcmp(GlobalIntFunction.function,'None') % RADIAL INTERACTION FUNCTION
     end
 end
 
-%     figure % NORMAL INTERACTION FORCE
-%     hold on
-%     fplot(@(alfa) NormalInteractionForce(alfa, LinkNumber),[-pi/LinkNumber, pi/LinkNumber])
-%     plot([0], [0], 'r.','MarkerSize', 30)
-%     ylim([-1.2 1.2])
-%     xlim([-pi/LinkNumber pi/LinkNumber])
-%     yticks([-1 0 1])
-%     xticks([-pi/LinkNumber, 0, pi/LinkNumber])
-%     set(gca,'XTickLabel',{'-\pi/4','0','\pi/4'})
-%     grid on
-%     title('f_n(\theta)')
-%     xlabel('\theta')
-%     set(gca,'FontSize',14)
-
+if ~strcmp(LocalIntFunction.function, 'None') % LOCAL INTERACTION FUNCTION
+    figure 
+    hold on
+    fplot(@(alfa) localInteractionForce(alfa, LinkNumber),[-pi/LinkNumber, pi/LinkNumber])
+    plot([0], [0], 'r.','MarkerSize', 30)
+    ylim([-1.2 1.2])
+    xlim([-pi/LinkNumber pi/LinkNumber])
+    yticks([-1 0 1])
+    xticks([-pi/LinkNumber, 0, pi/LinkNumber])
+    set(gca,'XTickLabel',{'-\pi/4','0','\pi/4'})
+    grid on
+    title('f_n(\theta)')
+    xlabel('\theta')
+    set(gca,'FontSize',14)
+end
 
 figure % SPEED and ANGULAR VELOCITY
 subplot(2,4,[1 2 3])
@@ -235,9 +237,9 @@ if outputDir
     saveas(gcf,fullfile(path, 'e_d_max'),'png')
 end
 
-figure % m
-plot(timeInstants,m)
-title('m', 'Interpreter','latex','FontSize',22)
+figure % links
+plot(timeInstants,links)
+title('links', 'Interpreter','latex','FontSize',22)
 xlabel('t', 'Interpreter','latex','FontSize',22)
 set(gca,'FontSize',14)
 box

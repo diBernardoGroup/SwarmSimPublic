@@ -31,11 +31,14 @@ arguments
     InteractionFactor   double  = 1
 end
 
+if ~isfield(LocalIntFunction, 'Rotation')
+   LocalIntFunction.Rotation = eye(size(x,2)); 
+end
+
 %% Instantiate Variables
     N=size(x,1);
     v= zeros(size(x));
     links = zeros(N,1);
-    R= [0 1; -1 0];         % 90deg rotation matrix
     SensingNumber = GlobalIntFunction.SensingNumber;
     
 %% for each agent...
@@ -83,7 +86,7 @@ end
         % compute global action (u_i,r)
         if ~strcmp(GlobalIntFunction.function,'None')
             indices=find(distances > 0 & distances <= GlobalIntFunction.MaxSensingRadius);
-            v(i,:)= v(i,:) + GlobalIntFunction.Gain * sum((x(i,:)-xRand(indices,:))./distances(indices) .* RadialInteractionForce(distances(indices), GlobalIntFunction)/InteractionFactor);
+            v(i,:)= v(i,:) + GlobalIntFunction.Gain * sum((x(i,:)-xRand(indices,:))./distances(indices) .* globalInteractionForce(distances(indices), GlobalIntFunction)/InteractionFactor);
         end
         
         % compute local action (u_i,n)
@@ -91,7 +94,7 @@ end
             if size(NeigIndices,1) > 0
                 % compute angular errors (theta_ij^err)
                 angErrNeigh = getAngularErrNeigh(x(i,:), 0, xNeighbours, LocalIntFunction.LinkNumber);
-                v(i,:)= v(i,:) + LocalIntFunction.Gain * sum((x(i,:)-xRand(NeigIndices,:))./distances(NeigIndices) * R .* NormalInteractionForce(angErrNeigh, LocalIntFunction.LinkNumber)/InteractionFactor);
+                v(i,:)= v(i,:) + LocalIntFunction.Gain * sum((x(i,:)-xRand(NeigIndices,:))./distances(NeigIndices) * LocalIntFunction.Rotation .* localInteractionForce(angErrNeigh, LocalIntFunction.LinkNumber)/InteractionFactor);
             end
         end
     end

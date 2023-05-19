@@ -20,8 +20,6 @@ D=3;                    % number of dimensions [2 or 3]
 
 defaultParam;           % load default parameters
 
-N=100;                  % number of agents
-
 delta=0.1;              % perturbation of the initial conditions
 
 seed=0;                 % set the randomn seed to a non negative value to have reproducible results
@@ -50,6 +48,10 @@ for rep=1:Ntimes
     [xVec(rep,:,:,:)] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction);
     
     %% ANALYSIS
+    if smoothing
+        xVec = movmean(xVec,3);
+        xVec = movmean(xVec,3);
+    end
     
     % metrics
     for i=1:length(timeInstants) % for each time instant...
@@ -129,10 +131,10 @@ if outputDir
     saveas(gcf,fullfile(path, 'x'),'png')
 end
 
-%     figure % RADIAL INTERACTION FUNCTION
+%     figure % GLOBAL INTERACTION FUNCTION
 %     hold on
 %     set(gca,'FontSize',14)
-%     fplot(@(x) RadialInteractionForce(x, RadialIntFunction),[0, 2], 'LineWidth', 2)
+%     fplot(@(x) globalInteractionForce(x, RadialIntFunction),[0, 2], 'LineWidth', 2)
 %     plot([1], [0], 'r.','MarkerSize', 30)
 %     yticks([-1:0.5:1])
 %     xticks([0:0.5:1, Rmax, 1.5:0.5:3])
@@ -144,9 +146,9 @@ end
 %     box on
 %     grid on
 
-%     figure % NORMAL INTERACTION FORCE
+%     figure % LOCAL INTERACTION FORCE
 %     hold on
-%     fplot(@(alfa) NormalInteractionForce(alfa, LinkNumber),[-pi/LinkNumber, pi/LinkNumber])
+%     fplot(@(alfa) localInteractionForce(alfa, LinkNumber),[-pi/LinkNumber, pi/LinkNumber])
 %     plot([0], [0], 'r.','MarkerSize', 30)
 %     ylim([-1.2 1.2])
 %     xlim([-pi/LinkNumber pi/LinkNumber])

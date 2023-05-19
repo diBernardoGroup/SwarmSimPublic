@@ -1,8 +1,8 @@
-function [f] = NormalInteractionForce(theta,LinkNumber)
+function [f] = localInteractionForce(theta,LinkNumber)
 %
-%NormalInteractionForce computes the values of normal interaction function for all the links of an agent.
+%localInteractionForce computes the values of normal interaction function for all the links of an agent.
 %
-%   [f] = NormalInteractionForce(theta,LinkNumber)
+%   [f] = localInteractionForce(theta,LinkNumber)
 %
 %   Inputs:
 %       theta are the angular errors of all the links of the agent (vector)
@@ -11,7 +11,7 @@ function [f] = NormalInteractionForce(theta,LinkNumber)
 %   Outputs:
 %       f are the values of normal interaction function for all the links of an agent (vector)
 %
-%   See also: RadialInteractionForce, VFcontroller
+%   See also: globalInteractionForce, VFcontroller
 %
 %   Authors:    Andrea Giusti and Gian Carlo Maffettone
 %   Date:       2022
