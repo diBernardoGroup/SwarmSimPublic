@@ -13,11 +13,14 @@
 % Directory to save the results of the simulations.
 % Set outputDir='' to prevent automatic saving.
 %outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/stability of geometric lattices/simulations';
-outputDir='';
+outputDir='./simulations';
+%outputDir='';
 
-N=25;                      %number of agents (N)
-LinkNumber=6*(D-1);         %number of links (6=triangular lattice, 4=square lattice, 3=hexagonal lattice) (L)
-
+N=100;                      %number of agents (N)
+LinkNumber=6*(D-1);         %number of links per agent in the lattice configuration (L)
+                            %If D=2 then 6=triangular lattice, 4=square lattice, 3=hexagonal lattice
+                            %If D=3 then 6=cubic lattice, 12=thetradic-octaedric lattice
+                            
 smoothing = false;          % smooth temporal data with moving average
 
 Rmax= (sqrt(5-D)+1)/2;      % maximum lenght of a link (R_a). Must be in [1; Rnext]

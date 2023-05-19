@@ -23,15 +23,13 @@ clc
 
 %% Parameters
 
-Ntimes=2;               % How many simulations are launched for each configuration
+Ntimes=10;              % How many simulations are launched for each configuration
 
 D=3;                    % number of dimensions [2 or 3]
 
 defaultParam;           % load default parameters
 
 seed=0;                 % seed for random generator, if negative it is not set
-
-smoothing = false;
 
 %% variable parameters
 % One or multiple parameters can be modified at the same time.
@@ -43,7 +41,7 @@ smoothing = false;
 % parameters(2).values=[50, 100, 150];
 
 parameters(1).name='GlobalIntFunction.Gain';
-parameters(1).values=[0.5:1:1.5];
+parameters(1).values=[0:0.5:2];
 parameters(2).name='N';
 parameters(2).values=[50, 100, 150];
 

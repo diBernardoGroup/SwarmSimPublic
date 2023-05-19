@@ -1,10 +1,14 @@
 %
 %MultiLauncher Set the parameters and launch multiple simulations from different initial conditions.
 %
+%   Notes:
+%       Running this script can take long time (up to hours)
+%       For better performances install the parallel computing toolbox
+%
 %   See also: Launcher, SequentialLauncher
 %
 %   Authors:    Andrea Giusti
-%   Date:       2022
+%   Date:       2023
 %
 
 %% Clear environment
@@ -14,7 +18,7 @@ clc
 
 %% Parameters
 
-Ntimes=10;              % How many simulations are launched for each configuration
+Ntimes=10;              % How many simulations are launched
 
 D=3;                    % number of dimensions [2 or 3]
 

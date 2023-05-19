@@ -1,5 +1,6 @@
 %
-%CrystalStability Allows to generate random triangular configurations and perform local analysis.
+%CrystalStability Generate random lattice configurations and perform local stability analysis.
+%   Note: it does not run simulations.
 %
 %   See also: Launcher
 %   
@@ -13,25 +14,30 @@ clc
 
 %% Parameters
 
+% directory to save the results
 outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/stability of geometric lattices/simulations';
 
-D=3; %number of dimensions [2 or 3]
+D=3;                        % number of dimensions [2 or 3]
+
+Nagents = 25:100;           % range of the number of agents in the lattice
+Ntimes=10;                  % How many simulations are launched
+
+seed=0;                     % seed for random generator, if negative it is not set
+
+LinkNumber=6*(D-1);         %number of links per agent in the lattice configuration (L)
+                            %If D=2 then 6=triangular lattice, 4=square lattice, 3=hexagonal lattice
+                            %If D=3 then 6=cubic lattice, 12=thetradic-octaedric lattice
+
+Rmax= (sqrt(5-D)+1)/2;      % maximum lenght of a link (R_a). Must be in [1; Rnext]
 
 % interaction function
 syms x
 a=0.5; c=24; f(x)= a/x^(c*2)-a/x^c %Lennard-Jones
 %f(x)= -(x-1) %linear
 
-epsilon = 10e-9; % value approximated to zero
+epsilon = 10e-9;            % value approximated to zero
 
-Nagents = 25:30;%[25:30];
-Ntimes = 2;
-
-seed=0;        % seed for random generator, if negative it is not set
-
-LinkNumber=6*(D-1);   %number of links (6=triangular lattice, 4=square lattice, 3=hexagonal lattice) (L)
-Rmax= (sqrt(5-D)+1)/2;    % maximum lenght of a link (R_a). Must be in [1; Rnext]
-
+%% Preallocate variables
 Nconfig=length(Nagents);
 rigidity = nan(Nconfig,Ntimes);
 equilibrium = nan(Nconfig,Ntimes);
@@ -81,10 +87,10 @@ for conf=1:Nconfig
         xvec = reshape(X',[],1);    % stack vector of positions
         rvec = reshape(R',[],1);    % stack vector of relative positions
         
-        d=vecnorm(R,2,2);   %vector of distances
-        Rhat=R./d;          %unit vectors of relative positions
+        d=vecnorm(R,2,2);           %vector of distances
+        Rhat=R./d;                  %unit vectors of relative positions
         
-        df=diff(f,x); % derivative of f
+        df=diff(f,x);               % derivative of f
         
         %cosines=Rhat*Rhat'; % scalar vectors between unit vectors
         
@@ -104,7 +110,6 @@ for conf=1:Nconfig
         gamma = eval((df(d).*d - f(d)).*d.^-3);
         diag_gamma=sparse(diag(gamma));
         for k=1:(D*n)
-            %dG(:,:,k)=diag(gamma) * diag(M(:,k));
             dG=sparse(diag_gamma * diag(M(:,k)));
             J(:,k)=kron(B * dG * B', eye(D)) * xvec;
         end
