@@ -113,7 +113,7 @@ for i_times=1:Nconfig
         x_f=squeeze(xVec(end,:,:));
         
         B = buildIncidenceMatrix(x_f, Rmax);
-        m(i_times,k_times)=size(B,2);
+        links(i_times,k_times)=size(B,2);
         M = buildRigidityMatrix(x_f, B);
         rigid_vec(i_times,k_times) = rank(M)==D*N-D*(D+1)/2;
         e_d_max_vec(i_times,k_times) = getMaxLinkLengthError(x_f, 1, 0, Rmax);   % max distance from the deisred link length.
@@ -270,7 +270,7 @@ if Nparameters==1
 
 elseif Nparameters==2
     % average over the initial conditions
-    m_mean = mean(m,2);
+    links_mean = mean(links,2);
     rigid_mean = mean(rigid_vec,2);
     e_d_max_mean = mean(e_d_max_vec,2);
     

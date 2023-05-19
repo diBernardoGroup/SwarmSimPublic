@@ -1,6 +1,7 @@
 function [xnew, vnew, Dynamics] = integrateAgents(x, v, input, Dynamics, deltaT)
 %
 %integrateAgents Integrates agents' dynamics with Euler–Maruyama method.
+%   You can modify this function to implement your own agents' dynamics.
 %   This function is called by Simulator.
 %
 %   Inputs:

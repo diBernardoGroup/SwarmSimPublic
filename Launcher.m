@@ -14,7 +14,7 @@ clear
 
 %% Parameters
 
-D=3;                        % number of dimensions [2 or 3]
+D=2;                        % number of dimensions [2 or 3]
 
 defaultParam;               % load default parameters
 
@@ -146,7 +146,7 @@ end
 if ~strcmp(LocalIntFunction.function, 'None') % LOCAL INTERACTION FUNCTION
     figure 
     hold on
-    fplot(@(alfa) localInteractionForce(alfa, LinkNumber),[-pi/LinkNumber, pi/LinkNumber])
+    fplot(@(alfa) localInteractionForce(zeros(1,D), [cos(alfa),sin(alfa)], LocalIntFunction),[-pi/LinkNumber, pi/LinkNumber])
     plot([0], [0], 'r.','MarkerSize', 30)
     ylim([-1.2 1.2])
     xlim([-pi/LinkNumber pi/LinkNumber])

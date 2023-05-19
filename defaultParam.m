@@ -18,6 +18,7 @@ outputDir='';
 N=25;                      %number of agents (N)
 LinkNumber=6*(D-1);         %number of links (6=triangular lattice, 4=square lattice, 3=hexagonal lattice) (L)
 
+smoothing = false;          % smooth temporal data with moving average
 
 Rmax= (sqrt(5-D)+1)/2;      % maximum lenght of a link (R_a). Must be in [1; Rnext]
 delta=(Rmax-1) * 0.5;       % maximum displacement of the initial positions. delta<=(Rmax-1)/2 preserves all the links
@@ -45,8 +46,8 @@ Dynamics=struct('model','FirstOrder', 'sigma',0, 'vMax', inf);
 %% Global interaction function for long distance interactions
 % These parameters are used in globalInteractionForce.
 
-%GlobalIntFunction=struct('function','Lennard-Jones','parameters',[0.5, (D-1)*12], 'MaxSensingRadius', MaxSensingRadius, 'Gain', 1);
-GlobalIntFunction=struct('function','PowerLaw-FiniteCutoff','parameters',[1, Rmax], 'MaxSensingRadius', MaxSensingRadius, 'Gain', 0.5);
+GlobalIntFunction=struct('function','Lennard-Jones','parameters',[0.5, (D-1)*12], 'MaxSensingRadius', MaxSensingRadius, 'Gain', 1);
+%GlobalIntFunction=struct('function','PowerLaw-FiniteCutoff','parameters',[1, Rmax], 'MaxSensingRadius', MaxSensingRadius, 'Gain', 0.5);
 %GlobalIntFunction=struct('function','Spears','parameters', [2 35]);  %from Spears2004
 %GlobalIntFunction=struct('function','Morse','parameters',[0.2, 2]);
 %GlobalIntFunction=struct('function','Modified-LJ','parameters',[]);  %from Torquato2009
@@ -64,8 +65,6 @@ LocalIntFunction=struct('function','None', 'DistanceRange', [0, Rmax]);
 % set an optional rotation matrix to apply non-radial local forces 
 % normal intercations can be used to form square lattices (only in 2D)
 % LocalIntFunction.Rotation = [0 1; -1 0];  % 90deg rotation matrix (optional)
-
-smoothing = false;      % smooth temporal data with moving average
 
 
 

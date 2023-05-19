@@ -1,6 +1,7 @@
 function [f] = globalInteractionForce(x, IntFunction)
 %
 %globalInteractionForce computes the values of radial interaction function for all the neighbours of an agent.
+%   You can modify this function to implement your control algorithm.
 %
 %   [f] = globalInteractionForce(x, IntFunction)
 %

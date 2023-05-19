@@ -63,7 +63,7 @@ for rep=1:Ntimes
         % e_d_max(0)<= 2*delta
         
         B = buildIncidenceMatrix(x, Rmax);                      % incidence matrix
-        m(rep,i)=size(B,2);                                         % number of links
+        links(rep,i)=size(B,2);                                         % number of links
         M = buildRigidityMatrix(x, B);                          % rigidity matrix
         
         rigidity(rep,i) = rank(M)==D*N-D*(D+1)/2;                   % check infinitesimal rigidity
@@ -182,10 +182,10 @@ if outputDir
 end
 
 
-figure % m
-plotWithShade(timeInstants,mean(m), min(m), max(m), 'r', 0.2);
+figure % links
+plotWithShade(timeInstants,mean(links), min(links), max(links), 'r', 0.2);
 set(gca,'FontSize',14)
-ylabel('$m$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
+ylabel('$links$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
 xlabel('t', 'Interpreter','latex','FontSize',22)
 box
 grid
