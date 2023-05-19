@@ -14,20 +14,14 @@ clear
 
 %% Parameters
 
-D=3; %number of dimensions [2 or 3]
+D=3;                        %number of dimensions [2 or 3]
 
-defaultParam;   % load default parameters
+defaultParam;               % load default parameters
 
-N=8;
+Simulation.drawON=true;     % draw swarm during simulation (if N is large slows down the simulation)
 
-% avgSpeed0=1;
-% sigmaSpeed0=0.5;
 
-Simulation.drawON=true;    % draw swarm during simulation (if N is large slows down the simulation)
-
-smoothing = false;
-
-delta=0.1;
+delta=0.1;                  % maximum displacement of the initial positions. delta<=(Rmax-1)/2 preserves all the links
 
 %% Create Initial Conditions
 %rng(1,'twister'); % set the randomn seed to have reproducible results

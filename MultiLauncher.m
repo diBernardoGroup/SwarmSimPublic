@@ -20,16 +20,11 @@ D=3;                    % number of dimensions [2 or 3]
 
 defaultParam;           % load default parameters
 
-N=100;
+N=100;                  % number of agents
 
-% avgSpeed0=1;
-% sigmaSpeed0=0.5;
+delta=0.1;              % perturbation of the initial conditions
 
-smoothing = false;
-
-delta=0.1;
-
-seed=0;             % set the randomn seed to a non negative value to have reproducible results
+seed=0;                 % set the randomn seed to a non negative value to have reproducible results
 
 %% Preallocate
 timeInstants = 0:Simulation.deltaT:Simulation.Tmax;

@@ -1,7 +1,9 @@
 %
 %SequentialLauncher allows to set multiple values of the parameters and
-%   launch multiple simulations, from different intial conditions, for each configuration.
+%   launch multiple simulations, from different intial conditions, for each 
+%   configuration and analyse the steady state results.
 %   If multiple parameters are defined all the combinations are tested.
+%   If 1 or 2 parameters are varied the results are plotted. 
 %   It is used to study the effect of parameters on the system.
 %
 %   Notes:
