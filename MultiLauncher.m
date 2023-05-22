@@ -1,11 +1,14 @@
 %
-%StabilityAnalysis Set the parameters and launch multiple simulations from different initial conditions.
-%   Also robustness tests can be run, see AgentsRemoval, NoiseTest and dynamicLattice
+%MultiLauncher Set the parameters and launch multiple simulations from different initial conditions.
+%
+%   Notes:
+%       Running this script can take long time (up to hours)
+%       For better performances install the parallel computing toolbox
 %
 %   See also: Launcher, SequentialLauncher
 %
 %   Authors:    Andrea Giusti
-%   Date:       2022
+%   Date:       2023
 %
 
 %% Clear environment
@@ -15,22 +18,15 @@ clc
 
 %% Parameters
 
-Ntimes=4;              % How many simulations are launched for each configuration
+Ntimes=10;              % How many simulations are launched
 
-D=3;                    % number of dimensions [2 or 3]
+D=2;                    % number of dimensions [2 or 3]
 
 defaultParam;           % load default parameters
 
-N=100;
+delta=0.1;              % perturbation of the initial conditions
 
-% avgSpeed0=1;
-% sigmaSpeed0=0.5;
-
-smoothing = false;
-
-delta=0.1;
-
-seed=0;             % set the randomn seed to a non negative value to have reproducible results
+seed=0;                 % set the randomn seed to a non negative value to have reproducible results
 
 %% Preallocate
 timeInstants = 0:Simulation.deltaT:Simulation.Tmax;
@@ -56,6 +52,10 @@ for rep=1:Ntimes
     [xVec(rep,:,:,:)] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction);
     
     %% ANALYSIS
+    if smoothing
+        xVec = movmean(xVec,3);
+        xVec = movmean(xVec,3);
+    end
     
     % metrics
     for i=1:length(timeInstants) % for each time instant...
@@ -63,12 +63,12 @@ for rep=1:Ntimes
         
         e_d(rep,i) = getAvgLinkLengthError(x, 1, 0, Rmax);          % avg distance from the deisred link length
         e_d_max(rep,i) = getMaxLinkLengthError(x, 1, 0, Rmax);      % max distance from the deisred link length.
-        % e_d_max<=(Rmax-1)preserves all the links.
-        % e_d_max(0)<= 2*delta
+                                                                    % e_d_max<=(Rmax-1)preserves all the links.
+                                                                    % e_d_max(0)<= 2*delta
         
-        B = buildIncidenceMatrix(x, Rmax);                      % incidence matrix
-        m(rep,i)=size(B,2);                                         % number of links
-        M = buildRigidityMatrix(x, B);                          % rigidity matrix
+        B = buildIncidenceMatrix(x, Rmax);                          % incidence matrix
+        links(rep,i)=size(B,2);                                     % number of links
+        M = buildRigidityMatrix(x, B);                              % rigidity matrix
         
         rigidity(rep,i) = rank(M)==D*N-D*(D+1)/2;                   % check infinitesimal rigidity
     end
@@ -88,7 +88,7 @@ if outputDir
     save(fullfile(path, 'data'))
     
     fileID = fopen(fullfile(path, 'parameters.txt'),'wt');
-    fprintf(fileID,'StabilityAnalysis\n\n');
+    fprintf(fileID,'MultiLauncher\n\n');
     fprintf(fileID,'Date: %s\n',datestr(now, 'dd/mm/yy'));
     fprintf(fileID,'Time: %s\n\n',datestr(now, 'HH:MM'));
     fprintf(fileID,'Ntimes= %d\n\n',Ntimes);
@@ -135,10 +135,10 @@ if outputDir
     saveas(gcf,fullfile(path, 'x'),'png')
 end
 
-%     figure % RADIAL INTERACTION FUNCTION
+%     figure % GLOBAL INTERACTION FUNCTION
 %     hold on
 %     set(gca,'FontSize',14)
-%     fplot(@(x) RadialInteractionForce(x, RadialIntFunction),[0, 2], 'LineWidth', 2)
+%     fplot(@(x) globalInteractionForce(x, RadialIntFunction),[0, 2], 'LineWidth', 2)
 %     plot([1], [0], 'r.','MarkerSize', 30)
 %     yticks([-1:0.5:1])
 %     xticks([0:0.5:1, Rmax, 1.5:0.5:3])
@@ -150,9 +150,9 @@ end
 %     box on
 %     grid on
 
-%     figure % NORMAL INTERACTION FORCE
+%     figure % LOCAL INTERACTION FORCE
 %     hold on
-%     fplot(@(alfa) NormalInteractionForce(alfa, LinkNumber),[-pi/LinkNumber, pi/LinkNumber])
+%     fplot(@(alfa) localInteractionForce(alfa, LinkNumber),[-pi/LinkNumber, pi/LinkNumber])
 %     plot([0], [0], 'r.','MarkerSize', 30)
 %     ylim([-1.2 1.2])
 %     xlim([-pi/LinkNumber pi/LinkNumber])
@@ -186,13 +186,17 @@ if outputDir
 end
 
 
-figure % m
-plotWithShade(timeInstants,mean(m), min(m), max(m), 'r', 0.2);
+figure % links
+plotWithShade(timeInstants,mean(links), min(links), max(links), 'r', 0.2);
 set(gca,'FontSize',14)
-ylabel('$m$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
+ylabel('$links$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
 xlabel('t', 'Interpreter','latex','FontSize',22)
 box
 grid
+if outputDir
+    saveas(gcf,fullfile(path, 'links'))
+    saveas(gcf,fullfile(path, 'links'),'png')
+end
 
 figure % rigidity
 set(gca,'FontSize',14)

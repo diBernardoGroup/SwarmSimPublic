@@ -2,7 +2,7 @@
 %Launcher Set the parameters and launch a single simulation of the swarm.
 %   Also robustness tests can be run, see AgentsRemoval, NoiseTest and dynamicLattice
 %
-%   See also: BruteForceTuning, SequentialLauncher, StabilityAnalysis
+%   See also: MultiLauncher, SequentialLauncher
 %
 %   Authors:    Andrea Giusti and Gian Carlo Maffettone
 %   Date:       2022
@@ -14,20 +14,13 @@ clear
 
 %% Parameters
 
-D=3; %number of dimensions [2 or 3]
+D=2;                        % number of dimensions [2 or 3]
 
-defaultParam;   % load default parameters
+defaultParam;               % load default parameters
 
-N=8;
+Simulation.drawON=true;     % draw swarm during simulation (if N is large slows down the simulation)
 
-% avgSpeed0=1;
-% sigmaSpeed0=0.5;
-
-Simulation.drawON=true;    % draw swarm during simulation (if N is large slows down the simulation)
-
-smoothing = false;
-
-delta=0.3;
+delta=0.1;                  % maximum displacement of the initial positions. delta<=(Rmax-1)/2 preserves all the links
 
 %% Create Initial Conditions
 %rng(1,'twister'); % set the randomn seed to have reproducible results
@@ -59,6 +52,7 @@ timeInstants = 0:Simulation.deltaT:Simulation.Tmax;
 speed = vecnorm(vVec,2,3);
 theta = atan2(vVec(:,:,2), vVec(:,:,1));
 for i=1:length(timeInstants)-1
+    % angular velocity
     omega(i,:) = angleBetweenVectors(squeeze(vVec(i,:,:)),squeeze(vVec(i+1,:,:)))';
 end
 omega(length(timeInstants),:) = angleBetweenVectors(squeeze(vVec(length(timeInstants)-1,:,:)),squeeze(vVec(length(timeInstants),:,:)))';
@@ -74,7 +68,7 @@ for i=1:length(timeInstants) % for each time instant...
                                                             % e_d_max(0)<= 2*delta
     
     B = buildIncidenceMatrix(x, Rmax);                      % incidence matrix
-    m(i)=size(B,2);                                         % number of links
+    links(i)=size(B,2);                                     % number of links of the swarm
     M = buildRigidityMatrix(x, B);                          % rigidity matrix
     
     rigidity(i) = rank(M)==D*N-D*(D+1)/2;                   % check infinitesimal rigidity
@@ -109,35 +103,33 @@ if outputDir
     fprintf(fileID,'LocalIntFunction:\n');
     fprintStruct(fileID,LocalIntFunction)
     fprintf(fileID,'smoothing= %s\n',mat2str(smoothing));
+    fprintf(fileID,'delta= %.2f\n',delta);
     fclose(fileID);
 end
 
-% % SWARM
-% figure
-% if isfield(LocalIntFunction, 'DistanceRange')
-%     plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena);
-% else
-%     plotSwarmInit(x0, 0, inf, inf, Simulation.arena);
-% end
-% if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9]); end
-% if outputDir
-%     saveas(gcf, fullfile(path, 'trajectories'))
-%     saveas(gcf, fullfile(path, 'trajectories'),'png')
-% end
+% SWARM
+figure
+if isfield(LocalIntFunction, 'DistanceRange')
+    plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena);
+else
+    plotSwarmInit(x0, 0, inf, inf, Simulation.arena);
+end
+if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9]); end
+if outputDir
+    saveas(gcf, fullfile(path, 'trajectories'))
+    saveas(gcf, fullfile(path, 'trajectories'),'png')
+end
 
-if ~strcmp(GlobalIntFunction.function,'None') % RADIAL INTERACTION FUNCTION
+if ~strcmp(GlobalIntFunction.function,'None') % GLOBAL INTERACTION FUNCTION
     figure
     set(gcf,'Position',[100 500 560 420*0.6])
     hold on
-    fplot(@(x) RadialInteractionForce(x, GlobalIntFunction),[0, 2], 'LineWidth', 1.5)
+    fplot(@(x) globalInteractionForce(x, GlobalIntFunction),[0, 2], 'LineWidth', 1.5)
     plot([1], [0], 'r.','MarkerSize', 25)
     yticks([-1:2])
     xticks(sort([0:0.5:3,Rmax]))
-    %ylim([-0.2 1.2])
     ylim([-0.6, 2])
     grid on
-    %title('f_r(d)')
-    %xlabel('d')
     set(gca,'FontSize',14)
     ylabel('$f(z)$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
     xlabel('$z$', 'Interpreter','latex','FontSize',22)    
@@ -148,20 +140,21 @@ if ~strcmp(GlobalIntFunction.function,'None') % RADIAL INTERACTION FUNCTION
     end
 end
 
-%     figure % NORMAL INTERACTION FORCE
-%     hold on
-%     fplot(@(alfa) NormalInteractionForce(alfa, LinkNumber),[-pi/LinkNumber, pi/LinkNumber])
-%     plot([0], [0], 'r.','MarkerSize', 30)
-%     ylim([-1.2 1.2])
-%     xlim([-pi/LinkNumber pi/LinkNumber])
-%     yticks([-1 0 1])
-%     xticks([-pi/LinkNumber, 0, pi/LinkNumber])
-%     set(gca,'XTickLabel',{'-\pi/4','0','\pi/4'})
-%     grid on
-%     title('f_n(\theta)')
-%     xlabel('\theta')
-%     set(gca,'FontSize',14)
-
+if ~strcmp(LocalIntFunction.function, 'None') % LOCAL INTERACTION FUNCTION
+    figure 
+    hold on
+    fplot(@(alfa) localInteractionForce(zeros(1,D), [cos(alfa),sin(alfa)], LocalIntFunction),[-pi/LinkNumber, pi/LinkNumber])
+    plot([0], [0], 'r.','MarkerSize', 30)
+    ylim([-1.2 1.2])
+    xlim([-pi/LinkNumber pi/LinkNumber])
+    yticks([-1 0 1])
+    xticks([-pi/LinkNumber, 0, pi/LinkNumber])
+    set(gca,'XTickLabel',{'-\pi/4','0','\pi/4'})
+    grid on
+    title('f_n(\theta)')
+    xlabel('\theta')
+    set(gca,'FontSize',14)
+end
 
 figure % SPEED and ANGULAR VELOCITY
 subplot(2,4,[1 2 3])
@@ -204,21 +197,21 @@ end
 % saveas(gcf,fullfile(path, 'scatter_plot'),'png')
 % end
 
-% figure % SCATTER PLOT - NORMALIZED SPEED and ANGULAR VELOCITY
-% normalized_speed=speed./median(speed);
-% s=scatterhist(normalized_speed(:),abs(omega(:)), 'Location','NorthEast','Direction','out');
-% xlabel(s,'speed / agent median speed')
-% ylabel(s,'ang. vel. [rad/s]')
-% s(1).YAxisLocation = 'left';
-% s(1).XAxisLocation = 'bottom';
-% s(2).Position = [0.1    0.82   0.7    0.125];
-% s(3).Position = [0.82   0.1    0.125    0.7];
-% s(1).Position(3) = 0.7;
-% s(1).Position(4) = 0.7;
-% if outputDir
-% saveas(gcf,fullfile(path, 'scatter_plot_normalised'))
-% saveas(gcf,fullfile(path, 'scatter_plot_normalised'),'png')
-% end
+figure % SCATTER PLOT - NORMALIZED SPEED and ANGULAR VELOCITY
+normalized_speed=speed./median(speed);
+s=scatterhist(normalized_speed(:),abs(omega(:)), 'Location','NorthEast','Direction','out');
+xlabel(s,'speed / agent median speed')
+ylabel(s,'ang. vel. [rad/s]')
+s(1).YAxisLocation = 'left';
+s(1).XAxisLocation = 'bottom';
+s(2).Position = [0.1    0.82   0.7    0.125];
+s(3).Position = [0.82   0.1    0.125    0.7];
+s(1).Position(3) = 0.7;
+s(1).Position(4) = 0.7;
+if outputDir
+saveas(gcf,fullfile(path, 'scatter_plot_normalised'))
+saveas(gcf,fullfile(path, 'scatter_plot_normalised'),'png')
+end
 
 figure % e_d_max
 set(gca,'FontSize',14)
@@ -228,10 +221,6 @@ hold on
 line=plot(timeInstants, e_d_max, 'b');
 yline(Rmax-1,'--','LineWidth',2)
 yticks(sort([0:0.1:1, Rmax-1]))
-%set(gca,'YTickLabel',{[0:0.1:0.3], 'R_a-R', [0.4:0.1:1]})
-%title('$e_{d,max}$', 'Interpreter','latex','FontSize',22)
-%title('$\max_{i\in\mathcal{E}} |\Vert \mathbf{r}_{i} \Vert - R |$', 'Interpreter','latex','FontSize',22)
-%legend([line],{'$e$'},'Interpreter','latex','FontSize',22)
 ylabel('$e$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
 xlabel('t', 'Interpreter','latex','FontSize',22)
 box
@@ -241,13 +230,17 @@ if outputDir
     saveas(gcf,fullfile(path, 'e_d_max'),'png')
 end
 
-figure % m
-plot(timeInstants,m)
-title('m', 'Interpreter','latex','FontSize',22)
+figure % links
+plot(timeInstants,links)
+title('links', 'Interpreter','latex','FontSize',22)
 xlabel('t', 'Interpreter','latex','FontSize',22)
 set(gca,'FontSize',14)
 box
 grid
+if outputDir
+    saveas(gcf,fullfile(path, 'links'))
+    saveas(gcf,fullfile(path, 'links'),'png')
+end
 
 figure % rigidity
 set(gca,'FontSize',14)
@@ -263,3 +256,4 @@ if outputDir
     saveas(gcf,fullfile(path, 'rigidity'))
     saveas(gcf,fullfile(path, 'rigidity'),'png')
 end
+

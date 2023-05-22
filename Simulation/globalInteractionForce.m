@@ -1,22 +1,27 @@
-function [f] = RadialInteractionForce(x, IntFunction)
+function [f] = globalInteractionForce(x, IntFunction)
 %
-%RadialInteractionForce computes the values of radial interaction function for all the neighbours of an agent.
+%globalInteractionForce computes the values of radial interaction function for all the neighbours of an agent.
+%   You can modify this function to implement your control algorithm.
 %
-%   [f] = RadialInteractionForce(x, IntFunction)
+%   [f] = globalInteractionForce(x, IntFunction)
 %
 %   Inputs:
-%       x are the distances between the agent and all its neighbours (vector)
-%       IntFunction describes the interaction function and its parameters (struct)
+%       x are the distances between the agent and all its neighbours        (vector)
+%       IntFunction describes the interaction function and its parameters   (struct)
 %
 %   Outputs:
 %       f are the values of radial interaction function for all the neighbours of an agent (vector)
 %
-%   See also: NormalInteractionForce, VFcontroller
+%   See also: localInteractionForce, VFcontroller
 %
 %   Authors:    Andrea Giusti and Gian Carlo Maffettone
 %   Date:       2022
 %
 
+arguments
+    x               double
+    IntFunction     struct
+end
 
 %% evaluate radial interaction function
 switch IntFunction.function

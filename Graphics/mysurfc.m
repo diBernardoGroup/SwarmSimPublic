@@ -23,6 +23,14 @@ function [splot,lplot] = mysurfc(x_vec,y_vec,z,level,curveLengthTol)
 %   Date:       2022
 %
 
+arguments
+    x_vec   (1,:)   double
+    y_vec   (1,:)   double
+    z               double 
+    level           double = 0
+    curveLengthTol  double = 0.6
+end
+
 levelset=contourc(x_vec, y_vec, z', [level level]);
 nanindex=find(levelset(1,:)==level & floor(levelset(2,:)) == levelset(2,:));
 levelset(1,nanindex)=nan;
@@ -42,7 +50,7 @@ shading interp
 view(2)
 hold on
 lplot=plot3(newlevelset(1,:),newlevelset(2,:),10*ones(length(newlevelset),1),'black-','LineWidth', 1);
-caxis([0 1.5*level])
+caxis([0 1.5*level]);
 colorbar;
 
 if isempty(lplot); lplot=plot(nan,'black-','LineWidth', 1); end
