@@ -20,7 +20,7 @@ clc
 
 Ntimes=10;              % How many simulations are launched
 
-D=3;                    % number of dimensions [2 or 3]
+D=2;                    % number of dimensions [2 or 3]
 
 defaultParam;           % load default parameters
 
@@ -63,12 +63,12 @@ for rep=1:Ntimes
         
         e_d(rep,i) = getAvgLinkLengthError(x, 1, 0, Rmax);          % avg distance from the deisred link length
         e_d_max(rep,i) = getMaxLinkLengthError(x, 1, 0, Rmax);      % max distance from the deisred link length.
-        % e_d_max<=(Rmax-1)preserves all the links.
-        % e_d_max(0)<= 2*delta
+                                                                    % e_d_max<=(Rmax-1)preserves all the links.
+                                                                    % e_d_max(0)<= 2*delta
         
-        B = buildIncidenceMatrix(x, Rmax);                      % incidence matrix
-        links(rep,i)=size(B,2);                                         % number of links
-        M = buildRigidityMatrix(x, B);                          % rigidity matrix
+        B = buildIncidenceMatrix(x, Rmax);                          % incidence matrix
+        links(rep,i)=size(B,2);                                     % number of links
+        M = buildRigidityMatrix(x, B);                              % rigidity matrix
         
         rigidity(rep,i) = rank(M)==D*N-D*(D+1)/2;                   % check infinitesimal rigidity
     end
@@ -193,6 +193,10 @@ ylabel('$links$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAli
 xlabel('t', 'Interpreter','latex','FontSize',22)
 box
 grid
+if outputDir
+    saveas(gcf,fullfile(path, 'links'))
+    saveas(gcf,fullfile(path, 'links'),'png')
+end
 
 figure % rigidity
 set(gca,'FontSize',14)

@@ -107,18 +107,18 @@ if outputDir
     fclose(fileID);
 end
 
-% % SWARM
-% figure
-% if isfield(LocalIntFunction, 'DistanceRange')
-%     plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena);
-% else
-%     plotSwarmInit(x0, 0, inf, inf, Simulation.arena);
-% end
-% if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9]); end
-% if outputDir
-%     saveas(gcf, fullfile(path, 'trajectories'))
-%     saveas(gcf, fullfile(path, 'trajectories'),'png')
-% end
+% SWARM
+figure
+if isfield(LocalIntFunction, 'DistanceRange')
+    plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena);
+else
+    plotSwarmInit(x0, 0, inf, inf, Simulation.arena);
+end
+if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9]); end
+if outputDir
+    saveas(gcf, fullfile(path, 'trajectories'))
+    saveas(gcf, fullfile(path, 'trajectories'),'png')
+end
 
 if ~strcmp(GlobalIntFunction.function,'None') % GLOBAL INTERACTION FUNCTION
     figure
@@ -128,11 +128,8 @@ if ~strcmp(GlobalIntFunction.function,'None') % GLOBAL INTERACTION FUNCTION
     plot([1], [0], 'r.','MarkerSize', 25)
     yticks([-1:2])
     xticks(sort([0:0.5:3,Rmax]))
-    %ylim([-0.2 1.2])
     ylim([-0.6, 2])
     grid on
-    %title('f_r(d)')
-    %xlabel('d')
     set(gca,'FontSize',14)
     ylabel('$f(z)$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
     xlabel('$z$', 'Interpreter','latex','FontSize',22)    
@@ -200,21 +197,21 @@ end
 % saveas(gcf,fullfile(path, 'scatter_plot'),'png')
 % end
 
-% figure % SCATTER PLOT - NORMALIZED SPEED and ANGULAR VELOCITY
-% normalized_speed=speed./median(speed);
-% s=scatterhist(normalized_speed(:),abs(omega(:)), 'Location','NorthEast','Direction','out');
-% xlabel(s,'speed / agent median speed')
-% ylabel(s,'ang. vel. [rad/s]')
-% s(1).YAxisLocation = 'left';
-% s(1).XAxisLocation = 'bottom';
-% s(2).Position = [0.1    0.82   0.7    0.125];
-% s(3).Position = [0.82   0.1    0.125    0.7];
-% s(1).Position(3) = 0.7;
-% s(1).Position(4) = 0.7;
-% if outputDir
-% saveas(gcf,fullfile(path, 'scatter_plot_normalised'))
-% saveas(gcf,fullfile(path, 'scatter_plot_normalised'),'png')
-% end
+figure % SCATTER PLOT - NORMALIZED SPEED and ANGULAR VELOCITY
+normalized_speed=speed./median(speed);
+s=scatterhist(normalized_speed(:),abs(omega(:)), 'Location','NorthEast','Direction','out');
+xlabel(s,'speed / agent median speed')
+ylabel(s,'ang. vel. [rad/s]')
+s(1).YAxisLocation = 'left';
+s(1).XAxisLocation = 'bottom';
+s(2).Position = [0.1    0.82   0.7    0.125];
+s(3).Position = [0.82   0.1    0.125    0.7];
+s(1).Position(3) = 0.7;
+s(1).Position(4) = 0.7;
+if outputDir
+saveas(gcf,fullfile(path, 'scatter_plot_normalised'))
+saveas(gcf,fullfile(path, 'scatter_plot_normalised'),'png')
+end
 
 figure % e_d_max
 set(gca,'FontSize',14)
@@ -224,10 +221,6 @@ hold on
 line=plot(timeInstants, e_d_max, 'b');
 yline(Rmax-1,'--','LineWidth',2)
 yticks(sort([0:0.1:1, Rmax-1]))
-%set(gca,'YTickLabel',{[0:0.1:0.3], 'R_a-R', [0.4:0.1:1]})
-%title('$e_{d,max}$', 'Interpreter','latex','FontSize',22)
-%title('$\max_{i\in\mathcal{E}} |\Vert \mathbf{r}_{i} \Vert - R |$', 'Interpreter','latex','FontSize',22)
-%legend([line],{'$e$'},'Interpreter','latex','FontSize',22)
 ylabel('$e$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
 xlabel('t', 'Interpreter','latex','FontSize',22)
 box
@@ -244,6 +237,10 @@ xlabel('t', 'Interpreter','latex','FontSize',22)
 set(gca,'FontSize',14)
 box
 grid
+if outputDir
+    saveas(gcf,fullfile(path, 'links'))
+    saveas(gcf,fullfile(path, 'links'),'png')
+end
 
 figure % rigidity
 set(gca,'FontSize',14)
@@ -259,3 +256,4 @@ if outputDir
     saveas(gcf,fullfile(path, 'rigidity'))
     saveas(gcf,fullfile(path, 'rigidity'),'png')
 end
+

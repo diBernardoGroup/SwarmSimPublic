@@ -14,8 +14,10 @@ clc
 
 %% Parameters
 
-% directory to save the results
-outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/stability of geometric lattices/simulations';
+% directory to save the results. Set outputDir='' to prevent automatic saving.
+outputDir='./simulations';
+%outputDir='';
+
 
 D=3;                        % number of dimensions [2 or 3]
 
