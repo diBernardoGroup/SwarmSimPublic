@@ -12,10 +12,14 @@ close all
 clear
 clc
 
+%% Add subfolders to the Matlab path
+current_folder = fileparts(which('defaultParam'));
+addpath(genpath(current_folder));
+
 %% Parameters
 
 % directory to save the results. Set outputDir='' to prevent automatic saving.
-outputDir='./simulations';
+outputDir='./Output';
 %outputDir='';
 
 

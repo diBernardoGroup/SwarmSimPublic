@@ -12,7 +12,7 @@
 
 % Directory to save the results of the simulations.
 % Set outputDir='' to prevent automatic saving.
-outputDir='./simulations';
+outputDir='./Output';
 %outputDir='';
 
 N=100;                      %number of agents (N)
@@ -69,4 +69,7 @@ LocalIntFunction=struct('function','None', 'DistanceRange', [0, Rmax]);
 % LocalIntFunction.Rotation = [0 1; -1 0];  % 90deg rotation matrix (optional)
 
 
+%% Add subfolders to the Matlab path
+current_folder = fileparts(which('defaultParam'));
+addpath(genpath(current_folder));
 
