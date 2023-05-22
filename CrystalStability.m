@@ -149,7 +149,7 @@ for conf=1:Nconfig
     % print a sample config for various number of agents
     if ismember(conf, round(linspace(1,Nconfig,24)))
         nexttile
-        plotSwarmInit(X,N,0,1.2)
+        plotSwarmInit(X,N,0,1.2);
         set(gca,'YTickLabel',[]);
         set(gca,'XTickLabel',[]);
         drawnow
