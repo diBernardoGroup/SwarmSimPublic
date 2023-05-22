@@ -13,7 +13,7 @@ Features:
   - Extensive simulations to study the effects of the parameters (see SequentialLauncher.m).
   - Local stability analysis through linearization (see CrystalStability).
   - Interface with Robotarium code to perform advanced simulations and real life experiments (see RobotariumSimulator). 
-    For more details and to use the Robotarium refer to https://www.robotarium.gatech.edu.
+    For more details refer to https://www.robotarium.gatech.edu.
   - Plots to visualise the simulation and the metrics.
   - Automatic save the results of the simulations.
 
