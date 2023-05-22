@@ -17,16 +17,16 @@ Features:
   - Plots to visualise the simulation and the metrics.
   - Automatic save the results of the simulations.
 
-This project implements the algorithms described in [Giusti2022] (see Release v1) and [Giusti2023]. In the Media folder, there is a video supplement for [Giusti2022].
+This project implements the algorithms described in [Giusti2022] (see [SwarmSimV1](https://github.com/diBernardoGroup/SwarmSimPublic/releases/tag/v1)) and [Giusti2023]. In the Media folder, there is a video supplement for [Giusti2022].
 
-For information contact andrea.giusti@unina.it.
+For more information contact andrea.giusti@unina.it.
 
 Copyrights: If you use this code for research purposes and want to mention it in one of your publications, please cite [Giusti2022].
 
 Versions:
-  - V2 - Authors: Andrea Giusti. Date: 2023
-  - V1 - Authors: Andrea Giusti and Gian Carlo Maffettone. Date: 2022
+  - [V2](https://github.com/diBernardoGroup/SwarmSimPublic/releases/tag/v2) - Authors: Andrea Giusti. Date: 2023
+  - [V1](https://github.com/diBernardoGroup/SwarmSimPublic/releases/tag/v1) - Authors: Andrea Giusti and Gian Carlo Maffettone. Date: 2022
 
 References:
-  - [Giusti2023] Giusti, A., Coraggio, M., & di Bernardo, M. (2023). Local convergence of multi-agent systems towards triangular patterns. arXiv preprint arXiv:2303.11865.
-  - [Giusti2022] Giusti, A., Maffettone, G. C., Fiore, D., Coraggio, M., & di Bernardo, M. (2022). Distributed control for geometric pattern formation of large-scale multirobot systems. arXiv preprint arXiv:2207.14567.
+  - \[[Giusti2023](https://arxiv.org/abs/2303.11865)\] Giusti, A., Coraggio, M., & di Bernardo, M. (2023). Local convergence of multi-agent systems towards triangular patterns. arXiv preprint arXiv:2303.11865.
+  - \[[Giusti2022](https://arxiv.org/abs/2207.14567)\] Giusti, A., Maffettone, G. C., Fiore, D., Coraggio, M., & di Bernardo, M. (2022). Distributed control for geometric pattern formation of large-scale multirobot systems. arXiv preprint arXiv:2207.14567.
