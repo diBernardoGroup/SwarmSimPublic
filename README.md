@@ -28,5 +28,5 @@ Versions:
   - [V1](https://github.com/diBernardoGroup/SwarmSimPublic/releases/tag/v1) - Authors: Andrea Giusti and Gian Carlo Maffettone. Date: 2022
 
 References:
-  - \[[Giusti2023](https://arxiv.org/abs/2303.11865)\] Giusti, A., Coraggio, M., & di Bernardo, M. (2023). Local convergence of multi-agent systems towards triangular patterns. arXiv preprint arXiv:2303.11865.
-  - \[[Giusti2022](https://arxiv.org/abs/2207.14567)\] Giusti, A., Maffettone, G. C., Fiore, D., Coraggio, M., & di Bernardo, M. (2022). Distributed control for geometric pattern formation of large-scale multirobot systems. arXiv preprint arXiv:2207.14567.
+  - \[[Giusti2023](https://ieeexplore.ieee.org/abstract/document/10160116)\] Giusti, A., Coraggio, M., & di Bernardo, M. (2023). Local Convergence of Multi-Agent Systems Toward Rigid Lattices. IEEE Control Systems Letters. DOI:10.1109/LCSYS.2023.3289060.
+  - \[[Giusti2022](https://arxiv.org/abs/2207.14567)\] Giusti, A., Maffettone, G. C., Fiore, D., Coraggio, M., & di Bernardo, M. (2022). Distributed Control for Geometric Pattern Formation of Large-Scale Multirobot Systems. arXiv preprint arXiv:2207.14567.
