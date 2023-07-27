@@ -24,8 +24,9 @@ For more information contact andrea.giusti@unina.it.
 Copyrights: If you use this code for research purposes and want to mention it in one of your publications, please cite [Giusti2022].
 
 Versions:
-  - [V2](https://github.com/diBernardoGroup/SwarmSimPublic/releases/tag/v2) - Authors: Andrea Giusti. Date: 2023
-  - [V1](https://github.com/diBernardoGroup/SwarmSimPublic/releases/tag/v1) - Authors: Andrea Giusti and Gian Carlo Maffettone. Date: 2022
+  - [V2.0](https://github.com/diBernardoGroup/SwarmSimPublic/releases/tag/v2) - Authors: Andrea Giusti. Date: 2023
+  - [V1.1](https://github.com/diBernardoGroup/SwarmSimPublic/releases/tag/v1.1) - Authors: Andrea Giusti and Gian Carlo Maffettone. Date: 2023
+  - [V1.0](https://github.com/diBernardoGroup/SwarmSimPublic/releases/tag/v1) - Authors: Andrea Giusti and Gian Carlo Maffettone. Date: 2022
 
 References:
   - \[[Giusti2023](https://ieeexplore.ieee.org/abstract/document/10160116)\] Giusti, A., Coraggio, M., & di Bernardo, M. (2023). Local Convergence of Multi-Agent Systems Toward Rigid Lattices. IEEE Control Systems Letters. DOI:10.1109/LCSYS.2023.3289060.
