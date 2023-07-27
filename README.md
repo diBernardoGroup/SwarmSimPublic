@@ -17,7 +17,7 @@ Features:
   - Plots to visualise the simulation and the metrics.
   - Automatic save the results of the simulations.
 
-This project implements the algorithms described in [Giusti2022] (see [SwarmSimV1](https://github.com/diBernardoGroup/SwarmSimPublic/releases/tag/v1)) and [Giusti2023]. In the Media folder, there is a video supplement for [Giusti2022].
+This project implements the algorithms described in [Giusti2022] (see [SwarmSimV1](https://github.com/diBernardoGroup/SwarmSimPublic/tree/SwarmSimV1) ) and [Giusti2023]. In the Media folder, there is a video supplement for [Giusti2022].
 
 For more information contact andrea.giusti@unina.it.
 
