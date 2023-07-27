@@ -24,7 +24,7 @@ For more information contact andrea.giusti@unina.it.
 Copyrights: If you use this code for research purposes and want to mention it in one of your publications, please cite [Giusti2022].
 
 Versions:
-  - [V1.1](https://github.com/diBernardoGroup/SwarmSimPublic/releases/tag/v1) - Authors: Andrea Giusti and Gian Carlo Maffettone. Date: 2023
+  - [V1.1](https://github.com/diBernardoGroup/SwarmSimPublic/releases/tag/v1.1) - Authors: Andrea Giusti and Gian Carlo Maffettone. Date: 2023
   - [V1.0](https://github.com/diBernardoGroup/SwarmSimPublic/releases/tag/v1) - Authors: Andrea Giusti and Gian Carlo Maffettone. Date: 2022
     
 For more advanced features checkout the current version of [SwarmSim](https://github.com/diBernardoGroup/SwarmSimPublic/tree/main).
