@@ -20,7 +20,7 @@ clc
 
 %% Parameters
 
-Ntimes=10; % How many simulations are launched for each configuration
+Ntimes=4; % How many simulations are launched for each configuration
 
 defaultParam;   % load default parameters
 
@@ -31,8 +31,8 @@ seed=0;        % seed for random generator, if negative it is not set
 % all the modified parameters must have the same number of values
 % the values specified here overwrite the default ones
 % IntFunctionStruct cannot be modified
-parameters.names={'initRadius'};
-parameters.values={[sqrt(25/25) sqrt(50/25) sqrt(100/25)]};
+parameters.names={'sigma_actuation'};
+parameters.values={[0:0.25:1]};
 
 
 %% Preallocate
@@ -82,7 +82,7 @@ for i_times=1:Nconfig
     tic
     parfor k_times=1:Ntimes
         x0=squeeze(x0Data(k_times,:,:));
-        [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, finalGNormal, stopTime, xVec] = Simulator(x0, LinkNumber, G_radial, G_normal, regularity_thresh, compactness_thresh, Tmax, sigma, drawON, getMetrics, RadialIntFunction, AgentsRemoval, NoiseTest, MaxSensingRadius, alpha, beta, dynamicLattice, Rmax);
+        [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, finalGNormal, stopTime, xVec] = Simulator(x0, LinkNumber, G_radial, G_normal, regularity_thresh, compactness_thresh, Tmax, sigma_actuation, sigma_measure, compassBias, drawON, getMetrics, RadialIntFunction, AgentsRemoval, FaultyAgents, MaxSensingRadius, alpha, beta, dynamicLattice, Rmax);
 
         e_L(k_times)=final_e_L;
         e_theta(k_times)=final_e_theta;

@@ -79,7 +79,7 @@ for i_times= 1:length(G_r_vec)
             x0=squeeze(x0Data(k_times,:,:));
                 
             %Gr-Gn tuning
-            [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, finalGNormal, stopTime] = Simulator(x0, LinkNumber, G_r, G_n, regularity_thresh, compactness_thresh, Tmax, sigma, drawON, getMetrics, IntFunctionStruct, AgentsRemoval, NoiseTest, MaxSensingRadius, alpha, beta, dynamicLattice, Rmax);
+            [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, finalGNormal, stopTime] = Simulator(x0, LinkNumber, G_radial, G_normal, regularity_thresh, compactness_thresh, Tmax, sigma_actuation, sigma_measure, compassBias, drawON, getMetrics, RadialIntFunction, AgentsRemoval, FaultyAgents, MaxSensingRadius, alpha, beta, dynamicLattice, Rmax);
          
             %import data from the simulation
             e_theta(k_times) = final_e_theta;

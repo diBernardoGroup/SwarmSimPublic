@@ -20,7 +20,7 @@ function error = getAvgAngularErr_Spears(x, LinkNumber, Rmin, Rmax)
     
     N=size(x,1);                % number of agents
     refAngle=2*pi/LinkNumber;   % reference angle
-    error=0;                    % average angular error of the swarm [rad].
+    error=pi/LinkNumber;        % average angular error of the swarm [rad].
     
     edges=zeros(N*10,1);        % angles of the links of all the agents
     M=0;                        % number of edges, counting both (i,j) and (j,i)

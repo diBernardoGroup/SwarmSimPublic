@@ -27,4 +27,5 @@ function maxLinkLenErr = getMaxLinkLengthError(x, R, minSensingRadius, maxSensin
     
     maxLinkLenErr=max(length_errors)/R;
     
+    if isempty(maxLinkLenErr); maxLinkLenErr=nan; end
 end

@@ -1,4 +1,4 @@
-function [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, finalGNormal, stopTime, xVec] = Simulator(x0, LinkNumber, GainRadialDefault, GainNormalDefault, regularity_thresh, compactness_thresh, Tmax, sigma, drawON, getMetrics, IntFunctionStruct, AgentsRemoval, NoiseTest, MaxSensingRadius, alpha, beta, dynamicLattice, RMax)
+function [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, finalGNormal, stopTime, xVec] = Simulator(x0, LinkNumber, GainRadialDefault, GainNormalDefault, regularity_thresh, compactness_thresh, Tmax, sigma_actuation, sigma_measure, compassBias, drawON, getMetrics, IntFunctionStruct, AgentsRemoval, FaultyAgents, MaxSensingRadius, alpha, beta, dynamicLattice, RMax)
 %
 %Simulator Executes a complete simulation of the swarm.
 %   This function is called by a launcher script (Launcher, BruteForceTuning, ...).
@@ -16,7 +16,7 @@ function [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, final
 %       regularity_thresh is the threshold value for regularity metrics (e^*_theta) (scalar)
 %       compactness_thresh is the threshold value for compactness metrics (e^*_L) (scalar)
 %       Tmax is the maximum simulation time (scalar)
-%       sigma is the standard deviation of noise (scalar)
+%       sigma_actuation is the standard deviation of the actuation noise (scalar)
 %       drawON draw swarm during simulation (bool)
 %       getMetrics acquire metrics during the simulation (getMetrics=false
 %           discard settling times and stop times) (bool)
@@ -26,6 +26,7 @@ function [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, final
 %       alpha and beta are the adaptation gains for the adaptive control (scalar)
 %       dynamicLattice change lattice during the simulation (bool)
 %       AgentsRemoval randomly remove agents during the simulation (bool)
+%       sigma_measure is the standard deviation of the measure noise (scalar)
 %
 %   Outputs:
 %       T_r is the settling time (scalar)
@@ -49,7 +50,7 @@ assert(size(x0,2)==2, "x0 must be a Nx2 matrix")
 assert(regularity_thresh>0, "regularity_thresh must be a positive number")
 assert(compactness_thresh>0, "compactness_thresh must be a positive number")
 assert(Tmax>=0, "Tmax must be a non negative number")
-assert(sigma>=0, "sigma must be a non negative number")
+assert(sigma_actuation>=0, "sigma must be a non negative number")
 assert(MaxSensingRadius>=0, "MaxSensingRadius must be a non negative number")
 assert(islogical(drawON), "drawON must be a logical value")
 assert(islogical(getMetrics), "getMetrics must be a logical value")
@@ -71,7 +72,7 @@ end
 
 vMax = 5; % maximum speed of the agents
 
-RMax = 1.1;             % maximum distance of adjacent agents
+%RMax = 1.1;             % maximum distance of adjacent agents
 RMin = 0.6;             % minimum distance of adjacent agents
 SensingNumber = inf;    % max number of neighbours to interact with
 
@@ -84,10 +85,18 @@ if (InteractionFactor~=1); warning("InteractionFactor is NOT set to 1"); end
 
 deltaT = 0.01;      % forward Euler integration step
 deltaSample = 0.25; % time step for metrics acquisition
-screenTimes=[0 Tmax/2-deltaT Tmax/2 Tmax]; % specify time instants to get simulation frames
+%screenTimes=[0, 1, 2, 15]; % specify time instants to get simulation frames
+screenTimes=[]; % specify time instants to get simulation frames
+if AgentsRemoval
+    screenTimes=[0, Tmax/2-deltaT, Tmax/2, Tmax];
+end
 
 % steady state detection
-stopSamples=ceil(10/deltaSample);               % number of consecutive samples to detect steady state 
+stopTimeWindow = 20;                            % time window [s] to detect steady state from the metrics
+if AgentsRemoval
+    stopTimeWindow = 200;
+end
+stopSamples=ceil(stopTimeWindow/deltaSample);   % number of consecutive samples to detect steady state 
 regularity_ss_thresh=regularity_thresh/10;      % steady state detection threshold for the regularity metrics
 compactness_ss_thresh=compactness_thresh/10;    % steady state detection threshold for the compactness metrics
 
@@ -101,16 +110,21 @@ if strcmp(IntFunctionStruct.function,'Spears') && (LinkNumber==4 || LinkNumber =
     spin(1:2:N, 1)=0;
 end
 
-if AgentsRemoval
+if ~isempty(screenTimes)
     savedIndex = 1;
     xSaved = cell(length(screenTimes),1);
 end
 
+% select FaultyAgents
+if FaultyAgents
+    faultyFactor = 0.3;
+    FaultyAgentsIndex = randsample(size(x,1),ceil(size(x,1)*faultyFactor));
+end
 
 %% Preallocate variables
 count=0;                                    % sampling iteration
 TSample = 0:deltaSample:Tmax;               % sampling time instants
-xVec=nan([size(x0),size(TSample,1)+1]);         % positions of the swarm
+xVec=nan([size(x0),size(TSample,1)+1]);     % positions of the swarm
 e_L=nan(size(TSample,2),3);                 % compactness metrics of the swarm
 e_theta=nan(size(TSample,2),3);             % regularity metrics of the swarm
 G_normal_vec=nan(size(TSample,2),3);        % average, min, and max values of the normal gain
@@ -139,16 +153,24 @@ while t<=Tmax && ~stopCondition
     end
     
     % Compute Control Actions
-    [v, links, ~, G_radial, G_normal] = VFcontroller(x, G_radial, G_normal, min(RMax,MaxSensingRadius), RMin, SensingNumber, InteractionFactor, LinkNumber, deltaT, DeadZoneThresh, IntFunctionStruct, spin, MaxSensingRadius, alpha, beta);
+    [v, links, ~, G_radial, G_normal] = VFcontroller(x, G_radial, G_normal, min(RMax,MaxSensingRadius), RMin, SensingNumber, InteractionFactor, LinkNumber, deltaT, DeadZoneThresh, IntFunctionStruct, spin, MaxSensingRadius, alpha, beta, sigma_measure, compassBias);
 
+    % Simulate faulty agents
+    if t>Tmax/2-deltaT && FaultyAgents
+    %if t>2 && FaultyAgents
+        v(FaultyAgentsIndex,:)=zeros(size(v(FaultyAgentsIndex,:)));
+        spin(FaultyAgentsIndex)=zeros(size(spin(FaultyAgentsIndex)));
+    end
+    
     % Simulate First Order Dynamics
-    x = SingleIntegrator(x, v, deltaT, vMax, sigma);
+    x = SingleIntegrator(x, v, deltaT, vMax, sigma_actuation);
     
     if t>=TSample(count+1)
+        t=deltaSample*round(t/deltaSample);
         count= count+1;
              
         if getMetrics || t>Tmax-2
-            xVec(:,:,count+1)=x;
+            xVec(1:size(x,1),:,count+1)=x;
             
             linkError=abs((LinkNumber-links))/LinkNumber;
             e_L(count,:)=[mean(linkError), quantile(linkError, 0.1), quantile(linkError, 0.9)];
@@ -182,13 +204,14 @@ while t<=Tmax && ~stopCondition
         end
     end
     
-    if ismember(t,screenTimes) && AgentsRemoval
+    %if ismember(t,screenTimes) && AgentsRemoval
+    if ~isempty(screenTimes) && abs(t-screenTimes(min(savedIndex, length(screenTimes)))) < deltaT/2
         xSaved(savedIndex) = {x};
         savedIndex = savedIndex + 1;
-        %plotSwarm(x, [], t, MinSensingRadius,MaxSensingRadius, true, spin);
     end
     
     t=t+deltaT;
+    t=deltaT*round(t/deltaT);
 end
 
 % compute settling times
@@ -202,7 +225,7 @@ final_e_d = getAvgLinkLengthError(x, 1, RMin, RMax);
 
 %% PLOTS
 
-if drawON
+if drawON || AgentsRemoval
     plotSwarm(x,[],t-deltaT,RMin,RMax,false, spin);
      
     figure %METRICS
@@ -247,36 +270,30 @@ if drawON
     
 end
 
-if AgentsRemoval
-    figure
-    for i=1:length(xSaved)
-        subplot(1,length(xSaved),i)
-        axis('equal',[Min Max Min Max])
-        yticks([-10 -5 0 5 10])
-        xticks([-10 -5 0 5 10])
-        set(gca,'FontSize',14)
-        hold on
-        plotSwarm(cell2mat(xSaved(i)),[],screenTimes(i),RMin,RMax,false, ones(size(cell2mat(xSaved(i)),1),1) );
-    end
-    figure
-    for i=1:length(xSaved)
-        subplot(2,2,i)
-        axis('equal',[Min Max Min Max])
-        yticks([-10 -5 0 5 10])
-        xticks([-10 -5 0 5 10])
-        set(gca,'FontSize',14)
-        hold on
-        plotSwarm(cell2mat(xSaved(i)),[],screenTimes(i),RMin,RMax,false, ones(size(cell2mat(xSaved(i)),1),1) );
-    end
+if ~isempty(screenTimes)
+%     figure
+%     for i=1:length(xSaved)
+%         subplot(1,length(xSaved),i)
+%         axis('equal',[Min Max Min Max])
+%         yticks([-10 -5 0 5 10])
+%         xticks([-10 -5 0 5 10])
+%         set(gca,'FontSize',14)
+%         hold on
+%         plotSwarm(cell2mat(xSaved(i)),[],screenTimes(i),RMin,RMax,false, ones(size(cell2mat(xSaved(i)),1),1) );
+%     end
+%     figure
+%     for i=1:length(xSaved)
+%         subplot(2,2,i)
+%         axis('equal',[Min Max Min Max])
+%         yticks([-10 -5 0 5 10])
+%         xticks([-10 -5 0 5 10])
+%         set(gca,'FontSize',14)
+%         hold on
+%         plotSwarm(cell2mat(xSaved(i)),[],screenTimes(i),RMin,RMax,false, ones(size(cell2mat(xSaved(i)),1),1) );
+%     end
     for i=1:length(xSaved)
         figure
-        axis('equal',[Min Max Min Max])
-        yticks([-10 -5 0 5 10])
-        xticks([-10 -5 0 5 10])
-        set(gca,'FontSize',14)
-        hold on
-        plotSwarm(cell2mat(xSaved(i)),[],screenTimes(i),RMin,RMax,false, ones(size(cell2mat(xSaved(i)),1),1));
-        title('')
+        plotSwarmInit(cell2mat(xSaved(i)),screenTimes(i),RMin,RMax)
     end
 end
 

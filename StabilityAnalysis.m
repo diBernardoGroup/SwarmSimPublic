@@ -15,7 +15,7 @@ clc
 
 %% Parameters
 
-Ntimes=2;              % How many simulations are launched for each configuration
+Ntimes=10;              % How many simulations are launched for each configuration
 
 defaultParam;           % load default parameters
 
@@ -37,7 +37,7 @@ for rep=1:Ntimes
     x0 = x0+randCircle(N, delta);                       % perturbe initial conditions appling a random displacement
     
     %% Run Simulation
-    [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, finalGNormal, stopTime, xVec(rep,:,:,:)] = Simulator(x0, LinkNumber, G_radial, G_normal, regularity_thresh, compactness_thresh, Tmax, sigma, drawON, getMetrics, RadialIntFunction, AgentsRemoval, NoiseTest, MaxSensingRadius, alpha, beta, dynamicLattice, Rmax);
+    [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, finalGNormal, stopTime, xVec(rep,:,:,:)] = Simulator(x0, LinkNumber, G_radial, G_normal, regularity_thresh, compactness_thresh, Tmax, sigma_actuation, sigma_measure, compassBias, drawON, getMetrics, RadialIntFunction, AgentsRemoval, FaultyAgents, MaxSensingRadius, alpha, beta, dynamicLattice, Rmax);
     
     
     %% ANALYSIS

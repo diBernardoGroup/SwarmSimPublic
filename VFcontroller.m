@@ -1,4 +1,4 @@
-function [v, links, angErr, GainRadial, GainNormal] = VFcontroller(x, oldGainRadial, oldGainNormal, RMax, RMin, SensingNumber, InteractionFactor, LinkNumber, deltaT, DeadZoneThresh, IntFunctionStruct, spin, MaxSensingRadius, alpha, beta)
+function [v, links, angErr, GainRadial, GainNormal] = VFcontroller(x, oldGainRadial, oldGainNormal, RMax, RMin, SensingNumber, InteractionFactor, LinkNumber, deltaT, DeadZoneThresh, IntFunctionStruct, spin, MaxSensingRadius, alpha, beta, sigma_measure, compassBias)
 %
 %VFcontroller implements the virtual forces controller and computes the
 %   velocities (control input) of the agents.
@@ -91,7 +91,8 @@ assert(all(spin==0 | spin==1), "spin must be equal to 0 or 1")
         
         %% compute interactions with neighbours
         % compute the distances from the neighbours (||r_ij||)
-        distances=vecnorm(x(i,:)-xRand, 2, 2); 
+        distances = vecnorm(x(i,:)-xRand, 2, 2); 
+        distances = distances+randn(size(distances))*sigma_measure; % add measurement noise
         
         % Renormalize distances if using Spear'spin algorithm (sqaure or hexagonal lattice)
         if strcmp(IntFunctionStruct.function,'Spears') && (LinkNumber==4 || LinkNumber == 3)
@@ -105,6 +106,9 @@ assert(all(spin==0 | spin==1), "spin must be equal to 0 or 1")
         
         % compute angular errors (theta_ij^err)
         angErrNeigh = getAngularErrNeigh(x(i,:), 0, xNeighbours, LinkNumber);
+        angErrNeigh = angErrNeigh+randn(size(angErrNeigh)).*sigma_measure*pi/LinkNumber;   % add measurement noise i.i.d. on each angular measure
+        %angErrNeigh = angErrNeigh+randn()*sigma_measure*pi/LinkNumber;                      % add measurement noise i.i.d. on each agent
+        angErrNeigh = angErrNeigh+compassBias(i);                                           % add compass bias (misscalibration) constant for each agent
         
         % compute radial action (u_i,r)
         indices=find(distances > 0 & distances <= MaxSensingRadius);

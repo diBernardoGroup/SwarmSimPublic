@@ -6,8 +6,8 @@ function [xout, sout] = randomKill(x, s, killFactor)
 %   [xout, sout] = randomKill(x, s, killFactor)
 %
 %   Inputs:
-%       xout are the positions of the agents (Nx2 matrix)
-%       sout are the spin of the agents (vector)
+%       x are the positions of the agents (Nx2 matrix)
+%       s are the spin of the agents (vector)
 %       killFactor is the fraction of agents to delete (scalar [0,1])
 %
 %   Outputs:

@@ -17,16 +17,14 @@ clc
 
 defaultParam;   % load default parameters
 
-LinkNumber=4;   % number of links (6=triangular lattice, 4=square lattice, 3=hexagonal lattice) (L)
+Tmax=15;                % maximum simulation time (simulation is stopped earlier if steady state is reached)
 
-RadialIntFunction=struct('function','Lennard-Jones','parameters',[0.15, 5]);
-
-% control gains
-G_radial= 15;   % default value for square lattice 15 (G_r)
-G_normal = 8;   % default value for square lattice  8 (G_n)
-
-
-Tmax=30;    % maximum simulation time (simulation is stopped earlier if steady state is reached)
+% 
+% % control gains
+% G_radial= 15;   % default value for square lattice 15 (G_r)
+% G_normal = 8;   % default value for square lattice  8 (G_n)
+% 
+% Tmax=15;    % maximum simulation time (simulation is stopped earlier if steady state is reached)
 
 %output options
 drawON=true;        % draw swarm during simulation (if N is large slows down the simulation)
@@ -35,13 +33,15 @@ getMetrics=true;    % acquire metrics during the simulation (getMetrics=false di
 %% Create Initial Conditions
 %rng(1,'twister'); % set the randomn seed to have reproducible results
 
-x0=randCircle(N, 2);                 % initial conditions drawn from a uniform disc
+x0=randCircle(N, initRadius);        % initial conditions drawn from a uniform disc
+%d=5; x0=[randCircle(N/2, 2)+[-d,0]; randCircle(N/2, 2)+[d,0]];  % initial conditions drawn from 2 discs
+%d=3; x0=[randCircle(N/4, 2)+[d,d]; randCircle(N/4, 2)+[d,-d]; randCircle(N/4, 2)+[-d,-d]; randCircle(N/4, 2)+[-d,d]];  % initial conditions drawn from 4 discs
 %x0 = normrnd(0,0.1*sqrt(N),N,2);    % initial conditions drawn from a normal distribution
 %x0 = perfectLactice(N, LinkNumber); % initial conditions on a correct lattice
 
 
 %% Run Simulation
-[T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, finalGNormal, stopTime] = Simulator(x0, LinkNumber, G_radial, G_normal, regularity_thresh, compactness_thresh, Tmax, sigma, drawON, getMetrics, RadialIntFunction, AgentsRemoval, NoiseTest, MaxSensingRadius, alpha, beta, dynamicLattice, Rmax);
+[T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, finalGNormal, stopTime, xVec] = Simulator(x0, LinkNumber, G_radial, G_normal, regularity_thresh, compactness_thresh, Tmax, sigma_actuation, sigma_measure, compassBias, drawON, getMetrics, RadialIntFunction, AgentsRemoval, FaultyAgents, MaxSensingRadius, alpha, beta, dynamicLattice, Rmax);
 
 
 %% PLOTS
