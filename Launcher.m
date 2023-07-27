@@ -17,18 +17,9 @@ clc
 
 defaultParam;   % load default parameters
 
-Tmax=15;                % maximum simulation time (simulation is stopped earlier if steady state is reached)
-
-% 
-% % control gains
-% G_radial= 15;   % default value for square lattice 15 (G_r)
-% G_normal = 8;   % default value for square lattice  8 (G_n)
-% 
-% Tmax=15;    % maximum simulation time (simulation is stopped earlier if steady state is reached)
-
 %output options
 drawON=true;        % draw swarm during simulation (if N is large slows down the simulation)
-getMetrics=true;    % acquire metrics during the simulation (getMetrics=false discard settling times and stop times)
+
 
 %% Create Initial Conditions
 %rng(1,'twister'); % set the randomn seed to have reproducible results

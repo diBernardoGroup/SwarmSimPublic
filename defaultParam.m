@@ -12,11 +12,13 @@
 N=100;          %number of agents (N)
 LinkNumber=4;   %number of links (6=triangular lattice, 4=square lattice, 3=hexagonal lattice) (L)
 
-% descrption of the radial interaction function
+Tmax=100;       % maximum simulation time (simulation is stopped earlier if steady state is reached)
+
+% descrption of the radial interaction function (see RadialInteractionForce.m)
 RadialIntFunction=struct('function','Lennard-Jones','parameters',[0.15, 5]);
-%RadialIntFunction=struct('function','Spears','parameters', [2 35]);  %from Spears2004
+%RadialIntFunction=struct('function','Spears','parameters', [2 35]);            %from Spears2004
 %RadialIntFunction=struct('function','Morse','parameters',[0.2, 2]);
-%RadialIntFunction=struct('function','Modified-LJ','parameters',[]);  %from Torquato2009
+%RadialIntFunction=struct('function','Modified-LJ','parameters',[]);            %from Torquato2009
 
 % control gains
 G_radial= 15;   % default value for square lattice 15 (G_r)
@@ -30,12 +32,9 @@ beta = 0;
 regularity_thresh=0.2;   % threshold value for regularity metrics (e^*_theta)
 compactness_thresh=0.3;  % threshold value for compactness metrics (e^*_L)
 
-Tmax=200;                % maximum simulation time (simulation is stopped earlier if steady state is reached)
-
-MaxSensingRadius=inf;   % sensing radius of the agents (R_s)
-
 % Rmax= (sqrt(3)+1)/2;    % maximum lenght of a link (R_a). Must be in [1; sqrt(3)]
 Rmax= 1.1;              % maximum lenght of a link (R_a). Must be in [1; sqrt(3)]
+MaxSensingRadius=inf;   % sensing radius of the agents (R_s)
 
 delta=(Rmax-1) * 0.5;   % maximum displacement of the initial positions. delta<=(Rmax-1)/2 preserves all the links
 initRadius = sqrt(N/25);% radius initial circle

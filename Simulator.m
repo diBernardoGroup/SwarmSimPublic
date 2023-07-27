@@ -3,9 +3,10 @@ function [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, final
 %Simulator Executes a complete simulation of the swarm.
 %   This function is called by a launcher script (Launcher, BruteForceTuning, ...).
 %
-%   [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, finalGNormal, stopTime] =...
+%   [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, finalGNormal, stopTime, xVec] =...
 %   ... Simulator(x0, LinkNumber, GainRadialDefault, GainNormalDefault, regularity_thresh, compactness_thresh,...
-%   ... Tmax, sigma, drawON, getMetrics, IntFunctionStruct, AgentsRemoval, NoiseTest, MaxSensingRadius, alpha, beta, dynamicLattice)
+%   ... Tmax, sigma_actuation, sigma_measure, compassBias, drawON, getMetrics, IntFunctionStruct,...
+%   ... AgentsRemoval, FaultyAgents, MaxSensingRadius, alpha, beta, dynamicLattice, RMax)
 %
 %   Inputs:
 %       x0 are the initial positions of the agents (Nx2 matrix)
@@ -17,16 +18,20 @@ function [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, final
 %       compactness_thresh is the threshold value for compactness metrics (e^*_L) (scalar)
 %       Tmax is the maximum simulation time (scalar)
 %       sigma_actuation is the standard deviation of the actuation noise (scalar)
+%       sigma_measure is the standard deviation of the measure noise (scalar)
+%       compassBias is the bias on the angular measurements of each agent (vector)
 %       drawON draw swarm during simulation (bool)
 %       getMetrics acquire metrics during the simulation (getMetrics=false
 %           discard settling times and stop times) (bool)
 %       IntFunctionStruct description and parameters of the radial
 %           interaction function (struct)
+%       dynamicLattice change lattice during the simulation (bool)
+%       AgentsRemoval randomly remove agents during the simulation (bool)
+%       FaultyAgents randomly disable agents during the simulation (bool)
 %       MaxSensingRadius is the sensing radius of the agents (R_s)
 %       alpha and beta are the adaptation gains for the adaptive control (scalar)
 %       dynamicLattice change lattice during the simulation (bool)
-%       AgentsRemoval randomly remove agents during the simulation (bool)
-%       sigma_measure is the standard deviation of the measure noise (scalar)
+%       RMax maximum distance of adjacent agents (scalar)
 %
 %   Outputs:
 %       T_r is the settling time (scalar)
@@ -37,6 +42,7 @@ function [T_r, success, final_e_theta, final_e_L, final_e_d, finalGRadial, final
 %       finalGRadial final value of the radial gain (scalar)
 %       finalGNormal final value of the normal gain (scalar)
 %       stopTime final simulation instant (scalar)
+%       xVec positions of the agents at each simulation instant (3D matrix)
 %
 %   See also: Launcher, BruteForceTuning, SequentialLauncher
 %
@@ -72,7 +78,6 @@ end
 
 vMax = 5; % maximum speed of the agents
 
-%RMax = 1.1;             % maximum distance of adjacent agents
 RMin = 0.6;             % minimum distance of adjacent agents
 SensingNumber = inf;    % max number of neighbours to interact with
 
@@ -92,7 +97,7 @@ if AgentsRemoval
 end
 
 % steady state detection
-stopTimeWindow = 20;                            % time window [s] to detect steady state from the metrics
+stopTimeWindow = 10;                            % time window [s] to detect steady state from the metrics
 if AgentsRemoval
     stopTimeWindow = 200;
 end
