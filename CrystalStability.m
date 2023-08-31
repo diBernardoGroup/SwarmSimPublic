@@ -12,10 +12,16 @@ close all
 clear
 clc
 
+%% Add subfolders to the Matlab path
+current_folder = fileparts(which('defaultParam'));
+addpath(genpath(current_folder));
+
 %% Parameters
 
-% directory to save the results
-outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/stability of geometric lattices/simulations';
+% directory to save the results. Set outputDir='' to prevent automatic saving.
+outputDir='./Output';
+%outputDir='';
+
 
 D=3;                        % number of dimensions [2 or 3]
 
@@ -147,7 +153,7 @@ for conf=1:Nconfig
     % print a sample config for various number of agents
     if ismember(conf, round(linspace(1,Nconfig,24)))
         nexttile
-        plotSwarmInit(X,N,0,1.2)
+        plotSwarmInit(X,N,0,1.2);
         set(gca,'YTickLabel',[]);
         set(gca,'XTickLabel',[]);
         drawnow

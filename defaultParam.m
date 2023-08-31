@@ -12,8 +12,7 @@
 
 % Directory to save the results of the simulations.
 % Set outputDir='' to prevent automatic saving.
-%outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/stability of geometric lattices/simulations';
-outputDir='./simulations';
+outputDir='./Output';
 %outputDir='';
 
 N=100;                      %number of agents (N)
@@ -30,10 +29,10 @@ MaxSensingRadius=3;         % sensing radius of the agents (R_s)
 %% Simulation parameters
 % All these fields are mandatory
 Simulation=struct();
-Simulation.Tmax =   5;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
+Simulation.Tmax =   10;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
 Simulation.deltaT = 0.25;   % sampling time step
 Simulation.dT =     0.01;   % integration time step
-Simulation.arena =  3;      % size of the simulation window
+Simulation.arena =  7.5;    % size of the simulation window
 Simulation.drawON=false;    % draw swarm during simulation (if N is large slows down the simulation)
 Simulation.drawTraj=true;   % draw trajectories of the agents (if N is large slows down the simulation)
 Simulation.getMetrics=true; % acquire metrics during the simulation (getMetrics=false discard settling times and stop times)
@@ -65,9 +64,12 @@ GlobalIntFunction=struct('function','Lennard-Jones','parameters',[0.5, (D-1)*12]
 LocalIntFunction=struct('function','None', 'DistanceRange', [0, Rmax]);
 %LocalIntFunction=struct('function','None');
 
-% set an optional rotation matrix to apply non-radial local forces 
-% normal intercations can be used to form square lattices (only in 2D)
+% Set an optional rotation matrix to apply non-radial local forces.
+% Normal intercations can be used to form square lattices (only in 2D).
 % LocalIntFunction.Rotation = [0 1; -1 0];  % 90deg rotation matrix (optional)
 
 
+%% Add subfolders to the Matlab path
+current_folder = fileparts(which('defaultParam'));
+addpath(genpath(current_folder));
 

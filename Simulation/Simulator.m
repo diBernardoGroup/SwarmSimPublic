@@ -1,7 +1,7 @@
 function [xVec, uVec] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction)
 %
 %Simulator executes a complete simulation of the swarm.
-%   This function is called by a launcher script (Launcher, BruteForceTuning, ...).
+%   This function is called by a launcher script (Launcher, SequentialLauncher...).
 %
 %   [xVec, uVec] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction)
 %
