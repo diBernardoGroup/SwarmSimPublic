@@ -65,10 +65,9 @@ N=size(x,1);
 
 
 %% Preallocate variables
-count=0;                                        % sampling iteration
-TSample = 0:Simulation.deltaT:Simulation.Tmax;  % sampling time instants
-xVec=nan([size(TSample,1)+1,size(x0)]);         % positions of the swarm
-uVec=nan([size(TSample,1)+1,size(x0)]);         % inputs of the swarm
+TSample = [0:Simulation.deltaT:Simulation.Tmax]';  % sampling time instants
+xVec=nan([size(TSample,1),size(x0)]);         % positions of the swarm
+uVec=nan([size(TSample,1),size(x0)]);         % inputs of the swarm
 
 xVec(1,:,:)=x0;
 v=v0;
@@ -77,8 +76,9 @@ disp(['- Simulating ',num2str(N),' ',Dynamics.model, ' agents in ', num2str(size
 
 %% Run Simulation
 t=0;
+count=0;                                        % sampling iteration
 
-while t<=Simulation.Tmax
+while t<Simulation.Tmax
     
     % Compute Control Actions
     forces = VFcontroller(x, GlobalIntFunction, LocalIntFunction, Simulation.dT, Simulation.InteractionFactor);
@@ -87,6 +87,7 @@ while t<=Simulation.Tmax
     [x, v, Dynamics] = integrateAgents(x, v, forces, Dynamics, Simulation.dT);
     
     if t>=TSample(count+1)
+        t=Simulation.deltaT*round(t/Simulation.deltaT);
         count= count+1;
         
         xVec(count+1,:,:)=x;
@@ -105,6 +106,7 @@ while t<=Simulation.Tmax
     end
     
     t=t+Simulation.dT;
+    t=Simulation.dT*round(t/Simulation.dT);
 end
 
 %% PLOTS

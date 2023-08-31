@@ -25,11 +25,11 @@ delta=0.1;                  % maximum displacement of the initial positions. del
 %% Create Initial Conditions
 %rng(1,'twister'); % set the randomn seed to have reproducible results
 
-%x0=randCircle(N, 2, D);                 % initial conditions drawn from a uniform disc
+x0=randCircle(N, 2, D);                 % initial conditions drawn from a uniform disc
 %x0 = normrnd(0,0.1*sqrt(N),N,D);    % initial conditions drawn from a normal distribution
 %x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D); % initial conditions on a correct lattice
 %x0 = perfectLactice(N, LinkNumber, D) + randCircle(N, delta, D); % initial conditions on a deformed lattice
-x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D ) + randCircle(N, delta, D); % initial conditions on a deformed lattice
+%x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D ) + randCircle(N, delta, D); % initial conditions on a deformed lattice
 
 % speeds0 = abs(normrnd(avgSpeed0,sigmaSpeed0,N,1));
 % theta0 = 2*pi*rand(N,1)-pi;
@@ -76,7 +76,7 @@ end
 
 %% PLOTS
 
-% create folder, save data and parameters
+% create output folder, save data and parameters
 
 if outputDir
     counter=1;
@@ -212,48 +212,48 @@ if outputDir
 saveas(gcf,fullfile(path, 'scatter_plot_normalised'))
 saveas(gcf,fullfile(path, 'scatter_plot_normalised'),'png')
 end
-
-figure % e_d_max
-set(gca,'FontSize',14)
-set(0, 'DefaultFigureRenderer', 'painters');
-set(gcf,'Position',[100 100 560 420*0.6])
-hold on
-line=plot(timeInstants, e_d_max, 'b');
-yline(Rmax-1,'--','LineWidth',2)
-yticks(sort([0:0.1:1, Rmax-1]))
-ylabel('$e$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
-xlabel('t', 'Interpreter','latex','FontSize',22)
-box
-grid
-if outputDir
-    saveas(gcf,fullfile(path, 'e_d_max'))
-    saveas(gcf,fullfile(path, 'e_d_max'),'png')
-end
-
-figure % links
-plot(timeInstants,links)
-title('links', 'Interpreter','latex','FontSize',22)
-xlabel('t', 'Interpreter','latex','FontSize',22)
-set(gca,'FontSize',14)
-box
-grid
-if outputDir
-    saveas(gcf,fullfile(path, 'links'))
-    saveas(gcf,fullfile(path, 'links'),'png')
-end
-
-figure % rigidity
-set(gca,'FontSize',14)
-set(gcf,'Position',[100 100 560 420*0.6])
-hold on
-plot(timeInstants,rigidity,'r')
-axis([-inf inf -0.05 1.05])
-title('$\rho$', 'Interpreter','latex','FontSize',22)
-xlabel('t', 'Interpreter','latex','FontSize',22)
-box
-grid
-if outputDir
-    saveas(gcf,fullfile(path, 'rigidity'))
-    saveas(gcf,fullfile(path, 'rigidity'),'png')
-end
+ 
+% figure % e_d_max
+% set(gca,'FontSize',14)
+% set(0, 'DefaultFigureRenderer', 'painters');
+% set(gcf,'Position',[100 100 560 420*0.6])
+% hold on
+% line=plot(timeInstants, e_d_max, 'b');
+% yline(Rmax-1,'--','LineWidth',2)
+% yticks(sort([0:0.1:1, Rmax-1]))
+% ylabel('$e$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
+% xlabel('t', 'Interpreter','latex','FontSize',22)
+% box
+% grid
+% if outputDir
+%     saveas(gcf,fullfile(path, 'e_d_max'))
+%     saveas(gcf,fullfile(path, 'e_d_max'),'png')
+% end
+% 
+% figure % links
+% plot(timeInstants,links)
+% title('links', 'Interpreter','latex','FontSize',22)
+% xlabel('t', 'Interpreter','latex','FontSize',22)
+% set(gca,'FontSize',14)
+% box
+% grid
+% if outputDir
+%     saveas(gcf,fullfile(path, 'links'))
+%     saveas(gcf,fullfile(path, 'links'),'png')
+% end
+% 
+% figure % rigidity
+% set(gca,'FontSize',14)
+% set(gcf,'Position',[100 100 560 420*0.6])
+% hold on
+% plot(timeInstants,rigidity,'r')
+% axis([-inf inf -0.05 1.05])
+% title('$\rho$', 'Interpreter','latex','FontSize',22)
+% xlabel('t', 'Interpreter','latex','FontSize',22)
+% box
+% grid
+% if outputDir
+%     saveas(gcf,fullfile(path, 'rigidity'))
+%     saveas(gcf,fullfile(path, 'rigidity'),'png')
+% end
 

@@ -12,8 +12,8 @@
 
 % Directory to save the results of the simulations.
 % Set outputDir='' to prevent automatic saving.
-outputDir='./Output';
-%outputDir='';
+%outputDir='./Output';
+outputDir='';
 
 N=100;                      %number of agents (N)
 LinkNumber=6*(D-1);         %number of links per agent in the lattice configuration (L)
@@ -40,20 +40,20 @@ Simulation.getMetrics=true; % acquire metrics during the simulation (getMetrics=
 %% Dynamic model of the agents
 % These parameters are used in integrateAgents.
 
-Dynamics=struct('model','FirstOrder', 'sigma',0, 'vMax', inf);
+%Dynamics=struct('model','FirstOrder', 'sigma',0, 'vMax', inf);
 %Dynamics=struct('model','SecondOrder', 'sigma',0.1, 'vMax', inf);
 %Dynamics=struct('model','CoupledSDEs', 'rateSpeed', 1, 'avgSpeed', avgSpeed0, 'sigmaSpeed', 1, 'rateOmega', 1, 'sigmaOmega', @(x)2*max(1-x/3,0), 'omega', zeros(N,1));
-%Dynamics=struct('model','LevyWalk', 'alpha',0.005, 'sigma', 0.25);
+Dynamics=struct('model','LevyWalk', 'alpha',0.005, 'sigma', 0.25);
 
 %% Global interaction function for long distance interactions
 % These parameters are used in globalInteractionForce.
 
-GlobalIntFunction=struct('function','Lennard-Jones','parameters',[0.5, (D-1)*12], 'MaxSensingRadius', MaxSensingRadius, 'Gain', 1);
+%GlobalIntFunction=struct('function','Lennard-Jones','parameters',[0.5, (D-1)*12], 'MaxSensingRadius', MaxSensingRadius, 'Gain', 1);
 %GlobalIntFunction=struct('function','PowerLaw-FiniteCutoff','parameters',[1, Rmax], 'MaxSensingRadius', MaxSensingRadius, 'Gain', 0.5);
 %GlobalIntFunction=struct('function','Spears','parameters', [2 35]);  %from Spears2004
 %GlobalIntFunction=struct('function','Morse','parameters',[0.2, 2]);
 %GlobalIntFunction=struct('function','Modified-LJ','parameters',[]);  %from Torquato2009
-%GlobalIntFunction=struct('function','None');
+GlobalIntFunction=struct('function','None');
 
 %% Local interaction function for short distance interactions
 % These parameters are used in localInteractionForce.
@@ -61,8 +61,8 @@ GlobalIntFunction=struct('function','Lennard-Jones','parameters',[0.5, (D-1)*12]
 % plot the links between the agents.
 
 %LocalIntFunction=struct('function','Linear', 'LinkNumber',LinkNumber, 'DistanceRange', [0.6, 1.1], 'Gain', 1);
-LocalIntFunction=struct('function','None', 'DistanceRange', [0, Rmax]);
-%LocalIntFunction=struct('function','None');
+%LocalIntFunction=struct('function','None', 'DistanceRange', [0, Rmax]);
+LocalIntFunction=struct('function','None');
 
 % Set an optional rotation matrix to apply non-radial local forces.
 % Normal intercations can be used to form square lattices (only in 2D).
