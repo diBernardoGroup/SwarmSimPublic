@@ -75,7 +75,7 @@ xVec(1,:,:)=x0;
 v=v0;
 
 if Simulation.recordVideo
-    video = VideoWriter('./Output/video.avi');
+    video = VideoWriter('./Output/video','MPEG-4');
     video.FrameRate = 1/Simulation.deltaT;
     open(video);
     currFrame = getframe(gcf);
@@ -106,7 +106,7 @@ while t<Simulation.Tmax
         % plot swarm
         if Simulation.drawON
             cla
-            if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9]); end
+            if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
             if isfield(LocalIntFunction, 'DistanceRange')
                 plotSwarm(x, [], t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), false);
             else
@@ -134,7 +134,7 @@ end
 % plot swarm
 if Simulation.drawON
     cla
-    if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9]); end
+    if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
     if isfield(LocalIntFunction, 'DistanceRange')
         plotSwarm(squeeze(xVec(end,:,:)), [], t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), false);
     else
