@@ -15,7 +15,7 @@
 %outputDir='./Output';
 outputDir='';
 
-N=100;                      %number of agents (N)
+N=20;                      %number of agents (N)
 LinkNumber=6*(D-1);         %number of links per agent in the lattice configuration (L)
                             %If D=2 then 6=triangular lattice, 4=square lattice, 3=hexagonal lattice
                             %If D=3 then 6=cubic lattice, 12=thetradic-octaedric lattice
@@ -32,18 +32,23 @@ Simulation=struct();
 Simulation.Tmax =   10;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
 Simulation.deltaT = 0.25;   % sampling time step
 Simulation.dT =     0.01;   % integration time step
-Simulation.arena =  7.5;    % size of the simulation window
+Simulation.arena =  5;    % size of the simulation window
 Simulation.drawON=false;    % draw swarm during simulation (if N is large slows down the simulation)
 Simulation.drawTraj=true;   % draw trajectories of the agents (if N is large slows down the simulation)
+Simulation.recordVideo=true;% record video of the simulation (if true drawON must be true)
 Simulation.getMetrics=true; % acquire metrics during the simulation (getMetrics=false discard settling times and stop times)
 
 %% Dynamic model of the agents
+% Initial velocities for CoupledSDEs and LevyWalk.
+avgSpeed0   = 1;
+sigmaSpeed0 = 0.2;
+
 % These parameters are used in integrateAgents.
 
 %Dynamics=struct('model','FirstOrder', 'sigma',0, 'vMax', inf);
 %Dynamics=struct('model','SecondOrder', 'sigma',0.1, 'vMax', inf);
 %Dynamics=struct('model','CoupledSDEs', 'rateSpeed', 1, 'avgSpeed', avgSpeed0, 'sigmaSpeed', 1, 'rateOmega', 1, 'sigmaOmega', @(x)2*max(1-x/3,0), 'omega', zeros(N,1));
-Dynamics=struct('model','LevyWalk', 'alpha',0.005, 'sigma', 0.25);
+Dynamics=struct('model','LevyWalk', 'alpha',0.005, 'sigma', 0.15);
 
 %% Global interaction function for long distance interactions
 % These parameters are used in globalInteractionForce.

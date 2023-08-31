@@ -25,16 +25,16 @@ delta=0.1;                  % maximum displacement of the initial positions. del
 %% Create Initial Conditions
 %rng(1,'twister'); % set the randomn seed to have reproducible results
 
-x0=randCircle(N, 2, D);                 % initial conditions drawn from a uniform disc
+x0=randCircle(N, 6, D);                 % initial conditions drawn from a uniform disc
 %x0 = normrnd(0,0.1*sqrt(N),N,D);    % initial conditions drawn from a normal distribution
 %x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D); % initial conditions on a correct lattice
 %x0 = perfectLactice(N, LinkNumber, D) + randCircle(N, delta, D); % initial conditions on a deformed lattice
 %x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D ) + randCircle(N, delta, D); % initial conditions on a deformed lattice
 
-% speeds0 = abs(normrnd(avgSpeed0,sigmaSpeed0,N,1));
-% theta0 = 2*pi*rand(N,1)-pi;
-% v0 = speeds0 .* [cos(theta0), sin(theta0)];
-v0 = zeros(size(x0));
+speeds0 = abs(normrnd(avgSpeed0,sigmaSpeed0,N,1));
+theta0 = 2*pi*rand(N,1)-pi;
+v0 = speeds0 .* [cos(theta0), sin(theta0)];
+%v0 = zeros(size(x0));
 
 %% Run Simulation
 [xVec, uVec] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction);

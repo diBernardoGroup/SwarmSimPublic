@@ -36,6 +36,8 @@ end
 assert(ismember(size(x0,2), [2,3]), 'x0 must have second dimension equal to 2 or 3!')
 assert(all(size(v0,2)==size(x0,2)), 'v0 must have same dimensions of x0!')
 
+assert(Simulation.recordVideo <= Simulation.drawON, 'Simulation.recordVideo must be false if Simulation.drawON is false')
+
 if ~isfield(Simulation, 'InteractionFactor')
     Simulation.InteractionFactor = 1; % fraction of agents to interact with ]0,1] 
 end
@@ -72,6 +74,14 @@ uVec=nan([size(TSample,1),size(x0)]);         % inputs of the swarm
 xVec(1,:,:)=x0;
 v=v0;
 
+if Simulation.recordVideo
+    video = VideoWriter('./Output/video.avi');
+    video.FrameRate = 1/Simulation.deltaT;
+    open(video);
+    currFrame = getframe(gcf);
+    writeVideo(video,currFrame);
+end
+
 disp(['- Simulating ',num2str(N),' ',Dynamics.model, ' agents in ', num2str(size(x0,2)),'D space with ',GlobalIntFunction.function,' interaction'])
 
 %% Run Simulation
@@ -95,11 +105,17 @@ while t<Simulation.Tmax
         
         % plot swarm
         if Simulation.drawON
+            cla
             if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9]); end
             if isfield(LocalIntFunction, 'DistanceRange')
-                plotSwarm(x, [], t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), true);
+                plotSwarm(x, [], t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), false);
             else
-                plotSwarm(x, [], t, inf, inf, true);
+                plotSwarm(x, [], t, inf, inf, false);
+            end
+            
+            if Simulation.recordVideo
+                currFrame = getframe(gcf);
+                writeVideo(video,currFrame);
             end
         end
 
@@ -109,15 +125,20 @@ while t<Simulation.Tmax
     t=Simulation.dT*round(t/Simulation.dT);
 end
 
+if Simulation.recordVideo
+    close(video);
+end
+
 %% PLOTS
 
 % plot swarm
 if Simulation.drawON
+    cla
     if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9]); end
     if isfield(LocalIntFunction, 'DistanceRange')
-        plotSwarm(x, [], t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), false);
+        plotSwarm(squeeze(xVec(end,:,:)), [], t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), false);
     else
-        plotSwarm(x, [], t, inf, inf, false);
+        plotSwarm(squeeze(xVec(end,:,:)), [], t, inf, inf, false);
     end
 end
 

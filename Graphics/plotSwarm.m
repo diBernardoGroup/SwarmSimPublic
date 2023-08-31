@@ -42,6 +42,10 @@ p_lines=drawLines(x,RMin,RMax,gradColor);
 spin1 = find(spin==1);
 spin0 = find(spin==0);
 
+if size(x,2) > 3
+    x=x';
+end
+
 if size(x,2) == 2
     p1 = plot(x(spin1,1), x(spin1,2),'b.','MarkerSize', 20);
     p2 = plot(x(spin0,1), x(spin0,2),'r.','MarkerSize', 20);
