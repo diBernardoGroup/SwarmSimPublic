@@ -1,3 +1,5 @@
+<img src="https://github.com/diBernardoGroup/SwarmSimPublic/assets/13195814/58bb7b7e-1966-4d4e-80ec-92e0e7fa2669" width="180">
+
 # SwarmSim
 
 Simulate 2D and 3D swarms of mobile agents with various dynamics and implement distributed control laws to obtain different behaviours.
