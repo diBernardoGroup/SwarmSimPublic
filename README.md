@@ -8,13 +8,13 @@ To execute your first simulation simply run Launcher.m.
 
 Features:
   - Simulation of swarms of mobile agents.
-  - Implement your own dynamical model or use one of the embedded ones (see integrateAgents.m).
-  - Implement your own distributed control law or use one of the embedded ones (see globalInteractionForce.m).
+  - Implement your own dynamical model or use one of the embedded ones (see `integrateAgents`).
+  - Implement your own distributed control law or use one of the embedded ones (see `globalInteractionForce`).
   - Acquisition of metrics to evaluate the performance.
-  - Extensive simulations to study stochastic effects or different initial conditions (see MultiLauncher.m).
-  - Extensive simulations to study the effects of the parameters (see SequentialLauncher.m).
-  - Local stability analysis through linearization (see CrystalStability).
-  - Interface with Robotarium code to perform advanced simulations and real life experiments (see RobotariumSimulator). 
+  - Extensive simulations to study stochastic effects or different initial conditions (see `MultiLauncher`).
+  - Extensive simulations to study the effects of the parameters (see `SequentialLauncher`).
+  - Local stability analysis through linearization (see `CrystalStability`).
+  - Interface with Robotarium code to perform advanced simulations and real life experiments (see `RobotariumSimulator`). 
     For more details refer to https://www.robotarium.gatech.edu.
   - Plots to visualise the simulation and the metrics.
   - Automatic save the results of the simulations.
