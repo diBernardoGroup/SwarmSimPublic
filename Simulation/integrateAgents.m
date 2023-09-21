@@ -91,6 +91,6 @@ end
     end
     
     % integration
-    xnew = x + vnew.*deltaT + noise;
+    xnew = x + vnew*deltaT + noise;
 end
 

@@ -1,11 +1,11 @@
 function [mu, theta, sigma] = MLE_SDE_parameters(data, deltaT)
-%MLE_SDE_PARAMETERS Estimate parameters of a SDE in the form
+%MLE_SDE_PARAMETERS Maximum Likelihood Estimation of the parameters of a SDE in the form
 %         dX = theta * (mu - X) * dt + sigma * dW
 %     where dW is gaussian white noise.
 %     
 %     The algorithm is described in "Calibrating the Ornstein-Uhlenbeck (Vasicek) model" by van den Berg (2011).
     
-    n=length(data);
+    n=length(data)-1;
     x = data(1:end-1);
     y = data(2:end);
     assert(length(x)==length(y))
