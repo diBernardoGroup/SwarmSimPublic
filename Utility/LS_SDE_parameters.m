@@ -10,7 +10,7 @@ mu=nan(1,number_of_series);
 theta=nan(1,number_of_series);
 sigma=nan(1,number_of_series);
 
-for i=1:size(data,2)
+for i=1:number_of_series
     x = data(1:end-1,i);
     y = data(2:end,i);
     assert(length(x)==length(y))

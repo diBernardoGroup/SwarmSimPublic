@@ -29,10 +29,10 @@ MaxSensingRadius=3;         % sensing radius of the agents (R_s)
 %% Simulation parameters
 % All these fields are mandatory
 Simulation=struct();
-Simulation.Tmax =   25;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
-Simulation.deltaT = 0.1;   % sampling time step
-Simulation.dT =     0.01;   % integration time step
-Simulation.arena =  800;    % size of the simulation window
+Simulation.Tmax =   20;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
+Simulation.deltaT = 0.25;   % sampling time step
+Simulation.dT =     0.25;   % integration time step
+Simulation.arena =  100;    % size of the simulation window
 Simulation.drawON=false;    % draw swarm during simulation (if N is large slows down the simulation)
 Simulation.drawTraj=15;   % draw trajectories of the agents (if N is large slows down the simulation)
 Simulation.recordVideo=true;% record video of the simulation (if true drawON must be true)
@@ -40,15 +40,15 @@ Simulation.getMetrics=true; % acquire metrics during the simulation (getMetrics=
 
 %% Dynamic model of the agents
 % Initial velocities for CoupledSDEs and LevyWalk.
-avgSpeed0   = 10;
-sigmaSpeed0 = 4;
+avgSpeed0   = 1;
+sigmaSpeed0 = 0;
 
 % These parameters are used in integrateAgents.
 
 %Dynamics=struct('model','FirstOrder', 'sigma',0, 'vMax', inf);
 %Dynamics=struct('model','SecondOrder', 'sigma',0, 'vMax', inf);
-Dynamics=struct('model','IndependentSDEs', 'rateSpeed', 1, 'avgSpeed', avgSpeed0, 'sigmaSpeed', 1, 'rateOmega', 0, 'sigmaOmega', 0, 'omega', normrnd(0,0,N,1));
-%Dynamics=struct('model','CoupledSDEs', 'rateSpeed', 1, 'avgSpeed', avgSpeed0, 'sigmaSpeed', 1, 'rateOmega', 1, 'sigmaOmega', @(x)2*max(1-x/3,0), 'omega', zeros(N,1));
+Dynamics=struct('model','IndependentSDEs', 'avgSpeed',5, 'rateSpeed', 1, 'sigmaSpeed', 0.5, 'rateOmega', 0, 'sigmaOmega', 0, 'omega', normrnd(0,0,N,1));
+%Dynamics=struct('model','CoupledSDEs', 'avgSpeed', avgSpeed0, 'rateSpeed', 1, 'sigmaSpeed', 1, 'rateOmega', 1, 'sigmaOmega', @(x)2*max(1-x/3,0), 'omega', zeros(N,1));
 %Dynamics=struct('model','LevyWalk', 'alpha',0.005, 'sigma', 0.15);
 
 %% Global interaction function for long distance interactions
