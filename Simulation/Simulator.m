@@ -1,4 +1,4 @@
-function [xVec, uVec] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction)
+function [xVec, uVec, vVec] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction)
 %
 %Simulator executes a complete simulation of the swarm.
 %   This function is called by a launcher script (Launcher, SequentialLauncher...).
@@ -70,6 +70,7 @@ N=size(x,1);
 %% Preallocate variables
 TSample = [0:Simulation.deltaT:Simulation.Tmax]';   % sampling time instants
 xVec=nan([size(TSample,1),size(x0)]);               % positions of the swarm
+vVec=nan([size(TSample,1),size(x0)]);               % velocities of the swarm
 uVec=nan([size(TSample,1),size(x0)]);               % inputs of the swarm
 
 % xVec(1,:,:)=x0;
@@ -98,6 +99,7 @@ while t<Simulation.Tmax
         t=Simulation.deltaT*round(t/Simulation.deltaT);
         
         xVec(count,:,:)=x;
+        vVec(count,:,:)=v;
         uVec(count,:,:)=forces;
         
         count= count+1;
@@ -128,6 +130,7 @@ while t<Simulation.Tmax
 end
 
 xVec(count,:,:)=x;
+vVec(count,:,:)=v;
 uVec(count,:,:)=forces;
 
 if Simulation.recordVideo

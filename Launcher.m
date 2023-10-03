@@ -10,7 +10,7 @@
 
 %% Clear environment
 close all
-clear
+%clear
 
 %% Parameters
 
@@ -37,7 +37,7 @@ v0 = speeds0 .* [cos(theta0), sin(theta0)];
 %v0 = zeros(size(x0));
 
 %% Run Simulation
-[xVec, uVec] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction);
+[xVec, uVec, vVec] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction);
 
 %% Analysis
 if smoothing
@@ -48,8 +48,12 @@ end
 timeInstants = 0:Simulation.deltaT:Simulation.Tmax;
 
 % derivate quantities
-[~, vVec] = gradient(xVec, 1, Simulation.deltaT, 1);
+[~, vVec_grad] = gradient(xVec, 1, Simulation.deltaT, 1);
+vVec_diff = diff(xVec)/Simulation.deltaT;
 speed = vecnorm(vVec,2,3);
+speed_grad = vecnorm(vVec_grad,2,3);
+speed_diff = [speeds0'; vecnorm(vVec_diff,2,3)];
+
 theta = atan2(vVec(:,:,2), vVec(:,:,1));
 for i=1:length(timeInstants)-1
     % angular velocity
@@ -256,4 +260,24 @@ end
 %     saveas(gcf,fullfile(path, 'rigidity'))
 %     saveas(gcf,fullfile(path, 'rigidity'),'png')
 % end
+
+if exist('SDEparameters')
+    figure
+    subplot(2,1,1)
+    set(gca,'FontSize',14)
+    boxplot([[SDEparameters.mean_s-SDEparameters.std_s, SDEparameters.mean_s+SDEparameters.std_s]', [mean(speed)-std(speed);mean(speed)+std(speed)]])
+    hold on
+    xline(1.5)
+    ylabel('speed [px/s]')
+    xticks([1, size(speed,2)/2+1.5])
+    xticklabels({'REAL','SIMULATED'})
+    subplot(2,1,2)
+    set(gca,'FontSize',14)
+    boxplot([[SDEparameters.mean_w-SDEparameters.std_w, SDEparameters.mean_w+SDEparameters.std_w]', [mean(omega)-std(omega);mean(omega)+std(omega)]])
+    hold on
+    xline(1.5)
+    ylabel('ang. vel. [rad/s]')
+    xticks([1, size(speed,2)/2+1.5])
+    xticklabels({'REAL','SIMULATED'})
+end
 

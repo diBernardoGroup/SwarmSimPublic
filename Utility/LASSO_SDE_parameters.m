@@ -18,35 +18,6 @@ for i=1:size(data,2)
     assert(length(x)==length(y))
     
     % LASSO regression
-    X = [x];
-    [B,FitInfo] = lasso(X,y,'CV',10 ,'Standardize', false, 'Intercept',true);
-    p=B(:,FitInfo.IndexMinMSE);
-    a = p(1);
-    b = FitInfo.Intercept(FitInfo.IndexMinMSE);
-    
-    residuals = y - (a*x + b);
-    residuals_constant = y - mean(y);    
-    if norm(residuals_constant) < norm(residuals) + 0.01
-        residuals = residuals_constant;
-        b=mean(y);
-        a=0;
-    end
-    
-    % compute estimated parameters
-    mu(i) = b/(1-a);
-    if a ~= 0
-        theta(i) = -1/deltaT * log(a);
-        sigma(i) = std(residuals) * sqrt(-2*log(a) / (1-a^2) / deltaT);
-    else
-        theta(i) = 0;
-        sigma(i) = 0;
-    end
-    
-%     x = data(1:end-1,i);
-%     y = data(2:end,i) - x;
-%     assert(length(x)==length(y))
-%     
-%     % leas sqaure regression
 %     X = [x];
 %     [B,FitInfo] = lasso(X,y,'CV',10 ,'Standardize', false, 'Intercept',true);
 %     p=B(:,FitInfo.IndexMinMSE);
@@ -55,20 +26,49 @@ for i=1:size(data,2)
 %     
 %     residuals = y - (a*x + b);
 %     residuals_constant = y - mean(y);    
-% %     if norm(residuals_constant) < norm(residuals) + 0.01
-% %         residuals = residuals_constant;
-% %         b=mean(y);
-% %         a=0;
-% %     end
-%     
-%     % compute estimated parameters
-%     theta(i) = -a/deltaT;
-%     if abs(a) < epsilon
-%         mu(i) = mean(x);
-%     else
-%         mu(i) = -b/a;
+%     if norm(residuals_constant) < norm(residuals) + 0.01
+%         residuals = residuals_constant;
+%         b=mean(y);
+%         a=0;
 %     end
-%     sigma(i) = std(residuals) / sqrt(deltaT);
+%     
+%     compute estimated parameters
+%     mu(i) = b/(1-a);
+%     if a ~= 0
+%         theta(i) = -1/deltaT * log(a);
+%         sigma(i) = std(residuals) * sqrt(-2*log(a) / (1-a^2) / deltaT);
+%     else
+%         theta(i) = 0;
+%         sigma(i) = 0;
+%     end
+%     
+    x = data(1:end-1,i);
+    y = data(2:end,i) - x;
+    assert(length(x)==length(y))
+    
+    % leas sqaure regression
+    X = [x];
+    [B,FitInfo] = lasso(X,y,'CV',10 ,'Standardize', false, 'Intercept',true);
+    p=B(:,FitInfo.IndexMinMSE);
+    a = p(1);
+    b = FitInfo.Intercept(FitInfo.IndexMinMSE);
+    
+    residuals = y - (a*x + b);
+    residuals_constant = y - mean(y);    
+%     if norm(residuals_constant) < norm(residuals) + 0.01
+%         residuals = residuals_constant;
+%         b=mean(y);
+%         a=0;
+%     end
+    
+    % compute estimated parameters
+    theta(i) = -a/deltaT;
+    if abs(a) < epsilon
+        mu(i) = mean(x);
+    else
+        mu(i) = -b/a;
+    end
+    sigma(i) = std(residuals) / sqrt(deltaT);
     
 end
 
