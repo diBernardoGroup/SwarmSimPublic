@@ -18,20 +18,21 @@ D=2;                        % number of dimensions [2 or 3]
 
 defaultParam;               % load default parameters
 
-Simulation.drawON=true;     % draw swarm during simulation (if N is large slows down the simulation)
+Dynamics=struct('model','IndependentSDEs', 'avgSpeed',mean(identification.mu_s), 'rateSpeed', mean(identification.theta_s), 'sigmaSpeed', mean(identification.sigma_s),...
+    'rateOmega', mean(identification.theta_w), 'sigmaOmega', mean(identification.sigma_w), 'omega', normrnd(0,mean(identification.sigma_w),N,1));
 
-delta=0.1;                  % maximum displacement of the initial positions. delta<=(Rmax-1)/2 preserves all the links
+Simulation.drawON=true;     % draw swarm during simulation (if N is large slows down the simulation)
 
 %% Create Initial Conditions
 %rng(1,'twister'); % set the randomn seed to have reproducible results
 
-x0=randCircle(N, 5, D);                 % initial conditions drawn from a uniform disc
+x0=randCircle(N, 1000, D);                 % initial conditions drawn from a uniform disc
 %x0 = normrnd(0,0.1*sqrt(N),N,D);    % initial conditions drawn from a normal distribution
 %x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D); % initial conditions on a correct lattice
 %x0 = perfectLactice(N, LinkNumber, D) + randCircle(N, delta, D); % initial conditions on a deformed lattice
 %x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D ) + randCircle(N, delta, D); % initial conditions on a deformed lattice
 
-speeds0 = abs(normrnd(avgSpeed0,sigmaSpeed0,N,1));
+speeds0 = abs(normrnd(mean(identification.mu_s),mean(identification.sigma_s),N,1));
 theta0 = 2*pi*rand(N,1)-pi;
 v0 = speeds0 .* [cos(theta0), sin(theta0)];
 %v0 = zeros(size(x0));
@@ -200,6 +201,13 @@ end
 % saveas(gcf,fullfile(path, 'scatter_plot'))
 % saveas(gcf,fullfile(path, 'scatter_plot'),'png')
 % end
+
+figure % CORRELETION PLOT - SPEED and ANGULAR VELOCITY
+corrplot([speed(1:end-1,1),speed(2:end,1),omega(1:end-1,1),omega(2:end,1)],VarNames={"v_k", "v_{k+1}", "\omega_k", "\omega_{k+1}"})
+if outputDir
+saveas(gcf,fullfile(path, 'scatter_plot'))
+saveas(gcf,fullfile(path, 'scatter_plot'),'png')
+end
 
 figure % SCATTER PLOT - NORMALIZED SPEED and ANGULAR VELOCITY
 normalized_speed=speed./median(speed);

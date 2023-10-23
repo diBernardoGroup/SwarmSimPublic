@@ -29,7 +29,7 @@ MaxSensingRadius=3;         % sensing radius of the agents (R_s)
 %% Simulation parameters
 % All these fields are mandatory
 Simulation=struct();
-Simulation.Tmax =   100;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
+Simulation.Tmax =   10;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
 Simulation.deltaT = 0.5;   % sampling time step
 Simulation.dT =     0.5;   % integration time step
 Simulation.arena =  1000;    % size of the simulation window
@@ -40,15 +40,14 @@ Simulation.getMetrics=true; % acquire metrics during the simulation (getMetrics=
 
 %% Dynamic model of the agents
 % Initial velocities for CoupledSDEs and LevyWalk.
-avgSpeed0   = SDEparameters.mu_s;
+avgSpeed0   = 5;
 sigmaSpeed0 = 2;
 
 % These parameters are used in integrateAgents.
 
 %Dynamics=struct('model','FirstOrder', 'sigma',0, 'vMax', inf);
 %Dynamics=struct('model','SecondOrder', 'sigma',0, 'vMax', inf);
-Dynamics=struct('model','IndependentSDEs', 'avgSpeed',SDEparameters.mu_s, 'rateSpeed', SDEparameters.theta_s, 'sigmaSpeed', SDEparameters.sigma_s, 'rateOmega', SDEparameters.theta_w, 'sigmaOmega', SDEparameters.sigma_w, 'omega', normrnd(0,0,N,1));
-%Dynamics=struct('model','IndependentSDEs', 'avgSpeed',5, 'rateSpeed', 1, 'sigmaSpeed', 0.5, 'rateOmega', 0, 'sigmaOmega', 0, 'omega', normrnd(0,0,N,1));
+Dynamics=struct('model','IndependentSDEs', 'avgSpeed',5, 'rateSpeed', 1, 'sigmaSpeed', 0.5, 'rateOmega', 0.5, 'sigmaOmega', 1, 'omega', normrnd(0,0,N,1));
 %Dynamics=struct('model','CoupledSDEs', 'avgSpeed', avgSpeed0, 'rateSpeed', 1, 'sigmaSpeed', 1, 'rateOmega', 1, 'sigmaOmega', @(x)2*max(1-x/3,0), 'omega', zeros(N,1));
 %Dynamics=struct('model','LevyWalk', 'alpha',0.005, 'sigma', 0.15);
 

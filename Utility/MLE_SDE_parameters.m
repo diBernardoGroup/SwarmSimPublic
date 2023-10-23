@@ -11,24 +11,30 @@ theta=nan(1,number_of_series);
 sigma=nan(1,number_of_series);
 
 for i=1:number_of_series
-    n=length(data)-1;
-    x = data(1:end-1,i);
-    y = data(2:end,i);
+    nan_ids = isnan(data(:,i));
+    d = data(~nan_ids,i);
+    
+    x = d(1:end-1);
+    y = d(2:end);
+    
+    n=length(x);
     assert(length(x)==length(y))
     
-    % compute moments
-    s_x = sum(x);
-    s_y = sum(y);
-    s_xx = sum(x.^2);
-    s_yy = sum(y.^2);
-    s_xy = sum(x .* y);
-    
-    % compute estimated parameters
-    mu(i) = (s_y*s_xx - s_x*s_xy) / (n *(s_xx - s_xy) - (s_x^2 - s_x*s_y));
-    theta(i) = -1/deltaT * log((s_xy - mu(i)*s_x - mu(i)*s_y + n*mu(i)^2)/(s_xx - 2*mu(i)*s_x + n*mu(i)^2));
-    
-    a = exp(-theta(i)*deltaT);
-    sigma(i) = sqrt(2*theta(i)/(1-a^2) * 1/n * (s_yy - 2*a*s_xy + a^2*s_xx - 2*mu(i)*(1-a)*(s_y - a*s_x) + n*mu(i)^2*(1-a)^2));
+    if n>2
+        % compute moments
+        s_x = sum(x);
+        s_y = sum(y);
+        s_xx = sum(x.^2);
+        s_yy = sum(y.^2);
+        s_xy = sum(x .* y);
+
+        % compute estimated parameters
+        mu(i) = (s_y*s_xx - s_x*s_xy) / (n *(s_xx - s_xy) - (s_x^2 - s_x*s_y));
+        theta(i) = real(-1/deltaT * log((s_xy - mu(i)*s_x - mu(i)*s_y + n*mu(i)^2)/(s_xx - 2*mu(i)*s_x + n*mu(i)^2)));
+
+        a = exp(-theta(i)*deltaT);
+        sigma(i) = real(sqrt(2*theta(i)/(1-a^2) * 1/n * (s_yy - 2*a*s_xy + a^2*s_xx - 2*mu(i)*(1-a)*(s_y - a*s_x) + n*mu(i)^2*(1-a)^2)));
+    end
 end
 end
 

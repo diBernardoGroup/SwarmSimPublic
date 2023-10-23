@@ -11,20 +11,25 @@ theta=nan(1,number_of_series);
 sigma=nan(1,number_of_series);
 
 for i=1:number_of_series
-    x = data(1:end-1,i);
-    y = data(2:end,i);
+    nan_ids = isnan(data(:,i));
+    d = data(~nan_ids,i);
+    
+    x = d(1:end-1);
+    y = d(2:end);
     assert(length(x)==length(y))
     
-    % leas sqaure regression
-    p = polyfit(x,y,1);
-    a = p(1);
-    b = p(2);
-    residuals = y - (a*x + b);
-    
-    % compute estimated parameters
-    mu(i) = b/(1-a);
-    theta(i) = -1/deltaT * log(a);
-    sigma(i) = std(residuals) * sqrt(-2*log(a) / (1-a^2) / deltaT);
+    if length(x) > 2
+        % leas sqaure regression
+        p = polyfit(x,y,1);
+        a = p(1);
+        b = p(2);
+        residuals = y - (a*x + b);
+
+        % compute estimated parameters
+        mu(i) = b/(1-a);
+        theta(i) = -1/deltaT * log(a);
+        sigma(i) = std(residuals) * sqrt(-2*log(a) / (1-a^2) / deltaT);
+    end
 end
 
 end
