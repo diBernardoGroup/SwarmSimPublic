@@ -10,7 +10,7 @@
 
 %% Clear environment
 close all
-%clear
+clear
 
 %% Parameters
 
@@ -18,8 +18,9 @@ D=2;                        % number of dimensions [2 or 3]
 
 defaultParam;               % load default parameters
 
+identification=readtable('/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12/identification.txt');
 Dynamics=struct('model','IndependentSDEs', 'avgSpeed',mean(identification.mu_s), 'rateSpeed', mean(identification.theta_s), 'sigmaSpeed', mean(identification.sigma_s),...
-    'rateOmega', mean(identification.theta_w), 'sigmaOmega', mean(identification.sigma_w), 'omega', normrnd(0,mean(identification.sigma_w),N,1));
+    'rateOmega', mean(identification.theta_w), 'sigmaOmega', mean(identification.sigma_w), 'omega', normrnd(0,mean(identification.std_w),N,1));
 
 Simulation.drawON=true;     % draw swarm during simulation (if N is large slows down the simulation)
 
@@ -32,7 +33,7 @@ x0=randCircle(N, 1000, D);                 % initial conditions drawn from a uni
 %x0 = perfectLactice(N, LinkNumber, D) + randCircle(N, delta, D); % initial conditions on a deformed lattice
 %x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D ) + randCircle(N, delta, D); % initial conditions on a deformed lattice
 
-speeds0 = abs(normrnd(mean(identification.mu_s),mean(identification.sigma_s),N,1));
+speeds0 = abs(normrnd(mean(identification.mean_s),mean(identification.std_s),N,1));
 theta0 = 2*pi*rand(N,1)-pi;
 v0 = speeds0 .* [cos(theta0), sin(theta0)];
 %v0 = zeros(size(x0));
@@ -269,23 +270,4 @@ end
 %     saveas(gcf,fullfile(path, 'rigidity'),'png')
 % end
 
-if exist('SDEparameters')
-    figure
-    subplot(2,1,1)
-    set(gca,'FontSize',14)
-    boxplot([[SDEparameters.mean_s-SDEparameters.std_s, SDEparameters.mean_s+SDEparameters.std_s]', [mean(speed)-std(speed);mean(speed)+std(speed)]])
-    hold on
-    xline(1.5)
-    ylabel('speed [px/s]')
-    xticks([1, size(speed,2)/2+1.5])
-    xticklabels({'REAL','SIMULATED'})
-    subplot(2,1,2)
-    set(gca,'FontSize',14)
-    boxplot([[SDEparameters.mean_w-SDEparameters.std_w, SDEparameters.mean_w+SDEparameters.std_w]', [mean(omega)-std(omega);mean(omega)+std(omega)]])
-    hold on
-    xline(1.5)
-    ylabel('ang. vel. [rad/s]')
-    xticks([1, size(speed,2)/2+1.5])
-    xticklabels({'REAL','SIMULATED'})
-end
 

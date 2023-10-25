@@ -18,6 +18,7 @@ for i=1:size(data,2)
     assert(length(x)==length(y))
     
     % LASSO regression
+    % invert sampling equation
     X = [x];
     [B,FitInfo] = lasso(X,y,'CV',10 ,'Standardize', false, 'Intercept',true);
     p=B(:,FitInfo.IndexMinMSE);
@@ -32,7 +33,7 @@ for i=1:size(data,2)
         a=0;
     end
     
-    compute estimated parameters
+    %compute estimated parameters
     mu(i) = b/(1-a);
     if a ~= 0
         theta(i) = -1/deltaT * log(a);
@@ -46,7 +47,7 @@ for i=1:size(data,2)
     y = data(2:end,i) - x;
     assert(length(x)==length(y))
     
-%     % leas sqaure regression
+%     % invert forward Euler integration equation
 %     X = [x];
 %     [B,FitInfo] = lasso(X,y,'CV',10 ,'Standardize', false, 'Intercept',true);
 %     p=B(:,FitInfo.IndexMinMSE);

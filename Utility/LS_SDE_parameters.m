@@ -26,9 +26,9 @@ for i=1:number_of_series
         residuals = y - (a*x + b);
 
         % compute estimated parameters
-        mu(i) = b/(1-a);
-        theta(i) = -1/deltaT * log(a);
-        sigma(i) = std(residuals) * sqrt(-2*log(a) / (1-a^2) / deltaT);
+        mu(i) = real(b/(1-a));
+        theta(i) = real(-1/deltaT * log(a));
+        sigma(i) = real(std(residuals) * sqrt(-2*log(a) / (1-a^2) / deltaT));
     end
 end
 

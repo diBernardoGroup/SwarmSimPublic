@@ -13,9 +13,9 @@
 % Directory to save the results of the simulations.
 % Set outputDir='' to prevent automatic saving.
 %outputDir='./Output';
-outputDir='';
+outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 
-N=10;                      %number of agents (N)
+N=25;                      %number of agents (N)
 LinkNumber=6*(D-1);         %number of links per agent in the lattice configuration (L)
                             %If D=2 then 6=triangular lattice, 4=square lattice, 3=hexagonal lattice
                             %If D=3 then 6=cubic lattice, 12=thetradic-octaedric lattice
@@ -29,9 +29,9 @@ MaxSensingRadius=3;         % sensing radius of the agents (R_s)
 %% Simulation parameters
 % All these fields are mandatory
 Simulation=struct();
-Simulation.Tmax =   10;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
+Simulation.Tmax =   180;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
 Simulation.deltaT = 0.5;   % sampling time step
-Simulation.dT =     0.5;   % integration time step
+Simulation.dT =     0.01;   % integration time step
 Simulation.arena =  1000;    % size of the simulation window
 Simulation.drawON=false;    % draw swarm during simulation (if N is large slows down the simulation)
 Simulation.drawTraj=15;   % draw trajectories of the agents (if N is large slows down the simulation)
