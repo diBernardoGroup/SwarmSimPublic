@@ -15,7 +15,7 @@
 %outputDir='./Output';
 outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 
-N=25;                      %number of agents (N)
+N=100;                      %number of agents (N)
 LinkNumber=6*(D-1);         %number of links per agent in the lattice configuration (L)
                             %If D=2 then 6=triangular lattice, 4=square lattice, 3=hexagonal lattice
                             %If D=3 then 6=cubic lattice, 12=thetradic-octaedric lattice

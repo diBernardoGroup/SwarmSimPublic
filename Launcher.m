@@ -19,8 +19,10 @@ D=2;                        % number of dimensions [2 or 3]
 defaultParam;               % load default parameters
 
 identification=readtable('/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12/identification.txt');
-Dynamics=struct('model','IndependentSDEs', 'avgSpeed',mean(identification.mu_s), 'rateSpeed', mean(identification.theta_s), 'sigmaSpeed', mean(identification.sigma_s),...
-    'rateOmega', mean(identification.theta_w), 'sigmaOmega', mean(identification.sigma_w), 'omega', normrnd(0,mean(identification.std_w),N,1));
+ids=randsample(length(identification.agents),N, true, ones(length(identification.agents),1));
+agents = identification(ids,:);
+Dynamics=struct('model','IndependentSDEs', 'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s,...
+    'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'omega', normrnd(0,agents.std_w,N,1));
 
 Simulation.drawON=true;     % draw swarm during simulation (if N is large slows down the simulation)
 
@@ -33,7 +35,7 @@ x0=randCircle(N, 1000, D);                 % initial conditions drawn from a uni
 %x0 = perfectLactice(N, LinkNumber, D) + randCircle(N, delta, D); % initial conditions on a deformed lattice
 %x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D ) + randCircle(N, delta, D); % initial conditions on a deformed lattice
 
-speeds0 = abs(normrnd(mean(identification.mean_s),mean(identification.std_s),N,1));
+speeds0 = abs(normrnd(median(identification.mean_s),median(identification.std_s),N,1));
 theta0 = 2*pi*rand(N,1)-pi;
 v0 = speeds0 .* [cos(theta0), sin(theta0)];
 %v0 = zeros(size(x0));
@@ -162,7 +164,7 @@ if ~strcmp(LocalIntFunction.function, 'None') % LOCAL INTERACTION FUNCTION
     set(gca,'FontSize',14)
 end
 
-figure % SPEED and ANGULAR VELOCITY
+figure % TIME PLOT - SPEED and ANGULAR VELOCITY
 subplot(2,4,[1 2 3])
 plotWithShade(timeInstants, median(speed,2), min(speed, [], 2), max(speed, [], 2), 'b', 0.3);
 xlabel('t [s]')
@@ -188,32 +190,9 @@ if outputDir
     saveas(gcf,fullfile(path, 'time_plot'),'png')
 end
 
-% figure % SCATTER PLOT - SPEED and ANGULAR VELOCITY
-% s=scatterhist(speed(:),abs(omega(:)), 'Location','NorthEast','Direction','out');
-% xlabel(s,'speed')
-% ylabel(s,'ang. vel. [rad/s]')
-% s(1).YAxisLocation = 'left';
-% s(1).XAxisLocation = 'bottom';
-% s(2).Position = [0.1    0.82   0.7    0.125];
-% s(3).Position = [0.82   0.1    0.125    0.7];
-% s(1).Position(3) = 0.7;
-% s(1).Position(4) = 0.7;
-% if outputDir
-% saveas(gcf,fullfile(path, 'scatter_plot'))
-% saveas(gcf,fullfile(path, 'scatter_plot'),'png')
-% end
-
-figure % CORRELETION PLOT - SPEED and ANGULAR VELOCITY
-corrplot([speed(1:end-1,1),speed(2:end,1),omega(1:end-1,1),omega(2:end,1)],VarNames={"v_k", "v_{k+1}", "\omega_k", "\omega_{k+1}"})
-if outputDir
-saveas(gcf,fullfile(path, 'scatter_plot'))
-saveas(gcf,fullfile(path, 'scatter_plot'),'png')
-end
-
-figure % SCATTER PLOT - NORMALIZED SPEED and ANGULAR VELOCITY
-normalized_speed=speed./median(speed);
-s=scatterhist(normalized_speed(:),abs(omega(:)), 'Location','NorthEast','Direction','out');
-xlabel(s,'speed / agent median speed')
+figure % SCATTER PLOT - SPEED and ANGULAR VELOCITY
+s=scatterhist(speed(:),abs(omega(:)), 'Location','NorthEast','Direction','out');
+xlabel(s,'speed')
 ylabel(s,'ang. vel. [rad/s]')
 s(1).YAxisLocation = 'left';
 s(1).XAxisLocation = 'bottom';
@@ -222,9 +201,31 @@ s(3).Position = [0.82   0.1    0.125    0.7];
 s(1).Position(3) = 0.7;
 s(1).Position(4) = 0.7;
 if outputDir
-saveas(gcf,fullfile(path, 'scatter_plot_normalised'))
-saveas(gcf,fullfile(path, 'scatter_plot_normalised'),'png')
+saveas(gcf,fullfile(path, 'scatter_plot'))
+saveas(gcf,fullfile(path, 'scatter_plot'),'png')
 end
+
+figure % SCATTER PLOT - MEAN SPEED and ANGULAR VELOCITY
+s=scatterhist(mean(speed,1),mean(abs(omega),1), 'Location','NorthEast','Direction','out');
+xlabel(s,'mean speed [px/s]')
+ylabel(s,'mean ang. vel. [rad/s]')
+s(1).YAxisLocation = 'left';
+s(1).XAxisLocation = 'bottom';
+s(2).Position = [0.1    0.82   0.7    0.125];
+s(3).Position = [0.82   0.1    0.125    0.7];
+s(1).Position(3) = 0.7;
+s(1).Position(4) = 0.7;
+if outputDir
+saveas(gcf,fullfile(path, 'scatter_plot_mean'))
+saveas(gcf,fullfile(path, 'scatter_plot_mean'),'png')
+end
+
+% figure % CORRELETION PLOT - SPEED and ANGULAR VELOCITY
+% corrplot([speed(1:end-1,1),speed(2:end,1),omega(1:end-1,1),omega(2:end,1)],VarNames={"v_k", "v_{k+1}", "\omega_k", "\omega_{k+1}"})
+% if outputDir
+% saveas(gcf,fullfile(path, 'scatter_plot'))
+% saveas(gcf,fullfile(path, 'scatter_plot'),'png')
+% end
  
 % figure % e_d_max
 % set(gca,'FontSize',14)
