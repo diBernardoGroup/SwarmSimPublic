@@ -36,6 +36,15 @@ end
 disp(['identified ',num2str(size(identification,1)),' valid agents out of ',num2str(length(agents))])
 disp([num2str(sum(nan_ids)),' removed because nans, ' num2str(length(agents)-size(identification,1)-sum(nan_ids)),' removed because negative or outliers'])
 
-myboxplot(identification(:,[2:7]), false, 3);
 
 writetable(identification,fullfile(current_folder, 'identification.txt') ,'Delimiter',' ')
+
+
+figure
+for i=1:6 
+subplot(1,6,i)
+myboxplot(identification(:,i+1), false, 3);
+yline(0,'Color',[0.5,0.5,0.5])
+%l=max(identification.(i+1))*1.1;ylim([-l/15,l]);yticks([0:l/3:l])
+set(gca,'FontSize',16)
+end

@@ -12,6 +12,7 @@ function [] = myboxplot(data, significance, whisker, color)
     %boxplot
     if istable(data)
         boxplot(data.Variables, labels=data.Properties.VariableNames,whisker=whisker,colors='k');
+        xlim([0.5 length(data.Properties.VariableNames)+0.5])
     else
         for i=1:length(data)
             boxplot(data{i},positions=i,labels=num2str(i),whisker=whisker,colors='k');
@@ -20,13 +21,15 @@ function [] = myboxplot(data, significance, whisker, color)
         xlim([0.5 length(data)+0.5])
     end
     
-    h=findobj('LineStyle','--'); set(h, 'LineStyle','-');
-    h=findobj(gca,'Type','line'); set(h, 'LineWidth',1);
-    if any(logical(color))
-        h = findobj(gca,'Tag','Box');
-        for j=1:length(h)
-            %patch(get(h(j),'XData'),get(h(j),'YData'),color);
+    h = findobj('LineStyle','--'); set(h, 'LineStyle','-');
+    h = findobj(gca,'Type','line'); set(h, 'LineWidth',1);
+    h = flip(findobj(gca,'Tag','Box'));
+    for j=1:length(h)
+        if any(logical(color))
             patch(get(h(j),'XData'),get(h(j),'YData'),color,'FaceAlpha',.5);
+        else
+            colors=get(gca,'ColorOrder');
+            patch(get(h(j),'XData'),get(h(j),'YData'),colors(j,:),'FaceAlpha',.5);
         end
     end
     
