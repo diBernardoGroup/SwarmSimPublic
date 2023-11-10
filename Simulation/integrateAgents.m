@@ -1,6 +1,6 @@
-function [xnew, vnew, Dynamics] = integrateAgents(x, v, input, Dynamics, deltaT)
+function [xnew, vnew, Dynamics] = integrateAgents(x, v, input, Dynamics, deltaT, envInput)
 %
-%integrateAgents Integrates agents' dynamics with Euler–Maruyama method.
+%integrateAgents Integrates agents' dynamics with forward Euler–Maruyama method.
 %   You can modify this function to implement your own agents' dynamics.
 %   This function is called by Simulator.
 %
@@ -9,7 +9,7 @@ function [xnew, vnew, Dynamics] = integrateAgents(x, v, input, Dynamics, deltaT)
 %       v                   Previous velocities of the agents   (NxD matrix)
 %       input               Control inputs of the agents        (NxD matrix)
 %       Dynamics            Dynamics of the agents              (struct)
-%       deltaT              Itegrateion step                    (positive scalar)
+%       deltaT              Itegration step                     (positive scalar)
 %
 %   Outputs:
 %       xnew                New positions of the agents         (NxD matrix)
@@ -28,6 +28,7 @@ arguments
     input               double
     Dynamics            struct  
     deltaT              double {mustBePositive}
+    envInput            double = zeros(size(x,1),1)
 end
     
     switch Dynamics.model
@@ -39,6 +40,16 @@ end
         vnew = v + input * deltaT;
         noise = Dynamics.sigma * sqrt(deltaT) * randn(size(x));
 
+    case 'IndependentSDEsWithInput'
+        speeds = vecnorm(v,2,2);
+        theta = atan2(v(:,2), v(:,1));
+        speedsnew = speeds + (Dynamics.rateSpeed .* (Dynamics.avgSpeed - speeds) + Dynamics.gainSpeed .* envInput )* deltaT + Dynamics.sigmaSpeed * sqrt(deltaT) .* randn(size(x,1),1);
+        speedsnew = max(speedsnew, 10e-6);
+        Dynamics.omega = Dynamics.omega +( -Dynamics.rateOmega .* Dynamics.omega + sign(Dynamics.omega).*Dynamics.gainOmega .*envInput )* deltaT + Dynamics.sigmaOmega  * sqrt(deltaT) .* randn(size(x,1),1);
+        thetanew = mod(theta + pi + Dynamics.omega * deltaT, 2*pi) - pi ;
+        vnew = speedsnew .* [cos(thetanew), sin(thetanew)];
+        noise = zeros(size(x));
+        
     case 'IndependentSDEs'
         speeds = vecnorm(v,2,2);
         theta = atan2(v(:,2), v(:,1));

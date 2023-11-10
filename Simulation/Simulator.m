@@ -1,4 +1,4 @@
-function [xVec, uVec, vVec] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction)
+function [xVec, uVec, vVec] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction, Environment)
 %
 %Simulator executes a complete simulation of the swarm.
 %   This function is called by a launcher script (Launcher, SequentialLauncher...).
@@ -31,6 +31,7 @@ arguments
     Dynamics            struct
     GlobalIntFunction   struct = struct('function','None')
     LocalIntFunction    struct = struct('function','None')
+    Environment         struct = struct()
 end
 
 assert(ismember(size(x0,2), [2,3]), 'x0 must have second dimension equal to 2 or 3!')
@@ -94,6 +95,13 @@ while t<Simulation.Tmax
     % Compute Control Actions
     forces = VFcontroller(x, GlobalIntFunction, LocalIntFunction, Simulation.dT, Simulation.InteractionFactor);
     
+    % Compute environmental input
+    if isfield(Environment,'EnvField')
+        envInput = interpn(Environment.EnvUniform.Points, Environment.EnvUniform.Values, x(:,1),x(:,2));
+    elseif isfield(Environment,'EnvUniform')
+        envInput = ones(N,1) * interp1(Environment.EnvUniform.Times, Environment.EnvUniform.Values, t);
+    end
+    
     % Acquire data
     if t>=TSample(count)-epsilon
         t=Simulation.deltaT*round(t/Simulation.deltaT);
@@ -121,8 +129,8 @@ while t<Simulation.Tmax
         end
     end
     
-    % Simulate Agents' Dynamics
-    [x, v, Dynamics] = integrateAgents(x, v, forces, Dynamics, Simulation.dT);
+    % Integrate Agents' Dynamics
+    [x, v, Dynamics] = integrateAgents(x, v, forces, Dynamics, Simulation.dT, envInput);
     
     % Update time
     t=t+Simulation.dT;

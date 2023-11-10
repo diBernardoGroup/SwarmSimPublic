@@ -18,11 +18,15 @@ D=2;                        % number of dimensions [2 or 3]
 
 defaultParam;               % load default parameters
 
-identification=readtable('/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12/identification.txt');
+identification=readtable('/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16/identification.txt');
 ids=randsample(length(identification.agents),N, true, ones(length(identification.agents),1));
 agents = identification(ids,:);
-Dynamics=struct('model','IndependentSDEs', 'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s,...
-    'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'omega', normrnd(0,agents.std_w,N,1));
+Dynamics=struct('model','IndependentSDEsWithInput', ...
+    'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s, 'gainSpeed', agents.alpha_s,...
+    'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', agents.alpha_w, 'omega', normrnd(0,agents.std_w,N,1));
+Environment = struct();
+Environment.EnvUniform.Times  = [0 5 5.5 25 25.5 40]; 
+Environment.EnvUniform.Values = [0 0   1  1    0  0]; 
 
 Simulation.drawON=true;     % draw swarm during simulation (if N is large slows down the simulation)
 
@@ -41,7 +45,7 @@ v0 = speeds0 .* [cos(theta0), sin(theta0)];
 %v0 = zeros(size(x0));
 
 %% Run Simulation
-[xVec, uVec, vVec] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction);
+[xVec, uVec, vVec] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction, Environment);
 
 %% Analysis
 if smoothing
@@ -167,6 +171,9 @@ end
 figure % TIME PLOT - SPEED and ANGULAR VELOCITY
 subplot(2,4,[1 2 3])
 plotWithShade(timeInstants, median(speed,2), min(speed, [], 2), max(speed, [], 2), 'b', 0.3);
+if isfield(Environment,'EnvUniform')
+    highlightInputs(Environment.EnvUniform.Times, Environment.EnvUniform.Values, 'r', 0.25)
+end
 xlabel('t [s]')
 ylabel('speed')
 rng=ylim;
@@ -177,12 +184,17 @@ ylim(rng);
 set(gca,'xtick',[])
 subplot(2,4,[5 6 7])
 plotWithShade(timeInstants, median(abs(omega),2), min(abs(omega), [], 2), max(abs(omega), [], 2), 'b', 0.3);
+%plotWithShade(timeInstants, median(omega,2), min(omega, [], 2), max(omega, [], 2), 'b', 0.3);
+if isfield(Environment,'EnvUniform')
+    highlightInputs(Environment.EnvUniform.Times, Environment.EnvUniform.Values, 'r', 0.25)
+end
 xlabel('t [s]')
 ylabel('ang. vel. [rad/s]')
 rng=ylim;
 box on
 subplot(2,4,8)
 h=histogram(abs(omega(:)),'Orientation','horizontal');
+%h=histogram(omega(:),'Orientation','horizontal');
 ylim(rng);
 set(gca,'xtick',[])
 if outputDir

@@ -30,7 +30,7 @@ MaxSensingRadius=3;         % sensing radius of the agents (R_s)
 %% Simulation parameters
 % All these fields are mandatory
 Simulation=struct();
-Simulation.Tmax =   180;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
+Simulation.Tmax =   40;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
 Simulation.deltaT = 0.5;   % sampling time step
 Simulation.dT =     0.01;   % integration time step
 Simulation.arena =  1000;    % size of the simulation window
