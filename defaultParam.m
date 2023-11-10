@@ -13,7 +13,8 @@
 % Directory to save the results of the simulations.
 % Set outputDir='' to prevent automatic saving.
 %outputDir='./Output';
-outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
+%outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
+outputDir='';
 
 N=100;                      %number of agents (N)
 LinkNumber=6*(D-1);         %number of links per agent in the lattice configuration (L)

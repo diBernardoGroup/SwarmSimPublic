@@ -20,7 +20,8 @@ for i=1:number_of_series
     
     if length(x_new) > 2
         % leas sqaure regression
-        p = polyfit(x_old,x_new,1);
+        %p = polyfit(x_old,x_new,1);
+        p = [x_old ones(length(x_old),1)]\x_new;
         a = p(1);
         b = p(2);
         residuals = x_new - (a*x_old + b);
