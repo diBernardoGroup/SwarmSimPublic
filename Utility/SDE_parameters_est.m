@@ -68,11 +68,11 @@ for i=1:number_of_series
         end
         
         %compute continuous time parameters
-        mu(i) = b/(1-a);
-        alpha(i,:) = inv(a-1)*log(a)/deltaT*c;
+        mu(i) = real(b/(1-a));
+        alpha(i,:) = real(inv(a-1)*log(a)/deltaT*c);
         if a ~= 0
-            theta(i) = -1/deltaT * log(a);
-            sigma(i) = std(residuals) * sqrt(-2*log(a) / (1-a^2) / deltaT);
+            theta(i) = real(-1/deltaT * log(a));
+            sigma(i) = real(std(residuals) * sqrt(-2*log(a) / (1-a^2) / deltaT));
         else
             theta(i) = 0;
             sigma(i) = 0;

@@ -1,26 +1,37 @@
 clear
-close all
+% close all
 
 
-%current_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12'; % off
-current_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
-%current_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
+%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12'; % off
+data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
+data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
 
 deltaT = 0.5;
 dT = 0.01;
 thresholdfactor = 5;
+downSampling = 2;
+
+current_folder = fileparts(which('AnalyseDOMEexp'));
+addpath(genpath(current_folder));
 
 %% Load data
 %identification=readtable(fullfile(current_folder,'identification.txt'));
-speed=load(fullfile(current_folder,'speeds_smooth.txt'));
-omega=load(fullfile(current_folder,'ang_vel_smooth.txt'));
-inputs=load(fullfile(current_folder,'inputs.txt'));
+speed=load(fullfile(data_folder,'speeds_smooth.txt'));
+omega=load(fullfile(data_folder,'ang_vel_smooth.txt'));
+inputs=load(fullfile(data_folder,'inputs.txt'));
+
+speed  = speed(1:downSampling:end,:);
+omega  = omega(1:downSampling:end,:);
+inputs = inputs(1:downSampling:end,:);
+deltaT = deltaT*downSampling;
 
 N = size(speed,2);
-timeInstants = [1:size(speed,1)] * deltaT;
+timeInstants = [0:size(speed,1)-1] * deltaT;
 agents = [0:N-1]';
 u=inputs(:,1)/255;
-u_dot = [diff(u);0]/deltaT;
+%u_dot = [diff(u);0]/deltaT;
+%u_dot = gradient(u)/deltaT;
+u_dot = max(gradient(u)/deltaT,0);
 
 %% Identification
 [mu_s, theta_s, sigma_s, gains_s] = SDE_parameters_est(speed, [u, u_dot], deltaT, 'OLS');
@@ -37,12 +48,15 @@ std_w   = round( std(omega,'omitnan')',4);
 identification = table(agents, mu_s, theta_s, sigma_s, alpha_s, beta_s, mu_w, theta_w, sigma_w, alpha_w, beta_w, mean_s, std_s, mean_w, std_w);
 nan_ids = isnan(identification.mu_s) | isnan(identification.mu_w);
 identification(nan_ids,:) = [];
+% must be different from zero
 for i=["alpha_s","beta_s","alpha_w","beta_w"]
     identification(identification.(i) == 0,:) = [];
 end
-for i=["mu_s","theta_s","sigma_s","theta_w","sigma_w"]
+% must be positive
+for i=["mu_s","theta_s","sigma_s","mu_w","theta_w","sigma_w"]
     identification(identification.(i) <= 0,:) = [];
 end
+% reject outliers
 for i=["mu_s","theta_s","sigma_s","alpha_s","beta_s","theta_w","sigma_w","alpha_w","beta_w"]
     identification(isoutlier(identification.(i),'quartiles',thresholdfactor=thresholdfactor),:) = [];
 end
@@ -50,17 +64,34 @@ disp(['identified ',num2str(size(identification,1)),' valid agents out of ',num2
 disp([num2str(sum(nan_ids)),' removed because nans, ' num2str(length(agents)-size(identification,1)-sum(nan_ids)),' removed because negative or outliers'])
 
 
-writetable(identification,fullfile(current_folder, 'identification.txt') ,'Delimiter',' ')
+writetable(identification,fullfile(data_folder, 'identification.txt') ,'Delimiter',' ')
 
 % simulate average behaviour
-s_sim=nan(max(timeInstants)/dT,1);
-w_sim=nan(max(timeInstants)/dT,1);
+t_sim=0:dT:max(timeInstants);
+s_sim=nan(length(t_sim),1);
+w_sim=nan(length(t_sim),1);
+u_sim=nan(length(t_sim),2);
 s_sim(1)=mean(identification.mu_s);
 w_sim(1)=mean(identification.mu_w);
-for i=1:max(timeInstants)/dT-1
-    s_sim(i+1)= s_sim(i) + (mean(identification.theta_s)*(mean(identification.mu_s)-s_sim(i)) + mean(identification.alpha_s)*u(ceil(i*dT/deltaT)) + mean(identification.beta_s)*u_dot(ceil(i*dT/deltaT)) )*dT;
-    w_sim(i+1)= w_sim(i) + (mean(identification.theta_w)*(mean(identification.mu_w)-w_sim(i)) + mean(identification.alpha_w)*u(ceil(i*dT/deltaT)) + mean(identification.beta_w)*u_dot(ceil(i*dT/deltaT)) )*dT;
+for i=1:length(t_sim)-1
+    u_sim(i,:)= [u(ceil(i*dT/deltaT)),u_dot(ceil(i*dT/deltaT))]; 
+%     u_sim(i,:)= [interp1(timeInstants,u,i*dT),interp1(timeInstants,u_dot,i*dT)]; 
+%     u_sim(i,1)= interp1(timeInstants,u,i*dT);
+%     if i==1
+%         u_sim(i,2)=0; 
+%     else
+%         u_sim(i,2)=(u_sim(i,1)-u_sim(i-1,1))/dT ;
+%     end
+    s_sim(i+1)= s_sim(i) + (mean(identification.theta_s)*(mean(identification.mu_s)-s_sim(i)) + mean(identification.alpha_s)*u_sim(i,1) + mean(identification.beta_s)*u_sim(i,2) )*dT;
+    w_sim(i+1)= w_sim(i) + (mean(identification.theta_w)*(mean(identification.mu_w)-w_sim(i)) + mean(identification.alpha_w)*u_sim(i,1) + mean(identification.beta_w)*u_sim(i,2) )*dT;
 end
+
+mse_speed = mean((mean(speed,2,'omitnan')-interp1(t_sim,s_sim,timeInstants)').^2);
+mse_omega = mean((mean(omega,2,'omitnan')-interp1(t_sim,w_sim,timeInstants(1:end-1))').^2);
+disp(['MSE from mean for speed: ',num2str(mse_speed),' and omega: ',num2str(mse_omega)])
+mse_speed = mean((median(speed,2,'omitnan')-interp1(t_sim,s_sim,timeInstants)').^2);
+mse_omega = mean((median(omega,2,'omitnan')-interp1(t_sim,w_sim,timeInstants(1:end-1))').^2);
+disp(['MSE from median for speed: ',num2str(mse_speed),' and omega: ',num2str(mse_omega)])
 
 %% PLOTS
 
@@ -76,7 +107,8 @@ end
 figure % TIME PLOT - SPEED and ANGULAR VELOCITY
 subplot(2,4,[1 2 3])
 plotWithShade(timeInstants, median(speed,2,'omitnan'), min(speed, [], 2,'omitnan'), max(speed, [], 2,'omitnan'), 'b', 0.3);
-plot(0:dT:max(timeInstants-dT),s_sim,'r',LineWidth = 1)
+plot(timeInstants, mean(speed,2,'omitnan'),'g',LineWidth = 2)
+plot(t_sim,s_sim,'r',LineWidth = 1)
 highlightInputs(timeInstants, u, 'r', 0.25)
 xlabel('t [s]')
 ylabel('speed')
@@ -88,8 +120,9 @@ h=histogram(speed(:),'Orientation','horizontal');
 ylim(rng);
 set(gca,'xtick',[])
 subplot(2,4,[5 6 7])
-plotWithShade(timeInstants, median(abs(omega),2,'omitnan'), min(abs(omega), [], 2,'omitnan'), max(abs(omega), [], 2,'omitnan'), 'b', 0.3);
-plot(0:dT:max(timeInstants-dT),abs(w_sim),'r',LineWidth = 1)
+plotWithShade(timeInstants(1:end-1), median(abs(omega),2,'omitnan'), min(abs(omega), [], 2,'omitnan'), max(abs(omega), [], 2,'omitnan'), 'b', 0.3);
+plot(timeInstants(1:end-1), mean(abs(omega),2,'omitnan'),'g',LineWidth = 2)
+plot(t_sim,abs(w_sim),'r',LineWidth = 1)
 highlightInputs(timeInstants, u, 'r', 0.25)
 xlabel('t [s]')
 ylabel('ang. vel. [rad/s]')
@@ -100,3 +133,20 @@ subplot(2,4,8)
 h=histogram(abs(omega(:)),'Orientation','horizontal');
 ylim(rng);
 set(gca,'xtick',[])
+
+figure % inputs
+subplot(3,1,1)
+hold on
+plot(timeInstants,u,'--')
+plot(t_sim,u_sim(:,1),'--')
+legend({'experiment','simulation'})
+subplot(3,1,2)
+hold on
+plot(timeInstants,u_dot,'--')
+plot(t_sim,u_sim(:,2),'--')
+legend({'experiment','simulation'})
+subplot(3,1,3)
+hold on
+plot(timeInstants,cumtrapz(u_dot)*deltaT,'--')
+plot(t_sim,cumtrapz(u_sim(:,2))*dT,'--')
+legend({'experiment','simulation'})

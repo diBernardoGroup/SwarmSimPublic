@@ -28,10 +28,11 @@ end
 
 X_data=X(1:deltaT/dT:end,:);
 u_data=u(1:deltaT/dT:end)';
-%times=times(1:deltaT/dT:end);
+u_dot_data=[diff(u_data);0]/deltaT;
+t_data=times(1:deltaT/dT:end);
 
-[m_LASSO, t_LASSO, s_LASSO, a_LASSO]= SDE_parameters_est(X_data, [u_data, [diff(u_data);0]/deltaT], deltaT, 'LASSO');
-[m_OLS, t_OLS, s_OLS, a_OLS]        = SDE_parameters_est(X_data, [u_data, [diff(u_data);0]/deltaT], deltaT, 'OLS');
+[m_LASSO, t_LASSO, s_LASSO, a_LASSO]= SDE_parameters_est(X_data, [u_data, u_dot_data], deltaT, 'LASSO');
+[m_OLS, t_OLS, s_OLS, a_OLS]        = SDE_parameters_est(X_data, [u_data, u_dot_data], deltaT, 'OLS');
 [m_MLE, t_MLE, s_MLE]               = MLE_SDE_parameters(X_data, deltaT);
 
 fprintf('Parameters: Tmax=%.1f\tdT=%.3f\tdeltaT=%.3f\tNtimes=%d\n', Tmax, dT, deltaT, Ntimes)
@@ -42,16 +43,27 @@ fprintf(join(['LASSO\t%.2f\t%.2f\t%.2f',repmat("%.2f",1,length(mean(a_LASSO))),'
 fprintf(join(['OLS\t%.2f\t%.2f\t%.2f',repmat("%.2f",1,length(mean(a_OLS))),'\n'],'\t'),  mean(t_OLS),    mean(m_OLS),    mean(s_OLS),  mean(a_OLS))
 fprintf('MLE\t%.2f\t%.2f\t%.2f\n',  mean(t_MLE),    mean(m_MLE),    mean(s_MLE))
 
+%% simulate average identified system
 x_sim=nan(length(times),1);
 x_sim(1)=mean(m_OLS);
 for i=1:length(times)-1
     x_sim(i+1)= x_sim(i) + (mean(t_OLS)*(mean(m_OLS)-x_sim(i)) + mean(a_OLS(:,1))*u(i) + mean(a_OLS(:,2))*u_dot(i) )*dT;
 end
 
+%% PLOTS
 figure; 
-subplot(2,1,1)
+subplot(3,1,1)
 hold on
 plot(times, X, color=[0.5,0.5,0.5])
 plot(times, x_sim, 'r', LineWidth=1)
-subplot(2,1,2)
+subplot(3,1,2)
+hold on
 plot(times, u)
+plot(t_data, u_data,'--')
+subplot(3,1,3)
+hold on
+plot(times, u_dot)
+plot(t_data, u_dot_data,'--')
+
+
+

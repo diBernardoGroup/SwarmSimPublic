@@ -92,7 +92,7 @@ t=0;
 count=1;                                        % sampling iteration
 
 while t<Simulation.Tmax
-    % Compute Control Actions
+    % Compute Control Actions from interactions
     forces = VFcontroller(x, GlobalIntFunction, LocalIntFunction, Simulation.dT, Simulation.InteractionFactor);
     
     % Compute environmental input
