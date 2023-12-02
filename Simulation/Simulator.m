@@ -73,16 +73,17 @@ TSample = [0:Simulation.deltaT:Simulation.Tmax]';   % sampling time instants
 xVec=nan([size(TSample,1),size(x0)]);               % positions of the swarm
 vVec=nan([size(TSample,1),size(x0)]);               % velocities of the swarm
 uVec=nan([size(TSample,1),size(x0)]);               % inputs of the swarm
+envInput = zeros(N,1);
 
 % xVec(1,:,:)=x0;
 v=v0;
 
 if Simulation.recordVideo
     video = VideoWriter('./Output/video','MPEG-4');
-    video.FrameRate = 1/Simulation.deltaT;
+    video.FrameRate = 1/Simulation.deltaT/4;
     open(video);
-    currFrame = getframe(gcf);
-    writeVideo(video,currFrame);
+%     currFrame = getframe(gcf);
+%     writeVideo(video,currFrame);
 end
 
 disp(['- Simulating ',num2str(N),' ',Dynamics.model, ' agents in ', num2str(size(x0,2)),'D space with ',GlobalIntFunction.function,' interaction'])

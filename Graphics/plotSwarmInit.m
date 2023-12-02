@@ -33,7 +33,7 @@ arguments
     Lim         double {mustBePositive}     = 10
     tickStep    double {mustBePositive}     = Lim/2
     showGrid    logical                     = false
-    gradColor   logical                     = false
+    gradColor   logical                     = true
     thenDelete  logical                     = false
 end
 

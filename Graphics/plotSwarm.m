@@ -33,10 +33,10 @@ arguments
     RMax        double {mustBeNonnegative}
     thenDelete  logical                     = false
     spin        double                      = ones(size(x,1), 1)
-    gradColor   logical                     = false
+    gradColor   logical                     = true
 end
 
-title("t="+time+" s")
+title(['t=',num2str(time,'%.2f'),' s'])
 p_lines=drawLines(x,RMin,RMax,gradColor);
 
 spin1 = find(spin==1);
