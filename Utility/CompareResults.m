@@ -72,17 +72,17 @@ end
 
 figure % BOX PLOT - SPEED and ANGULAR VELOCITY - MEAN OVER AGENTS
 subplot(2,1,1)
-set(gca,'FontSize',14)
+set(gca,'FontSize',12)
 for i=1:number_of_exp; data_to_plot{i} = mean(experiments{i}.speed,'omitnan'); end
-myboxplot(data_to_plot,true, 3)
-ylabel('speed [px/s]')
+myboxplot(data_to_plot,true, 3, {'b','k'})
+ylabel('$v$ [px/s]','Interpreter','Latex','FontSize',16)
 xticklabels({'REAL','SIMULATED'})
 title('Average over agents')
 subplot(2,1,2)
-set(gca,'FontSize',14)
+set(gca,'FontSize',12)
 for i=1:number_of_exp; data_to_plot{i} = mean(abs(experiments{i}.omega),'omitnan'); end
-myboxplot(data_to_plot,true, 3)
-ylabel('ang. vel. [rad/s]')
+myboxplot(data_to_plot,true, 3, {'b','k'})
+ylabel('$\omega$ [rad/s]','Interpreter','Latex','FontSize',16)
 xticklabels({'REAL','SIMULATED'})
 set(gcf,'position',[300,300,300,420])
 if outputDir
@@ -92,17 +92,17 @@ end
 
 figure % BOX PLOT - SPEED and ANGULAR VELOCITY - MEAN OVER TIME
 subplot(2,1,1)
-set(gca,'FontSize',14)
+set(gca,'FontSize',12)
 for i=1:number_of_exp; data_to_plot{i} = mean(experiments{i}.speed,2,'omitnan'); end
-myboxplot(data_to_plot,true, 3)
-ylabel('speed [px/s]')
+myboxplot(data_to_plot,true, 3, {'b','k'})
+ylabel('$v$ [px/s]','Interpreter','Latex','FontSize',16)
 xticklabels({'REAL','SIMULATED'})
 title('Average over time')
 subplot(2,1,2)
-set(gca,'FontSize',14)
+set(gca,'FontSize',12)
 for i=1:number_of_exp; data_to_plot{i} = mean(abs(experiments{i}.omega),2,'omitnan'); end
-myboxplot(data_to_plot,true, 3)
-ylabel('ang. vel. [rad/s]')
+myboxplot(data_to_plot,true, 3, {'b','k'})
+ylabel('$\omega$ [rad/s]','Interpreter','Latex','FontSize',16)
 xticklabels({'REAL','SIMULATED'})
 set(gcf,'position',[300,300,300,420])
 if outputDir
@@ -112,17 +112,17 @@ end
 
 figure % BOX PLOT - SPEED and ANGULAR VELOCITY - ALL POINTS
 subplot(2,1,1)
-set(gca,'FontSize',14)
+set(gca,'FontSize',12)
 for i=1:number_of_exp; data_to_plot{i} = experiments{i}.speed(:); end
-myboxplot(data_to_plot, true, 3)
-ylabel('speed [px/s]')
+myboxplot(data_to_plot, true, 3, {'b','k'})
+ylabel('$v$ [px/s]','Interpreter','Latex','FontSize',16)
 xticklabels({'REAL','SIMULATED'})
 title('All points')
 subplot(2,1,2)
-set(gca,'FontSize',14)
+set(gca,'FontSize',12)
 for i=1:number_of_exp; data_to_plot{i} = abs(experiments{i}.omega(:)); end
-myboxplot(data_to_plot, true, 3)%, [0,0.4470,0.7410])
-ylabel('ang. vel. [rad/s]')
+myboxplot(data_to_plot, true, 3, {'b','k'})%, [0,0.4470,0.7410])
+ylabel('$\omega$ [rad/s]','Interpreter','Latex','FontSize',16)
 xticklabels({'REAL','SIMULATED'})
 set(gcf,'position',[300,300,300,420])
 if outputDir
@@ -137,9 +137,9 @@ grouping=[];
 for i=1:number_of_exp; x_to_plot = [x_to_plot,  mean(experiments{i}.speed,2,'omitnan')']; end
 for i=1:number_of_exp; y_to_plot = [y_to_plot,  mean(abs(experiments{i}.omega),2,'omitnan')']; end
 for i=1:number_of_exp; grouping = [grouping,  i*ones(1,length(mean(experiments{i}.speed,2,'omitnan')))]; end
-s=scatterhist(x_to_plot, y_to_plot, 'Location','NorthEast','Direction','out','Group', grouping ,'Kernel','on');%,'Marker','.', 'MarkerSize', 15);
-xlabel(s,'mean speed [px/s]')
-ylabel(s,'mean ang. vel. [rad/s]')
+s=scatterhist(x_to_plot, y_to_plot, 'Location','NorthEast','Direction','out','Group', grouping ,'Color','bk','Kernel','on');%,'Marker','.', 'MarkerSize', 15);
+xlabel(s,'mean $v$ [px/s]','Interpreter','Latex','FontSize',16)
+ylabel(s,'mean $\omega$ [rad/s]','Interpreter','Latex','FontSize',16)
 s(1).YAxisLocation = 'left';
 s(1).XAxisLocation = 'bottom';
 %set(get(gca,'children'),'filled',true)
@@ -155,14 +155,15 @@ end
 
 figure % TIME PLOT - SPEED and ANGULAR VELOCITY
 subplot(2,1,1)
-plotWithShade(timeInstants, median(experiments{1}.speed,1,'omitnan'), min(experiments{1}.speed, [], 1,'omitnan'), max(experiments{1}.speed, [], 1,'omitnan'), 'b', 0.3);
-plotWithShade(timeInstants, median(experiments{2}.speed,1,'omitnan'), min(experiments{2}.speed, [], 1,'omitnan'), max(experiments{2}.speed, [], 1,'omitnan'), 'k', 0.3);
+l1=plotWithShade(timeInstants, median(experiments{1}.speed,1,'omitnan'), min(experiments{1}.speed, [], 1,'omitnan'), max(experiments{1}.speed, [], 1,'omitnan'), 'b', 0.3);
+l2=plotWithShade(timeInstants, median(experiments{2}.speed,1,'omitnan'), min(experiments{2}.speed, [], 1,'omitnan'), max(experiments{2}.speed, [], 1,'omitnan'), 'k', 0.3);
 xlim([0,max(timeInstants)])
 if isvarname('u')
     highlightInputs(timeInstants, u, 'r', 0.25)
 end
-xlabel('t [s]')
-ylabel('speed [px/s]')
+xlabel('$t$ [s]','Interpreter','Latex','FontSize',16)
+ylabel('$v$ [px/s]','Interpreter','Latex','FontSize',16)
+legend([l1,l2],'REAL','SIMULATED')
 rng=ylim;
 box on
 % subplot(2,4,4)
@@ -172,14 +173,15 @@ box on
 % ylim(rng);
 % set(gca,'xtick',[])
 subplot(2,1,2)
-plotWithShade(timeInstants, median(abs(experiments{1}.omega),1,'omitnan'), min(abs(experiments{1}.omega), [], 1,'omitnan'), max(abs(experiments{1}.omega), [], 1,'omitnan'), 'b', 0.3);
-plotWithShade(timeInstants, median(abs(experiments{2}.omega),1,'omitnan'), min(abs(experiments{2}.omega), [], 1,'omitnan'), max(abs(experiments{2}.omega), [], 1,'omitnan'), 'k', 0.3);
+l1=plotWithShade(timeInstants, median(abs(experiments{1}.omega),1,'omitnan'), min(abs(experiments{1}.omega), [], 1,'omitnan'), max(abs(experiments{1}.omega), [], 1,'omitnan'), 'b', 0.3);
+l2=plotWithShade(timeInstants, median(abs(experiments{2}.omega),1,'omitnan'), min(abs(experiments{2}.omega), [], 1,'omitnan'), max(abs(experiments{2}.omega), [], 1,'omitnan'), 'k', 0.3);
 xlim([0,max(timeInstants)])
 if isvarname('u')
     highlightInputs(timeInstants, u, 'r', 0.25)
 end
-xlabel('t [s]')
-ylabel('ang. vel. [rad/s]')
+xlabel('$t$ [s]','Interpreter','Latex','FontSize',16)
+ylabel('$\omega$ [rad/s]','Interpreter','Latex','FontSize',16)
+legend([l1,l2],'REAL','SIMULATED')
 rng=ylim;
 box on
 % subplot(2,4,8)

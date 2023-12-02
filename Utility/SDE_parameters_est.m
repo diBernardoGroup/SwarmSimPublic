@@ -32,44 +32,40 @@ for i=1:number_of_series
     u_current = u_current(1:end-1,:);
     assert(length(x_old)==length(x_new))
     
-    % LASSO regression
     % invert sampling equation
     if length(x_new) > 10
+        % LASSO regression
         if strcmp(method,'LASSO')
             predictors = [x_old, u_current];
             [B,FitInfo] = lasso(predictors, x_new,'CV',10 ,'Standardize', false, 'Intercept',true);
             p=B(:,FitInfo.IndexMinMSE);
             a = p(1);
-            c = p(2:end);
-            b = FitInfo.Intercept(FitInfo.IndexMinMSE);
+            b = p(2:end);
+            c = FitInfo.Intercept(FitInfo.IndexMinMSE);
+            
+        % OLS regression
         elseif strcmp(method,'OLS')
-            predictors = [ones(length(x_old),1), x_old, u_current];
+            predictors = [x_old, u_current, ones(length(x_old),1)];
             p = predictors\x_new;
-            a = p(2);
-            b = p(1);
-            c = p(3:end);
+            a = p(1);
+            b = p(2:end-1);
+            c = p(end);
         end
 
-        residuals = x_new - (b + a*x_old + u_current*c);
-%         residuals_constant = x_new - mean(x_new);    
-%         if norm(residuals_constant) < norm(residuals) + 0.01
-%             residuals = residuals_constant;
-%             b=mean(x_new);
-%             a=0;
-%         end
+        residuals = x_new - (a*x_old + u_current*b + c);
         
         if i >= series_to_plot(ii)
             subplot(1,length(series_to_plot),ii)
             hold on
-            scatter(x_old, x_new - u_current*c)
-            plot(x_old, b + a*x_old)
+            scatter(x_old, x_new - u_current*b)
+            plot(x_old, a*x_old + c)
             axis([min(x,[],'all')*0.9, max(x,[],'all')*1.1, min(x,[],'all')*0.9, max(x,[],'all')*1.1])
             ii=ii+1;
         end
         
         %compute continuous time parameters
-        mu(i) = real(b/(1-a));
-        alpha(i,:) = real(inv(a-1)*log(a)/deltaT*c);
+        mu(i) = real(c/(1-a));
+        alpha(i,:) = real(inv(a-1)*log(a)/deltaT*b);
         if a ~= 0
             theta(i) = real(-1/deltaT * log(a));
             sigma(i) = real(std(residuals) * sqrt(-2*log(a) / (1-a^2) / deltaT));

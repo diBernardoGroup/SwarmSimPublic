@@ -18,13 +18,16 @@ D=2;                        % number of dimensions [2 or 3]
 
 defaultParam;               % load default parameters
 
-data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16';
+data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12'; % off
+%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
+
+id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16';
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 
 %% Loads experiment data
 Simulation.deltaT = 0.5;
 
-identification=readtable(fullfile(data_folder,'identification.txt'));
+identification=readtable(fullfile(id_folder,'identification.txt'));
 ids=randsample(length(identification.agents),N, true, ones(length(identification.agents),1));
 agents = identification(ids,:);
 Dynamics=struct('model','IndependentSDEsWithInput', ...
@@ -123,6 +126,24 @@ if outputDir
     saveas(gcf, fullfile(path, 'trajectories'))
     saveas(gcf, fullfile(path, 'trajectories'),'png')
 end
+
+figure
+hold on
+colors = get(gca, 'ColorOrder');
+final=50;
+window = [-1920/3*2,1920/3,-1080/2,1080/2];
+for i=1:2:40
+    if xVec(final,i,1) > window(1) && xVec(final,i,1) < window(2) && xVec(final,i,2) > window(3) && xVec(final,i,2) < window(4)
+        c = colors(mod(i-1,7)+1,:);
+        plot(xVec(1:final,i,1),xVec(1:final,i,2), 'color', c); 
+        plot(xVec(final,i,1),xVec(final,i,2),'o', 'color', c, 'MarkerFaceColor', c); 
+    end
+end
+xticks([])
+yticks([])
+axis('equal')
+axis(window)
+box on
 
 % COMPARE RESULTS
 [mse_speed,mse_omega] = compareResults({data_folder,path}, path);

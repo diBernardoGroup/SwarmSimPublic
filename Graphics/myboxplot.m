@@ -1,10 +1,10 @@
-function [] = myboxplot(data, significance, whisker, color)
+function [] = myboxplot(data, significance, whisker, colors)
 
     arguments
         data
         significance = false
         whisker = 1.5
-        color = false
+        colors = get(gca,'ColorOrder')
     end
     
     hold on
@@ -21,16 +21,19 @@ function [] = myboxplot(data, significance, whisker, color)
         xlim([0.5 length(data)+0.5])
     end
     
+    h = findobj(gcf,'tag','Outliers');
+    for j=1:length(h)
+        h(j).MarkerEdgeColor = validatecolor('w')*0.5;
+    end
+    
     h = findobj('LineStyle','--'); set(h, 'LineStyle','-');
     h = findobj(gca,'Type','line'); set(h, 'LineWidth',1);
     h = flip(findobj(gca,'Tag','Box'));
+    if iscell(colors) && ischar(colors{1})
+        colors=validatecolor(colors,'multiple');
+    end
     for j=1:length(h)
-        if any(logical(color))
-            patch(get(h(j),'XData'),get(h(j),'YData'),color,'FaceAlpha',.5);
-        else
-            colors=get(gca,'ColorOrder');
-            patch(get(h(j),'XData'),get(h(j),'YData'),colors(j,:),'FaceAlpha',.5);
-        end
+        patch(get(h(j),'XData'),get(h(j),'YData'),colors(j,:),'FaceAlpha',.5);
     end
     
     %significance bar

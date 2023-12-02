@@ -2,14 +2,14 @@ clear
 % close all
 
 
-%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12'; % off
-data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
-data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
+data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12'; % off
+%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
+%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
 
 deltaT = 0.5;
 dT = 0.01;
 thresholdfactor = 5;
-downSampling = 2;
+downSampling = 3;
 
 current_folder = fileparts(which('AnalyseDOMEexp'));
 addpath(genpath(current_folder));
@@ -49,8 +49,10 @@ identification = table(agents, mu_s, theta_s, sigma_s, alpha_s, beta_s, mu_w, th
 nan_ids = isnan(identification.mu_s) | isnan(identification.mu_w);
 identification(nan_ids,:) = [];
 % must be different from zero
+if mean(u) ~= 0
 for i=["alpha_s","beta_s","alpha_w","beta_w"]
     identification(identification.(i) == 0,:) = [];
+end
 end
 % must be positive
 for i=["mu_s","theta_s","sigma_s","mu_w","theta_w","sigma_w"]
@@ -80,28 +82,30 @@ for i=1:length(t_sim)-1
 %     if i==1
 %         u_sim(i,2)=0; 
 %     else
-%         u_sim(i,2)=(u_sim(i,1)-u_sim(i-1,1))/dT ;
+%         u_sim(i,2)=(u_sim(i,1)-u_sim(i-1,1))/dT;
 %     end
     s_sim(i+1)= s_sim(i) + (mean(identification.theta_s)*(mean(identification.mu_s)-s_sim(i)) + mean(identification.alpha_s)*u_sim(i,1) + mean(identification.beta_s)*u_sim(i,2) )*dT;
     w_sim(i+1)= w_sim(i) + (mean(identification.theta_w)*(mean(identification.mu_w)-w_sim(i)) + mean(identification.alpha_w)*u_sim(i,1) + mean(identification.beta_w)*u_sim(i,2) )*dT;
 end
 
 mse_speed = mean((mean(speed,2,'omitnan')-interp1(t_sim,s_sim,timeInstants)').^2);
-mse_omega = mean((mean(omega,2,'omitnan')-interp1(t_sim,w_sim,timeInstants(1:end-1))').^2);
+mse_omega = mean((mean(abs(omega),2,'omitnan')-interp1(t_sim,w_sim,timeInstants(1:end-1))').^2);
 disp(['MSE from mean for speed: ',num2str(mse_speed),' and omega: ',num2str(mse_omega)])
 mse_speed = mean((median(speed,2,'omitnan')-interp1(t_sim,s_sim,timeInstants)').^2);
-mse_omega = mean((median(omega,2,'omitnan')-interp1(t_sim,w_sim,timeInstants(1:end-1))').^2);
+mse_omega = mean((median(abs(omega),2,'omitnan')-interp1(t_sim,w_sim,timeInstants(1:end-1))').^2);
 disp(['MSE from median for speed: ',num2str(mse_speed),' and omega: ',num2str(mse_omega)])
 
 %% PLOTS
 
 figure
 for i=1:10 
-    subplot(1,10,i)
+    ax=subplot(2,5,i);
     myboxplot(identification(:,i+1), false, 3);
+    set(ax,'PositionConstraint','innerposition')
     yline(0,'Color',[0.5,0.5,0.5])
     %l=max(identification.(i+1))*1.1;ylim([-l/15,l]);yticks([0:l/3:l])
     set(gca,'FontSize',16)
+    
 end
 
 figure % TIME PLOT - SPEED and ANGULAR VELOCITY
@@ -133,6 +137,10 @@ subplot(2,4,8)
 h=histogram(abs(omega(:)),'Orientation','horizontal');
 ylim(rng);
 set(gca,'xtick',[])
+
+figure
+corrplot(identification(:,2:11))
+
 
 figure % inputs
 subplot(3,1,1)
