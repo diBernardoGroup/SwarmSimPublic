@@ -16,7 +16,11 @@ number_of_series = size(x,2);
 mu=nan(number_of_series,1);
 theta=nan(number_of_series,1);
 sigma=nan(number_of_series,1);
-alpha=nan(number_of_series,size(u,2));
+if isa(u,'cell')
+    alpha=nan(number_of_series,size(u{1},2));
+else
+    alpha=nan(number_of_series,size(u,2));
+end
 
 % epsilon = 0.001;
 figure
@@ -25,8 +29,11 @@ ii=1;
 for i=1:number_of_series
     nan_ids = isnan(x(:,i));
     d = x(~nan_ids,i);
-    u_current = u(~nan_ids,:);
-
+    if isa(u,'cell')
+        u_current = u{i}(~nan_ids,:);
+    else
+        u_current = u(~nan_ids,:);
+    end
     x_old = d(1:end-1);
     x_new = d(2:end);
     u_current = u_current(1:end-1,:);

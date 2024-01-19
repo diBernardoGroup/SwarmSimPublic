@@ -22,16 +22,16 @@ delta=0.2;
 %% Create Initial Conditions
 %rng(1,'twister'); % set the randomn seed to have reproducible results
 
-%x0=randCircle(N, 2, D);                 % initial conditions drawn from a uniform disc
+x0=randCircle(N, 5, D);                 % initial conditions drawn from a uniform disc
 %x0 = normrnd(0,0.1*sqrt(N),N,D);    % initial conditions drawn from a normal distribution
 %x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D); % initial conditions on a correct lattice
 %x0 = perfectLactice(N, LinkNumber, D) + randCircle(N, delta, D); % initial conditions on a deformed lattice
-x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D ) + randCircle(N, delta, D); % initial conditions on a deformed lattice
+%x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D ) + randCircle(N, delta, D); % initial conditions on a deformed lattice
 
-% speeds0 = abs(normrnd(avgSpeed0,sigmaSpeed0,N,1));
-% theta0 = 2*pi*rand(N,1)-pi;
-% v0 = speeds0 .* [cos(theta0), sin(theta0)];
-v0 = zeros(size(x0));
+ speeds0 = abs(normrnd(avgSpeed0,sigmaSpeed0,N,1));
+ theta0 = 2*pi*rand(N,1)-pi;
+ v0 = speeds0 .* [cos(theta0), sin(theta0)];
+%v0 = zeros(size(x0));
 
 %% Run Simulation
 [xVec, uVec, vVec] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction, Environment);
@@ -118,6 +118,24 @@ if outputDir
     saveas(gcf, fullfile(path, 'trajectories'))
     saveas(gcf, fullfile(path, 'trajectories'),'png')
 end
+
+figure % colored trajectories
+hold on
+colors = get(gca, 'ColorOrder');
+final=ceil(size(xVec,1)/1);
+window = [-Simulation.arena, Simulation.arena, -Simulation.arena, Simulation.arena];
+for i=1:N
+    if xVec(final,i,1) > window(1) && xVec(final,i,1) < window(2) && xVec(final,i,2) > window(3) && xVec(final,i,2) < window(4)
+        c = colors(mod(i-1,7)+1,:);
+        plot(xVec(1:final,i,1),xVec(1:final,i,2), 'color', c); 
+        plot(xVec(final,i,1),xVec(final,i,2),'o', 'color', c, 'MarkerFaceColor', c); 
+    end
+end
+xticks([])
+yticks([])
+axis('equal')
+axis(window)
+box on
 
 % if ~strcmp(GlobalIntFunction.function,'None') % GLOBAL INTERACTION FUNCTION
 %     figure
@@ -226,22 +244,22 @@ end
 % saveas(gcf,fullfile(path, 'scatter_plot'),'png')
 % end
  
-figure % e_d_max
-set(gca,'FontSize',14)
-set(0, 'DefaultFigureRenderer', 'painters');
-set(gcf,'Position',[100 100 560 420*0.6])
-hold on
-line=plot(timeInstants, e_d_max, 'b');
-yline(Rmax-1,'--','LineWidth',2)
-yticks(sort([0:0.1:1, Rmax-1]))
-ylabel('$e$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
-xlabel('t', 'Interpreter','latex','FontSize',22)
-box
-grid
-if outputDir
-    saveas(gcf,fullfile(path, 'e_d_max'))
-    saveas(gcf,fullfile(path, 'e_d_max'),'png')
-end
+% figure % e_d_max
+% set(gca,'FontSize',14)
+% set(0, 'DefaultFigureRenderer', 'painters');
+% set(gcf,'Position',[100 100 560 420*0.6])
+% hold on
+% line=plot(timeInstants, e_d_max, 'b');
+% yline(Rmax-1,'--','LineWidth',2)
+% yticks(sort([0:0.1:1, Rmax-1]))
+% ylabel('$e$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
+% xlabel('t', 'Interpreter','latex','FontSize',22)
+% box
+% grid
+% if outputDir
+%     saveas(gcf,fullfile(path, 'e_d_max'))
+%     saveas(gcf,fullfile(path, 'e_d_max'),'png')
+% end
 
 % figure % links
 % plot(timeInstants,links)
@@ -255,19 +273,19 @@ end
 %     saveas(gcf,fullfile(path, 'links'),'png')
 % end
 
-figure % rigidity
-set(gca,'FontSize',14)
-set(gcf,'Position',[100 100 560 420*0.6])
-hold on
-plot(timeInstants,rigidity,'r')
-axis([-inf inf -0.05 1.05])
-title('$\rho$', 'Interpreter','latex','FontSize',22)
-xlabel('t', 'Interpreter','latex','FontSize',22)
-box
-grid
-if outputDir
-    saveas(gcf,fullfile(path, 'rigidity'))
-    saveas(gcf,fullfile(path, 'rigidity'),'png')
-end
+% figure % rigidity
+% set(gca,'FontSize',14)
+% set(gcf,'Position',[100 100 560 420*0.6])
+% hold on
+% plot(timeInstants,rigidity,'r')
+% axis([-inf inf -0.05 1.05])
+% title('$\rho$', 'Interpreter','latex','FontSize',22)
+% xlabel('t', 'Interpreter','latex','FontSize',22)
+% box
+% grid
+% if outputDir
+%     saveas(gcf,fullfile(path, 'rigidity'))
+%     saveas(gcf,fullfile(path, 'rigidity'),'png')
+% end
 
 

@@ -16,8 +16,8 @@ outputDir='./Output';
 %outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 outputDir='';
 
-N=20;                      % number of agents (N)
-D=3;                        % number of dimensions [2 or 3]
+N=50;                      % number of agents (N)
+D=2;                        % number of dimensions [2 or 3]
 
 LinkNumber=6*(D-1);         % number of links per agent in the lattice configuration (L)
                             % If D=2 then 6=triangular lattice, 4=square lattice, 3=hexagonal lattice
@@ -33,36 +33,36 @@ MaxSensingRadius=3;         % sensing radius of the agents (R_s)
 % All these fields are mandatory
 Simulation=struct();
 Simulation.Tmax =   5;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
-Simulation.deltaT = 0.05;   % sampling time step
+Simulation.deltaT = 0.01;   % sampling time step
 Simulation.dT =     0.001;   % integration time step
 Simulation.arena =  2.5;    % size of the simulation window
 Simulation.drawON=false;    % draw swarm during simulation (if N is large slows down the simulation)
-Simulation.drawTraj=0;   % draw trajectories of the agents (if N is large slows down the simulation)
-Simulation.recordVideo=true;% record video of the simulation (if true drawON must be true)
+Simulation.drawTraj=-1;   % draw trajectories of the agents (if N is large slows down the simulation)
+Simulation.recordVideo=false;% record video of the simulation (if true drawON must be true)
 %Simulation.getMetrics=true; % acquire metrics during the simulation (getMetrics=false discard settling times and stop times)
 
 %% Dynamic model of the agents
 % Initial velocities for CoupledSDEs and LevyWalk.
-avgSpeed0   = 5;
-sigmaSpeed0 = 2;
+avgSpeed0   = 2.5;
+sigmaSpeed0 = 0;
 
 % These parameters are used in integrateAgents.
 
-Dynamics=struct('model','FirstOrder', 'sigma',0, 'vMax',inf);
+%Dynamics=struct('model','FirstOrder', 'sigma',0, 'vMax',inf);
 %Dynamics=struct('model','SecondOrder', 'sigma',0, 'vMax', inf);
-%Dynamics=struct('model','IndependentSDEs', 'avgSpeed',5, 'rateSpeed', 1, 'sigmaSpeed', 0.5, 'rateOmega', 0.5, 'sigmaOmega', 1, 'omega', normrnd(0,0,N,1));
+Dynamics=struct('model','IndependentSDEs', 'avgSpeed',avgSpeed0, 'rateSpeed', 1, 'sigmaSpeed', sigmaSpeed0, 'rateOmega', 0.5, 'sigmaOmega', 3, 'omega', normrnd(0,0,N,1));
 %Dynamics=struct('model','CoupledSDEs', 'avgSpeed', avgSpeed0, 'rateSpeed', 1, 'sigmaSpeed', 1, 'rateOmega', 1, 'sigmaOmega', @(x)2*max(1-x/3,0), 'omega', zeros(N,1));
-%Dynamics=struct('model','LevyWalk', 'alpha',0.005, 'sigma', 0.15);
+%Dynamics=struct('model','LevyWalk', 'alpha',0.005, 'sigma', 0);
 
 %% Global interaction function for long distance interactions
 % These parameters are used in globalInteractionForce.
 
-GlobalIntFunction=struct('function','Lennard-Jones','parameters',[0.5, (D-1)*12], 'MaxSensingRadius', MaxSensingRadius, 'Gain', 1);
+%GlobalIntFunction=struct('function','Lennard-Jones','parameters',[0.5, (D-1)*12], 'MaxSensingRadius', MaxSensingRadius, 'Gain', 1);
 %GlobalIntFunction=struct('function','PowerLaw-FiniteCutoff','parameters',[1, Rmax], 'MaxSensingRadius', MaxSensingRadius, 'Gain', 0.5);
 %GlobalIntFunction=struct('function','Spears','parameters', [2 35]);  %from Spears2004
 %GlobalIntFunction=struct('function','Morse','parameters',[0.2, 2]);
 %GlobalIntFunction=struct('function','Modified-LJ','parameters',[]);  %from Torquato2009
-%GlobalIntFunction=struct('function','None');
+GlobalIntFunction=struct('function','None');
 
 %% Local interaction function for short distance interactions
 % These parameters are used in localInteractionForce.
@@ -70,8 +70,8 @@ GlobalIntFunction=struct('function','Lennard-Jones','parameters',[0.5, (D-1)*12]
 % plot the links between the agents.
 
 %LocalIntFunction=struct('function','Linear', 'LinkNumber',LinkNumber, 'DistanceRange', [0.6, 1.1], 'Gain', 1);
-LocalIntFunction=struct('function','None', 'DistanceRange', [0, Rmax]);
-%LocalIntFunction=struct('function','None');
+%LocalIntFunction=struct('function','None', 'DistanceRange', [0, Rmax]);
+LocalIntFunction=struct('function','None');
 
 % Set an optional rotation matrix to apply non-radial local forces.
 % Normal intercations can be used to form square lattices (only in 2D).

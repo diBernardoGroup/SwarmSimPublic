@@ -9,7 +9,7 @@
 %
 
 %% Clear environment
-close all
+%close all
 clear
 
 %% Parameters
@@ -18,10 +18,10 @@ D=2;                        % number of dimensions [2 or 3]
 
 defaultParam;               % load default parameters
 
-data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12'; % off
-%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
+%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12'; % off
+data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
 
-id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16';
+id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % folder with identification data
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 
 %% Loads experiment data
@@ -127,12 +127,12 @@ if outputDir
     saveas(gcf, fullfile(path, 'trajectories'),'png')
 end
 
-figure
+figure % colored trajectories
 hold on
 colors = get(gca, 'ColorOrder');
 final=50;
 window = [-1920/3*2,1920/3,-1080/2,1080/2];
-for i=1:2:40
+for i=1:N
     if xVec(final,i,1) > window(1) && xVec(final,i,1) < window(2) && xVec(final,i,2) > window(3) && xVec(final,i,2) < window(4)
         c = colors(mod(i-1,7)+1,:);
         plot(xVec(1:final,i,1),xVec(1:final,i,2), 'color', c); 
