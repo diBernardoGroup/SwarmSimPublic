@@ -22,12 +22,14 @@ defaultParam;               % load default parameters
 data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
 
 id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % folder with identification data
+identification_file_name = 'identification_ds1.txt';
+
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 
 %% Loads experiment data
 Simulation.deltaT = 0.5;
 
-identification=readtable(fullfile(id_folder,'identification.txt'));
+identification=readtable(fullfile(id_folder,identification_file_name));
 ids=randsample(length(identification.agents),N, true, ones(length(identification.agents),1));
 agents = identification(ids,:);
 Dynamics=struct('model','IndependentSDEsWithInput', ...
@@ -41,8 +43,6 @@ Simulation.Tmax = max(timeInstants);
 u=inputs(:,1)/255;
 Environment.EnvUniform.Times  = timeInstants; 
 Environment.EnvUniform.Values = u; 
-
-Simulation.drawON=true;     % draw swarm during simulation (if N is large slows down the simulation)
 
 %% Create Initial Conditions
 %rng(1,'twister'); % set the randomn seed to have reproducible results

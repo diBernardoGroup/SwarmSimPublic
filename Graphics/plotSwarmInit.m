@@ -36,7 +36,8 @@ arguments
     gradColor   logical                     = true
     thenDelete  logical                     = false
 end
-
+    figure
+    
     Max = Lim;   % amplitude of the simulation plane
     Min = -Lim;
 

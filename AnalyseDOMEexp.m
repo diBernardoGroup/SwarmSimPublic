@@ -6,10 +6,12 @@ clear
 data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
 
+identification_file_name = 'identification.txt';
+
 deltaT = 0.5;
 dT = 0.01;
-thresholdfactor = 5;
-downSampling = 3;
+thresholdfactor = 3;
+downSampling = 1;
 
 current_folder = fileparts(which('AnalyseDOMEexp'));
 addpath(genpath(current_folder));
@@ -40,8 +42,8 @@ for i=1:N
 end
 
 %% Identification
-[mu_s, theta_s, sigma_s, gains_s] = SDE_parameters_est(speed, u_matrix, deltaT, 'OLS');
-[mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_signw, deltaT,'OLS');
+[mu_s, theta_s, sigma_s, gains_s] = SDE_parameters_est(speed, u_matrix, deltaT, 'GreyBox');
+[mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_signw, deltaT,'GreyBox');
 %[mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(abs(omega), u_matrix, deltaT,'OLS');
 mu_s=round(mu_s,4); theta_s=round(theta_s,4); sigma_s=round(sigma_s,4); gains_s=round(gains_s,4); mu_w=round(mu_w,4); theta_w=round(theta_w,4); sigma_w=round(sigma_w,4); gains_w=round(gains_w,4);  
 alpha_s = gains_s(:,1); beta_s = gains_s(:,2); alpha_w = gains_w(:,1); beta_w = gains_w(:,2);
@@ -55,24 +57,24 @@ identification = table(agents, mu_s, theta_s, sigma_s, alpha_s, beta_s, mu_w, th
 nan_ids = isnan(identification.mu_s) | isnan(identification.mu_w);
 identification(nan_ids,:) = [];
 % must be different from zero
-if mean(u) ~= 0
-for i=["alpha_s","beta_s","alpha_w","beta_w"]
-    identification(identification.(i) == 0,:) = [];
-end
-end
+% if mean(u) ~= 0
+%     for i=["alpha_s","beta_s","alpha_w","beta_w"]
+%         identification(identification.(i) == 0,:) = [];
+%     end
+% end
 % must be positive
 for i=["mu_s","theta_s","sigma_s","theta_w","sigma_w"] %,"mu_w"
     identification(identification.(i) <= 0,:) = [];
 end
 % reject outliers
-for i=["mu_s","theta_s","sigma_s","alpha_s","beta_s","theta_w","sigma_w","alpha_w","beta_w"]
+for i=["mu_s","theta_s","sigma_s","alpha_s","beta_s","mu_w","theta_w","sigma_w","alpha_w","beta_w"]
     identification(isoutlier(identification.(i),'quartiles',thresholdfactor=thresholdfactor),:) = [];
 end
 disp(['identified ',num2str(size(identification,1)),' valid agents out of ',num2str(length(agents))])
-disp([num2str(sum(nan_ids)),' removed because nans, ' num2str(length(agents)-size(identification,1)-sum(nan_ids)),' removed because negative or outliers'])
+disp([num2str(sum(nan_ids)),' removed because nans, ' num2str(length(agents)-size(identification,1)-sum(nan_ids)),' removed because non valid values or outliers'])
 
 
-writetable(identification,fullfile(data_folder, 'identification.txt') ,'Delimiter',' ')
+writetable(identification,fullfile(data_folder, identification_file_name) ,'Delimiter',' ')
 
 % simulate average behaviour
 t_sim=0:dT:max(timeInstants);
@@ -105,7 +107,7 @@ disp(['MSE from median for speed: ',num2str(mse_speed),' and omega: ',num2str(ms
 
 %% PLOTS
 
-figure
+figure % PARAMETERS BOXPLOTS
 for i=1:10 
     ax=subplot(2,5,i);
     myboxplot(identification(:,i+1), false, 3);
@@ -148,23 +150,23 @@ h=histogram(abs(omega(:)),'Orientation','horizontal');
 ylim(rng);
 set(gca,'xtick',[])
 
-figure
-corrplot(identification(:,2:11))
-
-
-figure % inputs
-subplot(3,1,1)
-hold on
-plot(timeInstants,u,'--')
-plot(t_sim,u_sim(:,1),'--')
-legend({'experiment','simulation'})
-subplot(3,1,2)
-hold on
-plot(timeInstants,u_dot,'--')
-plot(t_sim,u_sim(:,2),'--')
-legend({'experiment','simulation'})
-subplot(3,1,3)
-hold on
-plot(timeInstants,cumtrapz(u_dot)*deltaT,'--')
-plot(t_sim,cumtrapz(u_sim(:,2))*dT,'--')
-legend({'experiment','simulation'})
+% figure
+% corrplot(identification(:,2:11))
+% 
+% 
+% figure % inputs
+% subplot(3,1,1)
+% hold on
+% plot(timeInstants,u,'--')
+% plot(t_sim,u_sim(:,1),'--')
+% legend({'experiment','simulation'})
+% subplot(3,1,2)
+% hold on
+% plot(timeInstants,u_dot,'--')
+% plot(t_sim,u_sim(:,2),'--')
+% legend({'experiment','simulation'})
+% subplot(3,1,3)
+% hold on
+% plot(timeInstants,cumtrapz(u_dot)*deltaT,'--')
+% plot(t_sim,cumtrapz(u_sim(:,2))*dT,'--')
+% legend({'experiment','simulation'})

@@ -13,14 +13,17 @@ arguments
 end
 
 number_of_series = size(x,2);
+if isa(u,'cell')
+    number_of_inputs = size(u{1},2);
+else
+    number_of_inputs = size(u,2);
+end
+
 mu=nan(number_of_series,1);
 theta=nan(number_of_series,1);
 sigma=nan(number_of_series,1);
-if isa(u,'cell')
-    alpha=nan(number_of_series,size(u{1},2));
-else
-    alpha=nan(number_of_series,size(u,2));
-end
+alpha=nan(number_of_series,number_of_inputs);
+
 
 % epsilon = 0.001;
 figure
@@ -39,7 +42,7 @@ for i=1:number_of_series
     u_current = u_current(1:end-1,:);
     assert(length(x_old)==length(x_new))
     
-    % invert sampling equation
+    % estimate discrete time parameters
     if length(x_new) > 10
         % LASSO regression
         if strcmp(method,'LASSO')
@@ -57,8 +60,23 @@ for i=1:number_of_series
             a = p(1);
             b = p(2:end-1);
             c = p(end);
+        
+        % MATLAB grey box estimation
+        elseif strcmp(method,'GreyBox')
+            data = iddata(x_old, u_current, deltaT);
+            sys = idnlgrey('discretizedSys',[1 number_of_inputs 1], {0, [0;0], 0}, x_old(1), deltaT);
+            sys.Parameters(1).Name = 'a'; sys.Parameters(2).Name = 'b'; sys.Parameters(3).Name = 'c';
+            %y = sim(sys, data);
+            opt = nlgreyestOptions;
+            %opt.Display = 'on';
+            opt.EstimateCovariance = false;
+            %opt.SearchOptions.FunctionTolerance = 10e-9;
+            sys_id = nlgreyest(data, sys, opt);
+            a = sys_id.Parameters(1).Value;
+            b = sys_id.Parameters(2).Value;
+            c = sys_id.Parameters(3).Value;
         end
-
+        
         residuals = x_new - (a*x_old + u_current*b + c);
         
         if i >= series_to_plot(ii)
