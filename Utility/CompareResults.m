@@ -1,6 +1,6 @@
 %% COMPARE EXPERIMENTS
 
-function [mse_speed,mse_omega] = compareResults(experiment_paths, outputDir)
+function [mse_speed,mse_omega,nmse_speed,nmse_omega,nmse_total] = compareResults(experiment_paths, outputDir)
 
 % experiment_paths = {'/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12';
 %                 '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/2023_10_26_IndependentSDEs_9';
@@ -66,7 +66,16 @@ else
     overlap = min(size(experiments{1}.speed,2),size(experiments{2}.speed,2));
     mse_speed = mean((mean(experiments{1}.speed(:,1:overlap),1,'omitnan')-mean(experiments{2}.speed(:,1:overlap),1,'omitnan')).^2);
     mse_omega = mean((mean(experiments{1}.omega(:,1:overlap),1,'omitnan')-mean(experiments{2}.omega(:,1:overlap),1,'omitnan')).^2);
-    disp(['MSE from mean for speed: ',num2str(mse_speed),' and omega: ',num2str(mse_omega)])
+    nmse_speed = goodnessOfFit(mean(experiments{2}.speed(:,1:overlap),1,'omitnan')', mean(experiments{1}.speed(:,1:overlap),1,'omitnan')', 'NMSE');
+    nmse_omega = goodnessOfFit(mean(experiments{2}.omega(:,1:overlap),1,'omitnan')', mean(experiments{1}.omega(:,1:overlap),1,'omitnan')', 'NMSE');
+    nmse_total = mean([nmse_speed, nmse_omega]);
+    %disp(['MSE between mean for speed:',num2str(mse_speed),' and omega: ',num2str(mse_omega)])
+    disp(['NMSE between mean for speed:',num2str(nmse_speed),' and omega: ',num2str(nmse_omega),' total: ', num2str(nmse_total)])
+    
+    nmse_speed_med = goodnessOfFit(median(experiments{2}.speed(:,1:overlap),1,'omitnan')', median(experiments{1}.speed(:,1:overlap),1,'omitnan')', 'NMSE');
+    nmse_omega_med = goodnessOfFit(median(experiments{2}.omega(:,1:overlap),1,'omitnan')', median(experiments{1}.omega(:,1:overlap),1,'omitnan')', 'NMSE');
+    nmse_total_med = mean([nmse_speed_med, nmse_omega_med]);
+    disp(['NMSE between median for speed:',num2str(nmse_speed_med),' and omega: ',num2str(nmse_omega_med),' total: ', num2str(nmse_total_med)])
 end
 
 

@@ -6,7 +6,7 @@ clear
 data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
 
-identification_file_name = 'identification.txt';
+identification_file_name = 'identification_GB_ds1_sign.txt';
 
 deltaT = 0.5;
 dT = 0.01;
@@ -45,7 +45,7 @@ end
 [mu_s, theta_s, sigma_s, gains_s] = SDE_parameters_est(speed, u_matrix, deltaT, 'GreyBox');
 [mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_signw, deltaT,'GreyBox');
 %[mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(abs(omega), u_matrix, deltaT,'OLS');
-mu_s=round(mu_s,4); theta_s=round(theta_s,4); sigma_s=round(sigma_s,4); gains_s=round(gains_s,4); mu_w=round(mu_w,4); theta_w=round(theta_w,4); sigma_w=round(sigma_w,4); gains_w=round(gains_w,4);  
+mu_s=round(mu_s,4); theta_s=round(theta_s,4); sigma_s=round(sigma_s,4); gains_s=round(gains_s,4); mu_w=round(mu_w,4); theta_w=round(theta_w,4); sigma_w=round(sigma_w,4); gains_w=round(gains_w,4);
 alpha_s = gains_s(:,1); beta_s = gains_s(:,2); alpha_w = gains_w(:,1); beta_w = gains_w(:,2);
 
 mean_s  = round(mean(speed,'omitnan')',4);
@@ -56,12 +56,7 @@ std_w   = round( std(omega,'omitnan')',4);
 identification = table(agents, mu_s, theta_s, sigma_s, alpha_s, beta_s, mu_w, theta_w, sigma_w, alpha_w, beta_w, mean_s, std_s, mean_w, std_w);
 nan_ids = isnan(identification.mu_s) | isnan(identification.mu_w);
 identification(nan_ids,:) = [];
-% must be different from zero
-% if mean(u) ~= 0
-%     for i=["alpha_s","beta_s","alpha_w","beta_w"]
-%         identification(identification.(i) == 0,:) = [];
-%     end
-% end
+
 % must be positive
 for i=["mu_s","theta_s","sigma_s","theta_w","sigma_w"] %,"mu_w"
     identification(identification.(i) <= 0,:) = [];
@@ -100,10 +95,19 @@ end
 
 mse_speed = mean((mean(speed,2,'omitnan')-interp1(t_sim,s_sim,timeInstants)').^2);
 mse_omega = mean((mean(abs(omega),2,'omitnan')-interp1(t_sim,w_sim,timeInstants(1:end-1))').^2);
-disp(['MSE from mean for speed: ',num2str(mse_speed),' and omega: ',num2str(mse_omega)])
+nmse_speed = goodnessOfFit(interp1(t_sim,s_sim,timeInstants)', mean(speed,2,'omitnan'), 'NMSE');
+nmse_omega = goodnessOfFit(interp1(t_sim,w_sim,timeInstants(1:end-1))', mean(abs(omega),2,'omitnan'), 'NMSE');
+nmse_total = mean([nmse_speed, nmse_omega]);
+%disp(['MSE from mean for speed: ',num2str(mse_speed),' and omega: ',num2str(mse_omega)])
+disp(['NMSE from mean for speed:',num2str(nmse_speed),' and omega: ',num2str(nmse_omega),' total: ', num2str(nmse_total)])
+
 mse_speed = mean((median(speed,2,'omitnan')-interp1(t_sim,s_sim,timeInstants)').^2);
 mse_omega = mean((median(abs(omega),2,'omitnan')-interp1(t_sim,w_sim,timeInstants(1:end-1))').^2);
-disp(['MSE from median for speed: ',num2str(mse_speed),' and omega: ',num2str(mse_omega)])
+nmse_speed = goodnessOfFit(interp1(t_sim,s_sim,timeInstants)', median(speed,2,'omitnan'), 'NMSE');
+nmse_omega = goodnessOfFit(interp1(t_sim,w_sim,timeInstants(1:end-1))', median(abs(omega),2,'omitnan'), 'NMSE');
+nmse_total = mean([nmse_speed, nmse_omega]);
+%disp(['MSE from median for speed: ',num2str(mse_speed),' and omega: ',num2str(mse_omega)])
+disp(['NMSE from median for speed:',num2str(nmse_speed),' and omega: ',num2str(nmse_omega),' total: ', num2str(nmse_total)])
 
 %% PLOTS
 

@@ -9,7 +9,7 @@
 %
 
 %% Clear environment
-%close all
+close all
 clear
 
 %% Parameters
@@ -22,13 +22,11 @@ defaultParam;               % load default parameters
 data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
 
 id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % folder with identification data
-identification_file_name = 'identification_ds1.txt';
+identification_file_name = 'identification_GB_ds3_sign.txt';
 
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 
 %% Loads experiment data
-Simulation.deltaT = 0.5;
-
 identification=readtable(fullfile(id_folder,identification_file_name));
 ids=randsample(length(identification.agents),N, true, ones(length(identification.agents),1));
 agents = identification(ids,:);
@@ -37,6 +35,7 @@ Dynamics=struct('model','IndependentSDEsWithInput', ...
     'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', agents.alpha_w, 'gainDerOmega', agents.beta_w,...
     'omega', normrnd(0,agents.std_w,N,1), 'oldInput', zeros(N,1));
 
+Simulation.deltaT = 0.5;
 inputs=load(fullfile(data_folder,'inputs.txt'));
 timeInstants = [0:size(inputs,1)-1] * Simulation.deltaT;
 Simulation.Tmax = max(timeInstants);
@@ -97,6 +96,7 @@ if outputDir
     fileID = fopen(fullfile(path, 'parameters.txt'),'wt');
     fprintf(fileID,'SimulateDOMEexp\n\n');
     fprintf(fileID,'Experiment: %s\n',data_folder);
+    fprintf(fileID,'Parameters: %s\n\n',identification_file_name);
     fprintf(fileID,'Date: %s\n',datestr(now, 'dd/mm/yy'));
     fprintf(fileID,'Time: %s\n\n',datestr(now, 'HH:MM'));
     fprintf(fileID,'Parameters:\n\n');
@@ -115,7 +115,6 @@ if outputDir
 end
 
 % SWARM
-figure
 if isfield(LocalIntFunction, 'DistanceRange')
     plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena);
 else
@@ -146,7 +145,7 @@ axis(window)
 box on
 
 % COMPARE RESULTS
-[mse_speed,mse_omega] = compareResults({data_folder,path}, path);
+[MSE_speed,MSE_omega,NMSE_speed,NMSE_omega,NMSE_total] = compareResults({data_folder,path}, path);
 
 % figure % TIME PLOT - SPEED and ANGULAR VELOCITY
 % subplot(2,4,[1 2 3])

@@ -34,8 +34,10 @@ for i=1:number_of_series
     d = x(~nan_ids,i);
     if isa(u,'cell')
         u_current = u{i}(~nan_ids,:);
+        u_is_empty = all(u{i}==0,'all');
     else
         u_current = u(~nan_ids,:);
+        u_is_empty = all(u==0,'all');
     end
     x_old = d(1:end-1);
     x_new = d(2:end);
@@ -43,7 +45,7 @@ for i=1:number_of_series
     assert(length(x_old)==length(x_new))
     
     % estimate discrete time parameters
-    if length(x_new) > 10
+    if length(x_new) > 10 && (u_is_empty || all(var(u_current) > 0))
         % LASSO regression
         if strcmp(method,'LASSO')
             predictors = [x_old, u_current];
@@ -65,7 +67,8 @@ for i=1:number_of_series
         elseif strcmp(method,'GreyBox')
             data = iddata(x_old, u_current, deltaT);
             sys = idnlgrey('discretizedSys',[1 number_of_inputs 1], {0, [0;0], 0}, x_old(1), deltaT);
-            sys.Parameters(1).Name = 'a'; sys.Parameters(2).Name = 'b'; sys.Parameters(3).Name = 'c';
+            sys.Parameters(1).Name = 'a'; sys.Parameters(1).Minimum = 0; sys.Parameters(1).Maximum = 1;
+            sys.Parameters(2).Name = 'b'; sys.Parameters(3).Name = 'c';
             %y = sim(sys, data);
             opt = nlgreyestOptions;
             %opt.Display = 'on';
