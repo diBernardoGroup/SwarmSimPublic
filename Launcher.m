@@ -19,6 +19,10 @@ defaultParam;               % load default parameters
 Simulation.drawON=true;     % draw swarm during simulation (if N is large slows down the simulation)
 delta=0.2;
 
+%Environment.Inputs.Points = cartesianProduct({[-5:5], [-2:2]});
+Environment.Inputs.Points = {[-5:5], [-10:10]};
+Environment.Inputs.Values = linspace(-1,1,length(Environment.Inputs.Points{1}))' * ones(1,length(Environment.Inputs.Points{2}));
+
 %% Create Initial Conditions
 %rng(1,'twister'); % set the randomn seed to have reproducible results
 
@@ -28,9 +32,9 @@ x0=randCircle(N, 5, D);                 % initial conditions drawn from a unifor
 %x0 = perfectLactice(N, LinkNumber, D) + randCircle(N, delta, D); % initial conditions on a deformed lattice
 %x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D ) + randCircle(N, delta, D); % initial conditions on a deformed lattice
 
- speeds0 = abs(normrnd(avgSpeed0,sigmaSpeed0,N,1));
- theta0 = 2*pi*rand(N,1)-pi;
- v0 = speeds0 .* [cos(theta0), sin(theta0)];
+speeds0 = abs(normrnd(avgSpeed0,sigmaSpeed0,N,1));
+theta0 = 2*pi*rand(N,1)-pi;
+v0 = speeds0 .* [cos(theta0), sin(theta0)];
 %v0 = zeros(size(x0));
 
 %% Run Simulation
@@ -108,6 +112,10 @@ end
 
 % SWARM
 figure
+% if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
+%     imagesc(x_vec,y_vec,F(x_mesh',y_mesh')')
+%     colormap(cmap)
+% end
 if isfield(LocalIntFunction, 'DistanceRange')
     plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena);
 else
@@ -119,23 +127,23 @@ if outputDir
     saveas(gcf, fullfile(path, 'trajectories'),'png')
 end
 
-figure % colored trajectories
-hold on
-colors = get(gca, 'ColorOrder');
-final=ceil(size(xVec,1)/1);
-window = [-Simulation.arena, Simulation.arena, -Simulation.arena, Simulation.arena];
-for i=1:N
-    if xVec(final,i,1) > window(1) && xVec(final,i,1) < window(2) && xVec(final,i,2) > window(3) && xVec(final,i,2) < window(4)
-        c = colors(mod(i-1,7)+1,:);
-        plot(xVec(1:final,i,1),xVec(1:final,i,2), 'color', c); 
-        plot(xVec(final,i,1),xVec(final,i,2),'o', 'color', c, 'MarkerFaceColor', c); 
-    end
-end
-xticks([])
-yticks([])
-axis('equal')
-axis(window)
-box on
+% figure % colored trajectories
+% hold on
+% colors = get(gca, 'ColorOrder');
+% final=ceil(size(xVec,1)/1);
+% window = [-Simulation.arena, Simulation.arena, -Simulation.arena, Simulation.arena];
+% for i=1:N
+%     if xVec(final,i,1) > window(1) && xVec(final,i,1) < window(2) && xVec(final,i,2) > window(3) && xVec(final,i,2) < window(4)
+%         c = colors(mod(i-1,7)+1,:);
+%         plot(xVec(1:final,i,1),xVec(1:final,i,2), 'color', c); 
+%         plot(xVec(final,i,1),xVec(final,i,2),'o', 'color', c, 'MarkerFaceColor', c); 
+%     end
+% end
+% xticks([])
+% yticks([])
+% axis('equal')
+% axis(window)
+% box on
 
 % if ~strcmp(GlobalIntFunction.function,'None') % GLOBAL INTERACTION FUNCTION
 %     figure
@@ -172,41 +180,41 @@ box on
 %     xlabel('\theta')
 %     set(gca,'FontSize',14)
 % end
-% 
-% figure % TIME PLOT - SPEED and ANGULAR VELOCITY
-% subplot(2,4,[1 2 3])
-% plotWithShade(timeInstants, median(speed,2), min(speed, [], 2), max(speed, [], 2), 'b', 0.3);
-% if isfield(Environment,'EnvUniform')
-%     highlightInputs(Environment.EnvUniform.Times, Environment.EnvUniform.Values, 'r', 0.25)
-% end
-% xlabel('t [s]')
-% ylabel('speed')
-% rng=ylim;
-% box on
-% subplot(2,4,4)
-% h=histogram(speed(:),'Orientation','horizontal');
-% ylim(rng);
-% set(gca,'xtick',[])
-% subplot(2,4,[5 6 7])
-% plotWithShade(timeInstants, median(abs(omega),2), min(abs(omega), [], 2), max(abs(omega), [], 2), 'b', 0.3);
-% %plotWithShade(timeInstants, median(omega,2), min(omega, [], 2), max(omega, [], 2), 'b', 0.3);
-% if isfield(Environment,'EnvUniform')
-%     highlightInputs(Environment.EnvUniform.Times, Environment.EnvUniform.Values, 'r', 0.25)
-% end
-% xlabel('t [s]')
-% ylabel('ang. vel. [rad/s]')
-% rng=ylim;
-% box on
-% subplot(2,4,8)
-% h=histogram(abs(omega(:)),'Orientation','horizontal');
-% %h=histogram(omega(:),'Orientation','horizontal');
-% ylim(rng);
-% set(gca,'xtick',[])
-% if outputDir
-%     saveas(gcf,fullfile(path, 'time_plot'))
-%     saveas(gcf,fullfile(path, 'time_plot'),'png')
-% end
-% 
+
+figure % TIME PLOT - SPEED and ANGULAR VELOCITY
+subplot(2,4,[1 2 3])
+plotWithShade(timeInstants, median(speed,2), min(speed, [], 2), max(speed, [], 2), 'b', 0.3);
+if isfield(Environment,'EnvUniform')
+    highlightInputs(Environment.EnvUniform.Times, Environment.EnvUniform.Values, 'r', 0.25)
+end
+xlabel('t [s]')
+ylabel('speed')
+rng=ylim;
+box on
+subplot(2,4,4)
+h=histogram(speed(:),'Orientation','horizontal');
+ylim(rng);
+set(gca,'xtick',[])
+subplot(2,4,[5 6 7])
+plotWithShade(timeInstants, median(abs(omega),2), min(abs(omega), [], 2), max(abs(omega), [], 2), 'b', 0.3);
+%plotWithShade(timeInstants, median(omega,2), min(omega, [], 2), max(omega, [], 2), 'b', 0.3);
+if isfield(Environment,'EnvUniform')
+    highlightInputs(Environment.EnvUniform.Times, Environment.EnvUniform.Values, 'r', 0.25)
+end
+xlabel('t [s]')
+ylabel('ang. vel. [rad/s]')
+rng=ylim;
+box on
+subplot(2,4,8)
+h=histogram(abs(omega(:)),'Orientation','horizontal');
+%h=histogram(omega(:),'Orientation','horizontal');
+ylim(rng);
+set(gca,'xtick',[])
+if outputDir
+    saveas(gcf,fullfile(path, 'time_plot'))
+    saveas(gcf,fullfile(path, 'time_plot'),'png')
+end
+
 % figure % SCATTER PLOT - SPEED and ANGULAR VELOCITY
 % s=scatterhist(speed(:),abs(omega(:)), 'Location','NorthEast','Direction','out');
 % xlabel(s,'speed')

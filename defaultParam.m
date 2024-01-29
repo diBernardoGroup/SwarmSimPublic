@@ -32,25 +32,29 @@ MaxSensingRadius=3;         % sensing radius of the agents (R_s)
 %% Simulation parameters
 % All these fields are mandatory
 Simulation=struct();
-Simulation.Tmax =   5;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
+Simulation.Tmax =   2;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
 Simulation.deltaT = 0.01;   % sampling time step
-Simulation.dT =     0.01;   % integration time step
-Simulation.arena =  1000;    % size of the simulation window
-Simulation.drawON=false;    % draw swarm during simulation (if N is large slows down the simulation)
-Simulation.drawTraj=-1;   % draw trajectories of the agents (if N is large slows down the simulation)
+Simulation.dT =     0.001;   % integration time step
+Simulation.arena =  10;    % size of the simulation window
+Simulation.drawON=true;    % draw swarm during simulation (if N is large slows down the simulation)
+Simulation.drawTraj=0;   % draw trajectories of the agents (if N is large slows down the simulation)
 Simulation.recordVideo=false;% record video of the simulation (if true drawON must be true)
 %Simulation.getMetrics=true; % acquire metrics during the simulation (getMetrics=false discard settling times and stop times)
 
 %% Dynamic model of the agents
 % Initial velocities for CoupledSDEs and LevyWalk.
 avgSpeed0   = 2.5;
-sigmaSpeed0 = 0;
+sigmaSpeed0 = 0.1;
 
 % These parameters are used in integrateAgents.
 
 %Dynamics=struct('model','FirstOrder', 'sigma',0, 'vMax',inf);
 %Dynamics=struct('model','SecondOrder', 'sigma',0, 'vMax', inf);
-Dynamics=struct('model','IndependentSDEs', 'avgSpeed',avgSpeed0, 'rateSpeed', 1, 'sigmaSpeed', sigmaSpeed0, 'rateOmega', 0.5, 'sigmaOmega', 3, 'omega', normrnd(0,0,N,1));
+%Dynamics=struct('model','IndependentSDEs', 'avgSpeed',avgSpeed0, 'rateSpeed', 1, 'sigmaSpeed', sigmaSpeed0, 'rateOmega', 0.5, 'sigmaOmega', 3, 'omega', normrnd(0,0,N,1));
+Dynamics=struct('model','IndependentSDEsWithInput', ...
+    'avgSpeed',avgSpeed0, 'rateSpeed', 1, 'sigmaSpeed', sigmaSpeed0, 'gainSpeed', -10, 'gainDerSpeed', 0,...
+    'rateOmega', 1, 'sigmaOmega', 0.1, 'gainOmega', 1, 'gainDerOmega', 0,...
+    'omega', normrnd(0,1,N,1), 'oldInput', zeros(N,1));
 %Dynamics=struct('model','CoupledSDEs', 'avgSpeed', avgSpeed0, 'rateSpeed', 1, 'sigmaSpeed', 1, 'rateOmega', 1, 'sigmaOmega', @(x)2*max(1-x/3,0), 'omega', zeros(N,1));
 %Dynamics=struct('model','LevyWalk', 'alpha',0.005, 'sigma', 0);
 
@@ -79,8 +83,8 @@ LocalIntFunction=struct('function','None');
 
 %% Simulation Environment
 Environment = struct();
-% Environment.EnvUniform.Times  = 'None'; 
-% Environment.EnvUniform.Values = 'None'; 
+% Environment.Inputs.Times  = 'None'; 
+% Environment.Inputs.Values = 'None'; 
 
 %% Add subfolders to the Matlab path
 current_folder = fileparts(which('defaultParam'));

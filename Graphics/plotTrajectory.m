@@ -11,8 +11,8 @@ function [p_traj] = plotTrajectory(xVec,thenDelete, color, window)
     else
         p_traj = plot3(xVec(:,:,1),xVec(:,:,2),xVec(:,:,3), 'color',color);
     end
-
-    if(thenDelete)
+    
+    if thenDelete
         drawnow
         delete(p_traj)
     end

@@ -22,7 +22,7 @@ defaultParam;               % load default parameters
 data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
 
 id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % folder with identification data
-identification_file_name = 'identification_GB_ds3_sign.txt';
+identification_file_name = 'identification_OLS_ds3_sign.txt';
 
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 
@@ -40,8 +40,8 @@ inputs=load(fullfile(data_folder,'inputs.txt'));
 timeInstants = [0:size(inputs,1)-1] * Simulation.deltaT;
 Simulation.Tmax = max(timeInstants);
 u=inputs(:,1)/255;
-Environment.EnvUniform.Times  = timeInstants; 
-Environment.EnvUniform.Values = u; 
+Environment.Inputs.Times  = timeInstants; 
+Environment.Inputs.Values = u; 
 
 %% Create Initial Conditions
 %rng(1,'twister'); % set the randomn seed to have reproducible results
@@ -150,8 +150,8 @@ box on
 % figure % TIME PLOT - SPEED and ANGULAR VELOCITY
 % subplot(2,4,[1 2 3])
 % plotWithShade(timeInstants, median(speed,2), min(speed, [], 2), max(speed, [], 2), 'b', 0.3);
-% if isfield(Environment,'EnvUniform')
-%     highlightInputs(Environment.EnvUniform.Times, Environment.EnvUniform.Values, 'r', 0.25)
+% if isfield(Environment,'Inputs')
+%     highlightInputs(Environment.Inputs.Times, Environment.Inputs.Values, 'r', 0.25)
 % end
 % xlabel('t [s]')
 % ylabel('speed')
@@ -164,8 +164,8 @@ box on
 % subplot(2,4,[5 6 7])
 % plotWithShade(timeInstants, median(abs(omega),2), min(abs(omega), [], 2), max(abs(omega), [], 2), 'b', 0.3);
 % %plotWithShade(timeInstants, median(omega,2), min(omega, [], 2), max(omega, [], 2), 'b', 0.3);
-% if isfield(Environment,'EnvUniform')
-%     highlightInputs(Environment.EnvUniform.Times, Environment.EnvUniform.Values, 'r', 0.25)
+% if isfield(Environment,'Inputs')
+%     highlightInputs(Environment.Inputs.Times, Environment.Inputs.Values, 'r', 0.25)
 % end
 % xlabel('t [s]')
 % ylabel('ang. vel. [rad/s]')

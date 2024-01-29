@@ -63,7 +63,7 @@ end
 
 p = [p1 ; p2];
 
-if(thenDelete)
+if thenDelete
     drawnow
     delete(p)
     delete(p_lines)

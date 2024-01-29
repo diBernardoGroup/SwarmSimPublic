@@ -55,10 +55,20 @@ if (GlobalIntFunction.SensingNumber~=inf); warning("SensingNumber is NOT set to 
 %% Instantiate Simulation Window
 
 if Simulation.drawON
+    figure
     if isfield(LocalIntFunction, 'DistanceRange')
         plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, 1, false, false, true);
     else
         plotSwarmInit(x0, 0, inf, inf, Simulation.arena, 1, false, false, true);
+    end
+    
+    if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
+        x_vec = linspace(-Simulation.arena,Simulation.arena,100);
+        y_vec = x_vec;
+        [x_mesh, y_mesh] = meshgrid(x_vec, y_vec);
+        %F=scatteredInterpolant(Environment.Inputs.Points, Environment.Inputs.Values, 'linear', 'nearest');
+        F = griddedInterpolant(Environment.Inputs.Points,Environment.Inputs.Values, 'linear', 'nearest');
+        cmap = [linspace(1,1,100)',linspace(1,0.5,100)',linspace(1,0.5,100)'];
     end
 end
 
@@ -97,10 +107,13 @@ while t<Simulation.Tmax
     forces = VFcontroller(x, GlobalIntFunction, LocalIntFunction, Simulation.dT, Simulation.InteractionFactor);
     
     % Compute environmental input
-    if isfield(Environment,'EnvField')
-        envInput = interpn(Environment.EnvUniform.Points, Environment.EnvUniform.Values, x(:,1),x(:,2));
-    elseif isfield(Environment,'EnvUniform')
-        envInput = ones(N,1) * interp1(Environment.EnvUniform.Times, Environment.EnvUniform.Values, t);
+    if isfield(Environment,'Inputs')
+        if isfield(Environment.Inputs,'Points')
+            %envInput = interpn(Environment.Inputs.Points{1}, Environment.Inputs.Points{2}, Environment.Inputs.Values, x(:,1),x(:,2), linear, nearest);
+            envInput = F(x(:,1),x(:,2));
+        else
+            envInput = ones(N,1) * interp1(Environment.Inputs.Times, Environment.Inputs.Values, t);
+        end
     end
     
     % Acquire data
@@ -116,11 +129,16 @@ while t<Simulation.Tmax
         % plot swarm
         if Simulation.drawON
             cla
+            hold on
+            if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
+                imagesc(x_vec,y_vec,F(x_mesh',y_mesh')')
+                colormap(cmap)
+            end
             if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
             if isfield(LocalIntFunction, 'DistanceRange')
-                plotSwarm(x, [], t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), false);
+                plotSwarm(x, [], t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), true);
             else
-                plotSwarm(x, [], t, inf, inf, false);
+                plotSwarm(x, [], t, inf, inf, true);
             end
             
             if Simulation.recordVideo
@@ -151,6 +169,10 @@ end
 % plot swarm
 if Simulation.drawON
     cla
+    if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
+        imagesc(x_vec,y_vec,F(x_mesh',y_mesh')')
+        colormap(cmap)
+    end
     if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
     if isfield(LocalIntFunction, 'DistanceRange')
         plotSwarm(squeeze(xVec(end,:,:)), [], t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), false);

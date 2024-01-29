@@ -26,9 +26,16 @@ function [splot,lplot] = mysurfc(x_vec,y_vec,z,level,curveLengthTol)
 arguments
     x_vec   (1,:)   double
     y_vec   (1,:)   double
-    z               double 
+    z               %(double, scatteredInterpolant)
     level           double = 0
     curveLengthTol  double = 0.6
+end
+
+[x_mesh, y_mesh] = meshgrid(x_vec, y_vec);
+
+if isa(z,'scatteredInterpolant')
+    z=surf(x_mesh,y_mesh,z(x_mesh,y_mesh));
+    z=z.ZData';
 end
 
 levelset=contourc(x_vec, y_vec, z', [level level]);
@@ -42,8 +49,6 @@ newlevelset=nan(2,0);
 for i=1:length(curveLenghts)
     newlevelset=[newlevelset, levelset(:,nanindex(cuveIndexes(i)):nanindex(cuveIndexes(i))+curveLenghts(i))];
 end
-
-[x_mesh, y_mesh] = meshgrid(x_vec, y_vec);
 
 splot=surf(x_mesh, y_mesh, z');
 shading interp
