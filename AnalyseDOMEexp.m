@@ -20,6 +20,7 @@ addpath(genpath(current_folder));
 %identification=readtable(fullfile(current_folder,'identification.txt'));
 speed=load(fullfile(data_folder,'speeds_smooth.txt'));
 omega=load(fullfile(data_folder,'ang_vel_smooth.txt'));
+
 inputs=load(fullfile(data_folder,'inputs.txt'));
 
 speed  = speed(1:downSampling:end,:);

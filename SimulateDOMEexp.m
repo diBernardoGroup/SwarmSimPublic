@@ -19,7 +19,8 @@ D=2;                        % number of dimensions [2 or 3]
 defaultParam;               % load default parameters
 
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12'; % off
-data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
+%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
+data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_37/tracking_2023_10_12'; % circle light
 
 id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % folder with identification data
 identification_file_name = 'identification_OLS_ds3_sign.txt';
@@ -27,6 +28,12 @@ identification_file_name = 'identification_OLS_ds3_sign.txt';
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 
 %% Loads experiment data
+Simulation.arena = [1920,1080]; % size of the simulation window
+Simulation.deltaT = 0.5;        % sampling time step
+Simulation.Tmax = 180;          % maximum simulation time
+timeInstants = [0:Simulation.deltaT:Simulation.Tmax];
+
+% load identification data and instantiate simulated agents
 identification=readtable(fullfile(id_folder,identification_file_name));
 ids=randsample(length(identification.agents),N, true, ones(length(identification.agents),1));
 agents = identification(ids,:);
@@ -35,13 +42,19 @@ Dynamics=struct('model','IndependentSDEsWithInput', ...
     'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', agents.alpha_w, 'gainDerOmega', agents.beta_w,...
     'omega', normrnd(0,agents.std_w,N,1), 'oldInput', zeros(N,1));
 
-Simulation.deltaT = 0.5;
-inputs=load(fullfile(data_folder,'inputs.txt'));
-timeInstants = [0:size(inputs,1)-1] * Simulation.deltaT;
-Simulation.Tmax = max(timeInstants);
-u=inputs(:,1)/255;
-Environment.Inputs.Times  = timeInstants; 
-Environment.Inputs.Values = u; 
+% load inputs data
+if isfile(fullfile(data_folder,'inputs.txt'))   % time varying inputs
+    inputs=load(fullfile(data_folder,'inputs.txt'));
+    u=inputs(:,1)/255;              %select blue channel and scale in [0,1]
+    Environment.Inputs.Times  = timeInstants;
+    Environment.Inputs.Values = u;
+else                                            % spatial inputs
+    inputs=imread(fullfile(fileparts(data_folder),'patterns_cam/pattern_10.0.jpeg'));
+    u=double(inputs(:,:,3))'/255;    %select blue channel and scale in [0,1]
+    Environment.Inputs.Points = {linspace(-Simulation.arena(1),Simulation.arena(1),size(inputs,2))/2, linspace(-Simulation.arena(2),Simulation.arena(2),size(inputs,1))/2};
+    %Environment.Inputs.Values = linspace(-1,1,length(Environment.Inputs.Points{1}))' * ones(1,length(Environment.Inputs.Points{2}));
+    Environment.Inputs.Values = u;
+end
 
 %% Create Initial Conditions
 %rng(1,'twister'); % set the randomn seed to have reproducible results
@@ -129,7 +142,7 @@ end
 figure % colored trajectories
 hold on
 colors = get(gca, 'ColorOrder');
-final=50;
+final=Simulation.Tmax;
 window = [-1920/3*2,1920/3,-1080/2,1080/2];
 for i=1:N
     if xVec(final,i,1) > window(1) && xVec(final,i,1) < window(2) && xVec(final,i,2) > window(3) && xVec(final,i,2) < window(4)

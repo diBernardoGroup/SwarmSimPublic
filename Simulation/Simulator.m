@@ -52,6 +52,10 @@ end
 assert(GlobalIntFunction.SensingNumber>0, 'GlobalIntFunction.SensingNumber must be positive')
 if (GlobalIntFunction.SensingNumber~=inf); warning("SensingNumber is NOT set to inf"); end
 
+if length(Simulation.arena)==1
+    Simulation.arena = [Simulation.arena, Simulation.arena];
+end
+    
 %% Instantiate Simulation Window
 
 if Simulation.drawON
@@ -63,8 +67,8 @@ if Simulation.drawON
     end
     
     if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
-        x_vec = linspace(-Simulation.arena,Simulation.arena,100);
-        y_vec = x_vec;
+        x_vec = linspace(-Simulation.arena(1)/2,Simulation.arena(1)/2,100);
+        y_vec = linspace(-Simulation.arena(2)/2,Simulation.arena(2)/2,100);
         [x_mesh, y_mesh] = meshgrid(x_vec, y_vec);
         %F=scatteredInterpolant(Environment.Inputs.Points, Environment.Inputs.Values, 'linear', 'nearest');
         F = griddedInterpolant(Environment.Inputs.Points,Environment.Inputs.Values, 'linear', 'nearest');

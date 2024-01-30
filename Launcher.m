@@ -19,9 +19,8 @@ defaultParam;               % load default parameters
 Simulation.drawON=true;     % draw swarm during simulation (if N is large slows down the simulation)
 delta=0.2;
 
-%Environment.Inputs.Points = cartesianProduct({[-5:5], [-2:2]});
-Environment.Inputs.Points = {[-5:5], [-10:10]};
-Environment.Inputs.Values = linspace(-1,1,length(Environment.Inputs.Points{1}))' * ones(1,length(Environment.Inputs.Points{2}));
+% Environment.Inputs.Points = {[-5:5], [-10:10]};
+% Environment.Inputs.Values = linspace(-1,1,length(Environment.Inputs.Points{1}))' * ones(1,length(Environment.Inputs.Points{2}));
 
 %% Create Initial Conditions
 %rng(1,'twister'); % set the randomn seed to have reproducible results
