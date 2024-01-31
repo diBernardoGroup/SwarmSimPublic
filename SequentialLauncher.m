@@ -264,10 +264,10 @@ elseif Nparameters==2
     norm_slope_map = reshape(norm_slope_mean, [length(parameters(1).values), length(parameters(2).values)]);
     
     figure
-    [~,lplot]=mysurfc(parameters(1).values, parameters(2).values, norm_slope);
+    [~,lplot]=mysurfc(parameters(1).values, parameters(2).values, norm_slope_map);
     xlabel(parameters(1).name)
     ylabel(parameters(2).name)
-    title('$\rho$', 'interpreter', 'latex')
+    title('norm slope')
     hold on
     xlim([-inf, inf])
     ylim([-inf, inf])
@@ -275,8 +275,8 @@ elseif Nparameters==2
     set(gca, 'YTick', parameters(2).values);
     set(gca,'FontSize',14)
     if outputDir
-        saveas(gcf,fullfile(path, 'c_coeff'))
-        saveas(gcf,fullfile(path, 'c_coeff'),'png')
+        saveas(gcf,fullfile(path, 'norm_slope'))
+        saveas(gcf,fullfile(path, 'norm_slope'),'png')
     end
     
 end
