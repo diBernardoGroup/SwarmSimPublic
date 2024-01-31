@@ -19,8 +19,8 @@ defaultParam;               % load default parameters
 Simulation.drawON=true;     % draw swarm during simulation (if N is large slows down the simulation)
 delta=0.2;
 
-% Environment.Inputs.Points = {[-5:5], [-10:10]};
-% Environment.Inputs.Values = linspace(-1,1,length(Environment.Inputs.Points{1}))' * ones(1,length(Environment.Inputs.Points{2}));
+Environment.Inputs.Points = {[-3:3], [-5:5]};
+Environment.Inputs.Values = linspace(-1,1,length(Environment.Inputs.Points{1}))' * ones(1,length(Environment.Inputs.Points{2}));
 
 %% Create Initial Conditions
 %rng(1,'twister'); % set the randomn seed to have reproducible results
@@ -77,6 +77,8 @@ for i=1:length(timeInstants) % for each time instant...
 end
 
 %% PLOTS
+xFinal_inWindow = squeeze(xVec(end,(xVec(end,:,1)>-Simulation.arena(1)/2 & xVec(end,:,1)<Simulation.arena(1)/2 ...
+                        & xVec(end,:,2)>-Simulation.arena(2)/2 & xVec(end,:,2)<Simulation.arena(2)/2),:));
 
 % create output folder, save data and parameters
 
@@ -111,10 +113,9 @@ end
 
 % SWARM
 figure
-% if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
-%     imagesc(x_vec,y_vec,F(x_mesh',y_mesh')')
-%     colormap(cmap)
-% end
+if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
+    plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Simulation.arena)
+end
 if isfield(LocalIntFunction, 'DistanceRange')
     plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena);
 else
@@ -130,7 +131,7 @@ end
 % hold on
 % colors = get(gca, 'ColorOrder');
 % final=ceil(size(xVec,1)/1);
-% window = [-Simulation.arena, Simulation.arena, -Simulation.arena, Simulation.arena];
+% window = [-Simulation.arena(1), Simulation.arena(1), -Simulation.arena(2), Simulation.arena(2)]/2;
 % for i=1:N
 %     if xVec(final,i,1) > window(1) && xVec(final,i,1) < window(2) && xVec(final,i,2) > window(3) && xVec(final,i,2) < window(4)
 %         c = colors(mod(i-1,7)+1,:);
@@ -295,4 +296,26 @@ end
 %     saveas(gcf,fullfile(path, 'rigidity'),'png')
 % end
 
-
+% light distribution
+if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
+    F = griddedInterpolant(Environment.Inputs.Points,Environment.Inputs.Values, 'linear', 'nearest');
+    envInput = F(xFinal_inWindow(:,1),xFinal_inWindow(:,2));    % input intensity measured by the agents
+    
+    x_vec = linspace(-Simulation.arena(1)/2,Simulation.arena(1)/2,100);
+    y_vec = linspace(-Simulation.arena(2)/2,Simulation.arena(2)/2,100);
+    [x_mesh, y_mesh] = meshgrid(x_vec, y_vec);
+    [pixels_by_input,bins] = histcounts(F(x_mesh',y_mesh'), 10);
+    [agents_by_input,bins] = histcounts(envInput, bins);
+    
+    figure % light distribution
+    bar((bins(1:end-1)+bins(2:end))/2,agents_by_input./pixels_by_input, 1)
+    xlabel('Input intensity')
+    ylabel('Density of agents')
+    title('Final distribution')
+        
+    figure 
+    histogram(envInput,bins)
+    xlabel('Input intensity')
+    ylabel('Number of agents')
+    title('Final distribution')
+end

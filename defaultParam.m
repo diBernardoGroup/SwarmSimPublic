@@ -32,10 +32,10 @@ MaxSensingRadius=3;         % sensing radius of the agents (R_s)
 %% Simulation parameters
 % All these fields are mandatory
 Simulation=struct();
-Simulation.Tmax =   2;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
+Simulation.Tmax =   5;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
 Simulation.deltaT = 0.01;   % sampling time step
 Simulation.dT =     0.001;   % integration time step
-Simulation.arena =  10;    % size of the simulation window
+Simulation.arena =  [10,10];    % size of the simulation window
 Simulation.drawON=true;    % draw swarm during simulation (if N is large slows down the simulation)
 Simulation.drawTraj=0;   % draw trajectories of the agents (if N is large slows down the simulation)
 Simulation.recordVideo=false;% record video of the simulation (if true drawON must be true)

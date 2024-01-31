@@ -55,24 +55,28 @@ if (GlobalIntFunction.SensingNumber~=inf); warning("SensingNumber is NOT set to 
 if length(Simulation.arena)==1
     Simulation.arena = [Simulation.arena, Simulation.arena];
 end
+
+if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
+    x_vec = linspace(-Simulation.arena(1)/2,Simulation.arena(1)/2,100);
+    y_vec = linspace(-Simulation.arena(2)/2,Simulation.arena(2)/2,100);
+    [x_mesh, y_mesh] = meshgrid(x_vec, y_vec);
+    %F=scatteredInterpolant(Environment.Inputs.Points, Environment.Inputs.Values, 'linear', 'nearest');
+    F = griddedInterpolant(Environment.Inputs.Points,Environment.Inputs.Values, 'linear', 'nearest');
+    cmap = linspace2([1,1,1], [1,0.5,0.5], 100)';
+end
     
 %% Instantiate Simulation Window
 
 if Simulation.drawON
     figure
+    if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
+        imagesc(x_vec,y_vec,F(x_mesh',y_mesh')')
+        colormap(cmap)
+    end
     if isfield(LocalIntFunction, 'DistanceRange')
         plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, 1, false, false, true);
     else
         plotSwarmInit(x0, 0, inf, inf, Simulation.arena, 1, false, false, true);
-    end
-    
-    if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
-        x_vec = linspace(-Simulation.arena(1)/2,Simulation.arena(1)/2,100);
-        y_vec = linspace(-Simulation.arena(2)/2,Simulation.arena(2)/2,100);
-        [x_mesh, y_mesh] = meshgrid(x_vec, y_vec);
-        %F=scatteredInterpolant(Environment.Inputs.Points, Environment.Inputs.Values, 'linear', 'nearest');
-        F = griddedInterpolant(Environment.Inputs.Points,Environment.Inputs.Values, 'linear', 'nearest');
-        cmap = [linspace(1,1,100)',linspace(1,0.5,100)',linspace(1,0.5,100)'];
     end
 end
 
@@ -136,7 +140,7 @@ while t<Simulation.Tmax
             hold on
             if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
                 imagesc(x_vec,y_vec,F(x_mesh',y_mesh')')
-                colormap(cmap)
+                %colormap(cmap)
             end
             if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
             if isfield(LocalIntFunction, 'DistanceRange')
@@ -175,7 +179,7 @@ if Simulation.drawON
     cla
     if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
         imagesc(x_vec,y_vec,F(x_mesh',y_mesh')')
-        colormap(cmap)
+        %colormap(cmap)
     end
     if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
     if isfield(LocalIntFunction, 'DistanceRange')
