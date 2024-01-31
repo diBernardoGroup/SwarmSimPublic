@@ -18,28 +18,37 @@ D=2;                        % number of dimensions [2 or 3]
 
 defaultParam;               % load default parameters
 
-%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12'; % off
-%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
-data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_37/tracking_2023_10_12'; % circle light
+%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12';  % off
+%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16';  % switch10s
+%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_37/tracking_2023_10_12'; % circle light
+%data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_21/tracking_2024_01_30'; % circle dark
+%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_33/tracking_2023_10_12'; % gradient central light
+data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_34/tracking_2023_10_12'; % gradient central dark
 
 id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % folder with identification data
-identification_file_name = 'identification_OLS_ds3_sign.txt';
+identification_file_name = 'identification_OLS_ds2_sign.txt';
 
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 
 %% Loads experiment data
 Simulation.arena = [1920,1080]; % size of the simulation window
 Simulation.deltaT = 0.5;        % sampling time step
+Simulation.dT =     0.01;   % integration time step
 Simulation.Tmax = 180;          % maximum simulation time
 timeInstants = [0:Simulation.deltaT:Simulation.Tmax];
 
 % load identification data and instantiate simulated agents
 identification=readtable(fullfile(id_folder,identification_file_name));
 ids=randsample(length(identification.agents),N, true, ones(length(identification.agents),1));
-agents = identification(ids,:);
+agents = identification(ids,:); 
+% Dynamics=struct('model','IndependentSDEsWithInput', ...
+%     'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s, 'gainSpeed', agents.alpha_s, 'gainDerSpeed', agents.beta_s,...
+%     'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', agents.alpha_w, 'gainDerOmega', agents.beta_w,...
+%     'omega', normrnd(0,agents.std_w,N,1), 'oldInput', zeros(N,1));
+
 Dynamics=struct('model','IndependentSDEsWithInput', ...
-    'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s, 'gainSpeed', agents.alpha_s, 'gainDerSpeed', agents.beta_s,...
-    'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', agents.alpha_w, 'gainDerOmega', agents.beta_w,...
+    'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s, 'gainSpeed', -50, 'gainDerSpeed', 0,...
+    'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', 0, 'gainDerOmega', 0,...
     'omega', normrnd(0,agents.std_w,N,1), 'oldInput', zeros(N,1));
 
 % load inputs data
@@ -92,6 +101,10 @@ end
 omega(length(timeInstants),:) = angleBetweenVectors(squeeze(vVec(length(timeInstants)-1,:,:)),squeeze(vVec(length(timeInstants),:,:)))';
 omega=omega/Simulation.deltaT;
 
+xFinal_inWindow = squeeze(xVec(end,(xVec(end,:,1)>-Simulation.arena(1)/2 & xVec(end,:,1)<Simulation.arena(1)/2 ...
+                        & xVec(end,:,2)>-Simulation.arena(2)/2 & xVec(end,:,2)<Simulation.arena(2)/2),:));
+
+                    
 %% PLOTS
 
 % create output folder, save data and parameters
@@ -127,7 +140,11 @@ if outputDir
     fclose(fileID);
 end
 
-% SWARM
+% SWARM initial
+figure
+if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
+    plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Simulation.arena)
+end
 if isfield(LocalIntFunction, 'DistanceRange')
     plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena);
 else
@@ -135,30 +152,84 @@ else
 end
 if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
 if outputDir
-    saveas(gcf, fullfile(path, 'trajectories'))
-    saveas(gcf, fullfile(path, 'trajectories'),'png')
+    saveas(gcf, fullfile(path, 'x_0'))
+    saveas(gcf, fullfile(path, 'x_0'),'png')
 end
 
-figure % colored trajectories
-hold on
-colors = get(gca, 'ColorOrder');
-final=Simulation.Tmax;
-window = [-1920/3*2,1920/3,-1080/2,1080/2];
-for i=1:N
-    if xVec(final,i,1) > window(1) && xVec(final,i,1) < window(2) && xVec(final,i,2) > window(3) && xVec(final,i,2) < window(4)
-        c = colors(mod(i-1,7)+1,:);
-        plot(xVec(1:final,i,1),xVec(1:final,i,2), 'color', c); 
-        plot(xVec(final,i,1),xVec(final,i,2),'o', 'color', c, 'MarkerFaceColor', c); 
-    end
+% SWARM final
+figure
+if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
+    plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Simulation.arena)
 end
-xticks([])
-yticks([])
-axis('equal')
-axis(window)
-box on
+if isfield(LocalIntFunction, 'DistanceRange')
+    plotSwarmInit(xFinal_inWindow, Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena);
+else
+    plotSwarmInit(xFinal_inWindow, Simulation.Tmax, inf, inf, Simulation.arena);
+end
+if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
+if outputDir
+    saveas(gcf, fullfile(path, 'x_final'))
+    saveas(gcf, fullfile(path, 'x_final'),'png')
+end
+
+% figure % colored trajectories
+% hold on
+% colors = get(gca, 'ColorOrder');
+% final=Simulation.Tmax;
+% window = [-1920/3*2,1920/3,-1080/2,1080/2];
+% for i=1:N
+%     if xVec(final,i,1) > window(1) && xVec(final,i,1) < window(2) && xVec(final,i,2) > window(3) && xVec(final,i,2) < window(4)
+%         c = colors(mod(i-1,7)+1,:);
+%         plot(xVec(1:final,i,1),xVec(1:final,i,2), 'color', c); 
+%         plot(xVec(final,i,1),xVec(final,i,2),'o', 'color', c, 'MarkerFaceColor', c); 
+%     end
+% end
+% xticks([])
+% yticks([])
+% axis('equal')
+% axis(window)
+% box on
+
+% light distribution
+if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
+    F = griddedInterpolant(Environment.Inputs.Points,Environment.Inputs.Values, 'linear', 'nearest');
+    envInput = F(xFinal_inWindow(:,1),xFinal_inWindow(:,2));    % input intensity measured by the agents
+    
+    x_vec = linspace(-Simulation.arena(1)/2,Simulation.arena(1)/2,100);
+    y_vec = linspace(-Simulation.arena(2)/2,Simulation.arena(2)/2,100);
+    [x_mesh, y_mesh] = meshgrid(x_vec, y_vec);
+    [pixels_by_input,bins] = histcounts(F(x_mesh',y_mesh'), 5);
+    [agents_by_input,bins] = histcounts(envInput, bins);
+    density_by_input = agents_by_input./pixels_by_input;
+    figure % light distribution
+    
+    bar((bins(1:end-1)+bins(2:end))/2,density_by_input, 1)
+    c_coeff = corrcoef(density_by_input, bins(1:end-1));
+    c_coeff = c_coeff(1,2);
+    coefficents = [ones(length(bins(1:end-1)),1),(bins(1:end-1)+bins(2:end))'/2]\density_by_input';
+    norm_slope = coefficents(2)/mean(density_by_input);
+    hold on
+    plot(bins,coefficents(1)+coefficents(2)*bins);
+    xlabel('Input intensity')
+    ylabel('Density of agents')
+    title('Final distribution w.r.t. light intensity')
+    yticklabels([]);
+    %text(max(bins),max(density_by_input),['\rho=',num2str(c_coeff,3)],'HorizontalAlignment','right','FontSize',14)
+    text(max(bins),max(density_by_input),['norm slope=',num2str(norm_slope,3)],'HorizontalAlignment','right','FontSize',14)
+    if outputDir
+    saveas(gcf, fullfile(path, 'light_distribution'))
+    saveas(gcf, fullfile(path, 'light_distribution'),'png')
+    end
+    
+%     figure 
+%     histogram(envInput,bins)
+%     xlabel('Input intensity')
+%     ylabel('Number of agents')
+%     title('Final distribution')
+end
 
 % COMPARE RESULTS
-[MSE_speed,MSE_omega,NMSE_speed,NMSE_omega,NMSE_total] = compareResults({data_folder,path}, path);
+% [MSE_speed,MSE_omega,NMSE_speed,NMSE_omega,NMSE_total] = compareResults({data_folder,path}, path);
 
 % figure % TIME PLOT - SPEED and ANGULAR VELOCITY
 % subplot(2,4,[1 2 3])

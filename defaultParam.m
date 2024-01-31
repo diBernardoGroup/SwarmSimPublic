@@ -16,7 +16,7 @@ outputDir='./Output';
 %outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 outputDir='';
 
-N=50;                      % number of agents (N)
+N=250;                      % number of agents (N)
 D=2;                        % number of dimensions [2 or 3]
 
 LinkNumber=6*(D-1);         % number of links per agent in the lattice configuration (L)
@@ -52,8 +52,8 @@ sigmaSpeed0 = 0.1;
 %Dynamics=struct('model','SecondOrder', 'sigma',0, 'vMax', inf);
 %Dynamics=struct('model','IndependentSDEs', 'avgSpeed',avgSpeed0, 'rateSpeed', 1, 'sigmaSpeed', sigmaSpeed0, 'rateOmega', 0.5, 'sigmaOmega', 3, 'omega', normrnd(0,0,N,1));
 Dynamics=struct('model','IndependentSDEsWithInput', ...
-    'avgSpeed',avgSpeed0, 'rateSpeed', 1, 'sigmaSpeed', sigmaSpeed0, 'gainSpeed', -10, 'gainDerSpeed', 0,...
-    'rateOmega', 1, 'sigmaOmega', 0.1, 'gainOmega', 1, 'gainDerOmega', 0,...
+    'avgSpeed',avgSpeed0, 'rateSpeed', 1, 'sigmaSpeed', sigmaSpeed0, 'gainSpeed', -1, 'gainDerSpeed', -1,...
+    'rateOmega', 1, 'sigmaOmega', 0.1, 'gainOmega', 1, 'gainDerOmega', 1,...
     'omega', normrnd(0,1,N,1), 'oldInput', zeros(N,1));
 %Dynamics=struct('model','CoupledSDEs', 'avgSpeed', avgSpeed0, 'rateSpeed', 1, 'sigmaSpeed', 1, 'rateOmega', 1, 'sigmaOmega', @(x)2*max(1-x/3,0), 'omega', zeros(N,1));
 %Dynamics=struct('model','LevyWalk', 'alpha',0.005, 'sigma', 0);

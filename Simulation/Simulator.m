@@ -91,6 +91,7 @@ TSample = [0:Simulation.deltaT:Simulation.Tmax]';   % sampling time instants
 xVec=nan([size(TSample,1),size(x0)]);               % positions of the swarm
 vVec=nan([size(TSample,1),size(x0)]);               % velocities of the swarm
 uVec=nan([size(TSample,1),size(x0)]);               % inputs of the swarm
+forces=zeros(size(x0));
 envInput = zeros(N,1);
 
 % xVec(1,:,:)=x0;
@@ -111,10 +112,12 @@ t=0;
 count=1;                                        % sampling iteration
 
 while t<Simulation.Tmax
-    % Compute Control Actions from interactions
-    forces = VFcontroller(x, GlobalIntFunction, LocalIntFunction, Simulation.dT, Simulation.InteractionFactor);
+    % Compute inputs from interactions
+    if ~strcmp(GlobalIntFunction.function, 'None') || ~strcmp(LocalIntFunction.function, 'None')
+        forces = VFcontroller(x, GlobalIntFunction, LocalIntFunction, Simulation.dT, Simulation.InteractionFactor);
+    end
     
-    % Compute environmental input
+    % Compute environmental inputs
     if isfield(Environment,'Inputs')
         if isfield(Environment.Inputs,'Points')
             %envInput = interpn(Environment.Inputs.Points{1}, Environment.Inputs.Points{2}, Environment.Inputs.Values, x(:,1),x(:,2), linear, nearest);
