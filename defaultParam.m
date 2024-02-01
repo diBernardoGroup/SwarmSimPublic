@@ -16,7 +16,7 @@ outputDir='./Output';
 %outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 outputDir='';
 
-N=250;                      % number of agents (N)
+N=500;                      % number of agents (N)
 D=2;                        % number of dimensions [2 or 3]
 
 LinkNumber=6*(D-1);         % number of links per agent in the lattice configuration (L)

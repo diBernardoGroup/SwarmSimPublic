@@ -105,7 +105,10 @@ if Simulation.recordVideo
 %     writeVideo(video,currFrame);
 end
 
-disp(['- Simulating ',num2str(N),' ',Dynamics.model, ' agents in ', num2str(size(x0,2)),'D space with ',GlobalIntFunction.function,' interaction'])
+log_txt = ['- Simulating ',num2str(N),' ',Dynamics.model, ' agents in ', num2str(size(x0,2)),'D space'];
+if ~strcmp(GlobalIntFunction.function, 'None'); log_txt = [log_txt,' with ',GlobalIntFunction.function,' interaction']; end
+if isfield(Environment,'Inputs'); log_txt = [log_txt,' with environmental inputs']; end
+disp(log_txt);
 
 %% Run Simulation
 t=0;
