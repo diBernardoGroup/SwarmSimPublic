@@ -99,7 +99,7 @@ v=v0;
 
 if Simulation.recordVideo
     video = VideoWriter('./Output/video','MPEG-4');
-    video.FrameRate = 1/Simulation.deltaT/4;
+    video.FrameRate = 1/Simulation.deltaT;
     open(video);
 %     currFrame = getframe(gcf);
 %     writeVideo(video,currFrame);
@@ -150,9 +150,9 @@ while t<Simulation.Tmax
             end
             if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
             if isfield(LocalIntFunction, 'DistanceRange')
-                plotSwarm(x, [], t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), true);
+                plotSwarm(x, [], t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), ~Simulation.recordVideo);
             else
-                plotSwarm(x, [], t, inf, inf, true);
+                plotSwarm(x, [], t, inf, inf, ~Simulation.recordVideo);
             end
             
             if Simulation.recordVideo
@@ -176,6 +176,7 @@ uVec(count,:,:)=forces;
 
 if Simulation.recordVideo
     close(video);
+    disp(['Video saved in ', video.Path])
 end
 
 %% PLOTS

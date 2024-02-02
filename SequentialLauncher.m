@@ -23,7 +23,7 @@ clear
 
 %% Parameters
 
-Ntimes=4;              % How many simulations are launched for each configuration
+Ntimes=8;              % How many simulations are launched for each configuration
 
 D=2;                    % number of dimensions [2 or 3]
 
@@ -32,8 +32,8 @@ defaultParam;           % load default parameters
 seed=-1;                 % seed for random generator, if negative it is not set
 
 %% Loads DOME experiment data
-%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_34/tracking_2023_10_12'; % gradient central dark
-data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_33/tracking_2023_10_12'; % gradient central light
+%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_33/tracking_2023_10_12'; % gradient central light
+data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_34/tracking_2023_10_12'; % gradient central dark
 id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % folder with identification data
 identification_file_name = 'identification_OLS_ds2_sign.txt';
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
@@ -81,11 +81,11 @@ end
 % parameters(2).name='N';
 % parameters(2).values=[50, 100, 150];
 
-parameters(1).name='Dynamics.gainSpeed';
-parameters(1).values=[-10,-5,-2,-1,0,1,2,5,10];
+parameters(1).name='Dynamics.gainDerSpeed';
+parameters(1).values=[-10,-5,-2,-1,0,1,2,5,10]*5;
 %parameters(1).values=[-10,0,10];
-parameters(2).name='Dynamics.gainOmega';
-parameters(2).values=[-1,-0.5,-0.2,-0.1,0,0.1,0.2,0.5,1];
+parameters(2).name='Dynamics.gainDerOmega';
+parameters(2).values=[-1,-0.5,-0.2,-0.1,0,0.1,0.2,0.5,1]*5;
 %parameters(2).values=[-10,10];
 
 %% Preallocate
@@ -198,10 +198,10 @@ end
 % create folder, save data and parameters
 if outputDir
     counter=1;
-    while exist(fullfile(outputDir,[datestr(now, 'yyyy_mm_dd_'),Dynamics.model,'_',num2str(counter)]),'dir')
+    while exist(fullfile(outputDir,[datestr(now, 'yyyy_mm_dd_'),Dynamics.model,'_tuning',num2str(counter)]),'dir')
         counter=counter+1;
     end
-    path=fullfile(outputDir, [datestr(now, 'yyyy_mm_dd_'),Dynamics.model,'_',num2str(counter)]);
+    path=fullfile(outputDir, [datestr(now, 'yyyy_mm_dd_'),Dynamics.model,'_tuning',num2str(counter)]);
     mkdir(path)
     disp('Saving data in ' + string(path))
     save(fullfile(path, 'data'))
@@ -277,9 +277,10 @@ elseif Nparameters==2
     figure
     [~,lplot]=mysurfc(parameters(1).values, parameters(2).values, norm_slope_map);
     xlabel(parameters(1).name)
-    xlabel('$\alpha_v$','Interpreter','latex','FontSize',18)
+    xlabel('$\beta_v$','Interpreter','latex','FontSize',18)
     ylabel(parameters(2).name)
     ylabel('$\alpha_\omega$','Interpreter','latex','FontSize',18)
+    ylabel('$\beta_\omega$','Interpreter','latex','FontSize',18)
     title('Photoaccumulation Index')
     hold on
     xlim([-inf, inf])
@@ -308,6 +309,7 @@ elseif Nparameters==2
             plotSwarmInit(squeeze(x_f(sub2ind([length(parameters(1).values), length(parameters(2).values)], i_x, i_y),1,:,:)), Simulation.Tmax, inf, inf, Simulation.arena);
             xticks([]); yticks([])
             title([parameters(1).name,'=' num2str(parameters(1).values(i_x)),' ', parameters(2).name,'=' num2str(parameters(2).values(i_y))])
+            title(['\beta_v=' num2str(parameters(1).values(i_x)),' ','\beta_\omega=' num2str(parameters(2).values(i_y))])
         end
     end
     set(gcf,'Position',[100 500 200*swarms_to_show 300*2])
