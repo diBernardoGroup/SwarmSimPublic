@@ -78,7 +78,7 @@ else
     disp(['NMSE between median for speed:',num2str(nmse_speed_med),' and omega: ',num2str(nmse_omega_med),' total: ', num2str(nmse_total_med)])
 end
 
-
+%% POLTS
 figure % BOX PLOT - SPEED and ANGULAR VELOCITY - MEAN OVER AGENTS
 subplot(2,1,1)
 set(gca,'FontSize',12)

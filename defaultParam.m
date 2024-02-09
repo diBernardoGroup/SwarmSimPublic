@@ -16,7 +16,7 @@ outputDir='./Output';
 %outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 outputDir='';
 
-N=1000;                      % number of agents (N)
+N=100;                      % number of agents (N)
 D=2;                        % number of dimensions [2 or 3]
 
 LinkNumber=6*(D-1);         % number of links per agent in the lattice configuration (L)
@@ -36,9 +36,9 @@ Simulation.Tmax =   5;     % maximum simulation time (simulation is stopped earl
 Simulation.deltaT = 0.01;   % sampling time step
 Simulation.dT =     0.001;   % integration time step
 Simulation.arena =  [10,10];    % size of the simulation window
-Simulation.drawON=true;    % draw swarm during simulation (if N is large slows down the simulation)
+Simulation.drawON=false;    % draw swarm during simulation (if N is large slows down the simulation)
 Simulation.drawTraj=0;   % draw trajectories of the agents (if N is large slows down the simulation)
-Simulation.recordVideo=true;% record video of the simulation (if true drawON must be true)
+Simulation.recordVideo=false;% record video of the simulation (if true drawON must be true)
 %Simulation.getMetrics=true; % acquire metrics during the simulation (getMetrics=false discard settling times and stop times)
 
 %% Dynamic model of the agents

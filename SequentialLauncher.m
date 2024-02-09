@@ -23,7 +23,7 @@ clear
 
 %% Parameters
 
-Ntimes=8;              % How many simulations are launched for each configuration
+Ntimes=2;              % How many simulations are launched for each configuration
 
 D=2;                    % number of dimensions [2 or 3]
 
@@ -43,6 +43,8 @@ Simulation.deltaT = 0.5;        % sampling time step
 Simulation.dT =     0.01;   % integration time step
 Simulation.Tmax = 180;          % maximum simulation time
 timeInstants = [0:Simulation.deltaT:Simulation.Tmax];
+Simulation.drawON=false;    % draw swarm during simulation (if N is large slows down the simulation)
+Simulation.recordVideo=false;% record video of the simulation (if true drawON must be true)
 
 % load identification data and instantiate simulated agents
 identification=readtable(fullfile(id_folder,identification_file_name));
@@ -83,10 +85,10 @@ end
 
 parameters(1).name='Dynamics.gainDerSpeed';
 parameters(1).values=[-10,-5,-2,-1,0,1,2,5,10]*5;
-%parameters(1).values=[-10,0,10];
+parameters(1).values=[-10,10];
 parameters(2).name='Dynamics.gainDerOmega';
 parameters(2).values=[-1,-0.5,-0.2,-0.1,0,0.1,0.2,0.5,1]*5;
-%parameters(2).values=[-10,10];
+parameters(2).values=[-10,10];
 
 %% Preallocate
 p=cartesianProduct({parameters.values});
@@ -95,6 +97,7 @@ Nparameters=length(parameters);
 Nconfig=size(p, 1);
 
 timeInstants = 0:Simulation.deltaT:Simulation.Tmax;
+window = [-Simulation.arena(1),Simulation.arena(1),-Simulation.arena(2),Simulation.arena(2)]/2;
 
 xVec=nan(length(timeInstants),N,D);
 x_f = nan(Nconfig,Ntimes,N,D);
@@ -152,8 +155,7 @@ for i_times=1:Nconfig
         % analyse final configuration
         xFinal=squeeze(xVec(end,:,:));
         x_f(i_times,k_times,:,:) = xFinal;
-        xFinal_inWindow = squeeze(xVec(end,(xVec(end,:,1)>-Simulation.arena(1)/2 & xVec(end,:,1)<Simulation.arena(1)/2 ...
-                        & xVec(end,:,2)>-Simulation.arena(2)/2 & xVec(end,:,2)<Simulation.arena(2)/2),:));
+        xFinal_inWindow = squeeze(xVec(end,(xVec(end,:,1)>window(1) & xVec(end,:,1)<window(2) & xVec(end,:,2)>window(3) & xVec(end,:,2)<window(4)),:));
         
         B = buildIncidenceMatrix(xFinal, Rmax);
         links(i_times,k_times)=size(B,2);
@@ -161,18 +163,8 @@ for i_times=1:Nconfig
         rigid_vec(i_times,k_times) = rank(M)==D*N-D*(D+1)/2;
         e_d_max_vec(i_times,k_times) = getMaxLinkLengthError(xFinal, 1, 0, Rmax);   % max distance from the deisred link length.
         
-        F = griddedInterpolant(Environment.Inputs.Points,Environment.Inputs.Values, 'linear', 'nearest');
-        envInput = F(xFinal_inWindow(:,1),xFinal_inWindow(:,2));    % input intensity measured by the agents
-        x_vec = linspace(-Simulation.arena(1)/2,Simulation.arena(1)/2,100);
-        y_vec = linspace(-Simulation.arena(2)/2,Simulation.arena(2)/2,100);
-        [x_mesh, y_mesh] = meshgrid(x_vec, y_vec);
-        [pixels_by_input,bins] = histcounts(F(x_mesh',y_mesh'), 5);
-        [agents_by_input,bins] = histcounts(envInput, bins);
-        density_by_input = agents_by_input./pixels_by_input;        
-        c_matrix = corrcoef(density_by_input, bins(1:end-1));
-        c_coeff = c_matrix(1,2);
-        coefficents = [ones(length(bins(1:end-1)),1),(bins(1:end-1)+bins(2:end))'/2]\density_by_input';
-        norm_slope(i_times,k_times) = coefficents(2)/mean(density_by_input);
+        [density_by_input, bins, norm_sl, c_coeff] = agentsDensityByInput(Environment.Inputs, xFinal_inWindow, window);
+        norm_slope(i_times,k_times) = norm_sl;
     end
     fprintf('Elapsed time is %.2f s.\n\n',toc)
 end

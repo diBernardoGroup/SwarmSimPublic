@@ -18,15 +18,18 @@ D=2;                        % number of dimensions [2 or 3]
 
 defaultParam;               % load default parameters
 
+N=1500;
+
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12';  % off
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16';  % switch10s
-data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_37/tracking_2023_10_12'; % circle light
+%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_37/tracking_2023_10_12'; % circle light
+%data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_26/tracking_2024_01_30'; % circle light high denisty
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_21/tracking_2024_01_30'; % circle dark
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_33/tracking_2023_10_12'; % gradient central light
-%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_34/tracking_2023_10_12'; % gradient central dark
+data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_34/tracking_2023_10_12'; % gradient central dark
 
 id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % folder with identification data
-identification_file_name = 'identification_OLS_ds2_sign.txt';
+identification_file_name = 'identification_OLS_ds3_sign.txt';
 
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 
@@ -41,15 +44,15 @@ timeInstants = [0:Simulation.deltaT:Simulation.Tmax];
 identification=readtable(fullfile(id_folder,identification_file_name));
 ids=randsample(length(identification.agents),N, true, ones(length(identification.agents),1));
 agents = identification(ids,:); 
-% Dynamics=struct('model','IndependentSDEsWithInput', ...
-%     'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s, 'gainSpeed', agents.alpha_s, 'gainDerSpeed', agents.beta_s,...
-%     'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', agents.alpha_w, 'gainDerOmega', agents.beta_w,...
-%     'omega', normrnd(0,agents.std_w,N,1), 'oldInput', zeros(N,1));
-
 Dynamics=struct('model','IndependentSDEsWithInput', ...
-    'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s, 'gainSpeed', 0, 'gainDerSpeed', -50,...
-    'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', 0, 'gainDerOmega', 5,...
+    'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s, 'gainSpeed', agents.alpha_s, 'gainDerSpeed', agents.beta_s,...
+    'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', agents.alpha_w, 'gainDerOmega', agents.beta_w,...
     'omega', normrnd(0,agents.std_w,N,1), 'oldInput', zeros(N,1));
+
+% Dynamics=struct('model','IndependentSDEsWithInput', ...
+%     'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s, 'gainSpeed', 0, 'gainDerSpeed', -50,...
+%     'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', 0, 'gainDerOmega', 5,...
+%     'omega', normrnd(0,agents.std_w,N,1), 'oldInput', zeros(N,1));
 
 % load inputs data
 if isfile(fullfile(data_folder,'inputs.txt'))   % time varying inputs
@@ -60,6 +63,8 @@ if isfile(fullfile(data_folder,'inputs.txt'))   % time varying inputs
 else                                            % spatial inputs
     inputs=imread(fullfile(fileparts(data_folder),'patterns_cam/pattern_10.0.jpeg'));
     u=double(inputs(:,:,3))'/255;    %select blue channel and scale in [0,1]
+    K=ones(51)/51^2;
+    u=conv2(u,K,'same');
     Environment.Inputs.Points = {linspace(-Simulation.arena(1),Simulation.arena(1),size(inputs,2))/2, linspace(-Simulation.arena(2),Simulation.arena(2),size(inputs,1))/2};
     %Environment.Inputs.Values = linspace(-1,1,length(Environment.Inputs.Points{1}))' * ones(1,length(Environment.Inputs.Points{2}));
     Environment.Inputs.Values = u;
@@ -192,22 +197,11 @@ end
 
 % light distribution
 if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
-    F = griddedInterpolant(Environment.Inputs.Points,Environment.Inputs.Values, 'linear', 'nearest');
-    envInput = F(xFinal_inWindow(:,1),xFinal_inWindow(:,2));    % input intensity measured by the agents
+    window = [-Simulation.arena(1),Simulation.arena(1),-Simulation.arena(2),Simulation.arena(2)]/2;
+    [density_by_input, bins, norm_slope, c_coeff, coefficents] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, xFinal_inWindow, window);
     
-    x_vec = linspace(-Simulation.arena(1)/2,Simulation.arena(1)/2,100);
-    y_vec = linspace(-Simulation.arena(2)/2,Simulation.arena(2)/2,100);
-    [x_mesh, y_mesh] = meshgrid(x_vec, y_vec);
-    [pixels_by_input,bins] = histcounts(F(x_mesh',y_mesh'), 5);
-    [agents_by_input,bins] = histcounts(envInput, bins);
-    density_by_input = agents_by_input./pixels_by_input;
     figure % light distribution
-    
     bar((bins(1:end-1)+bins(2:end))/2,density_by_input, 1)
-    c_coeff = corrcoef(density_by_input, bins(1:end-1));
-    c_coeff = c_coeff(1,2);
-    coefficents = [ones(length(bins(1:end-1)),1),(bins(1:end-1)+bins(2:end))'/2]\density_by_input';
-    norm_slope = coefficents(2)/mean(density_by_input);
     hold on
     plot(bins,coefficents(1)+coefficents(2)*bins);
     xlabel('Input intensity')
@@ -221,11 +215,27 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     saveas(gcf, fullfile(path, 'light_distribution'),'png')
     end
     
-%     figure 
-%     histogram(envInput,bins)
-%     xlabel('Input intensity')
-%     ylabel('Number of agents')
-%     title('Final distribution')
+     
+    img=imread(fullfile(fileparts(data_folder),'images/fig_180.0.jpeg'));
+    img_grey = double(img(:,:,1))/255;
+    th=0.3;
+    mask=img_grey>th;
+    x_vec = linspace(window(1),window(2),size(mask,2));
+    y_vec = linspace(window(3),window(4),size(mask,1));
+    figure; imagesc(x_vec,y_vec,img_grey); axis('equal')
+    figure; imagesc(x_vec,y_vec,mask); axis('equal'); title(['mask=',num2str(th)])
+    
+    figure % light distribution
+    [density_by_input, bins, norm_slope, c_coeff, coefficents] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, mask, window);
+    bar((bins(1:end-1)+bins(2:end))/2,density_by_input, 1)
+    hold on
+    plot(bins,coefficents(1)+coefficents(2)*bins);
+    xlabel('Input intensity')
+    ylabel('Density of agents')
+    title('Final distribution w.r.t. light intensity')
+    yticklabels([]);
+    %text(max(bins),max(density_by_input),['\rho=',num2str(c_coeff,3)],'HorizontalAlignment','right','FontSize',14)
+    text(max(bins),max(density_by_input),['norm slope=',num2str(norm_slope,3)],'HorizontalAlignment','right','FontSize',14)
 end
 
 % COMPARE RESULTS
