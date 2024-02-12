@@ -1,17 +1,17 @@
 clear
-%close all
+close all
 
 
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12'; % off
 data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
 
-identification_file_name = 'identification_GBCD_ds1_sign.txt';
+identification_file_name = 'identification_GBCD_ds2_sign.txt';
 
 deltaT = 0.5;
 dT = 0.01;
 thresholdfactor = 3;
-downSampling = 1;
+downSampling = 2;
 
 current_folder = fileparts(which('AnalyseDOMEexp'));
 addpath(genpath(current_folder));
@@ -43,8 +43,8 @@ for i=1:N
 end
 
 %% Identification
-[mu_s, theta_s, sigma_s, gains_s] = SDE_parameters_est(speed, u_matrix, deltaT, 'OLS');
-[mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_signw,  deltaT, 'OLS');
+[mu_s, theta_s, sigma_s, gains_s] = SDE_parameters_est(speed, u_matrix, deltaT, 'GreyBoxCT');
+[mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_signw,  deltaT, 'GreyBoxCT');
 %[mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(abs(omega), u_matrix, deltaT,'OLS');
 mu_s=round(mu_s,4); theta_s=round(theta_s,4); sigma_s=round(sigma_s,4); gains_s=round(gains_s,4); mu_w=round(mu_w,4); theta_w=round(theta_w,4); sigma_w=round(sigma_w,4); gains_w=round(gains_w,4);
 alpha_s = gains_s(:,1); beta_s = gains_s(:,2); alpha_w = gains_w(:,1); beta_w = gains_w(:,2);

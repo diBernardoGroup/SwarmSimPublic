@@ -49,11 +49,11 @@ for i=1:number_of_series
         % LASSO regression
         if strcmp(method,'LASSO')
             predictors = [x_old, u_current];
-            [B,FitInfo] = lasso(predictors, x_new,'CV',10 ,'Standardize', false, 'Intercept',true);
-            p=B(:,FitInfo.IndexMinMSE);
+            [B,FitInfo] = lasso(predictors, x_new,'CV',10 ,'Standardize', true, 'Intercept',true);
+            p=B(:,FitInfo.Index1SE);
             a = p(1);
             b = p(2:end);
-            c = FitInfo.Intercept(FitInfo.IndexMinMSE);
+            c = FitInfo.Intercept(FitInfo.Index1SE);
             
         % OLS regression
         elseif strcmp(method,'OLS')
@@ -82,13 +82,14 @@ for i=1:number_of_series
         % MATLAB direct CT grey box estimation
         elseif strcmp(method,'GreyBoxCT')
             data = iddata(x_old, u_current, deltaT);
-            sys = idnlgrey('continouosSys',[1 number_of_inputs 1], {0, [0;0], 0}, x_old(1));
+            sys = idnlgrey('continouosSys',[1 number_of_inputs 1], {1, [0;0], mean(x_old)}, x_old(1), 0);
             sys.Parameters(1).Name = 'theta';   sys.Parameters(1).Minimum = 0; %sys.Parameters(1).Maximum = 1;
             sys.Parameters(2).Name = 'alpha'; 
             sys.Parameters(3).Name = 'mu';      %sys.Parameters(3).Minimum = 0;
             %y = sim(sys, data);
             opt = nlgreyestOptions;
             opt.EstimateCovariance = false;
+            %opt.Regularization.Lambda = 1;
             %opt.SearchOptions.FunctionTolerance = 10e-9;
             %opt.Display = 'on';
             sys_id = nlgreyest(data, sys, opt);
