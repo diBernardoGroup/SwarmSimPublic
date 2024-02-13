@@ -5,8 +5,8 @@ close all
 theta   = 0.5;
 mu      = 0.1;
 sigma   = 0.25;
-alpha   = 1;
-beta    = 1;
+alpha   = -1;
+beta    = -1;
 
 Tmax    = 100;
 dT      = 0.01; % integration step
