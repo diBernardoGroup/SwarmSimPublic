@@ -1,14 +1,5 @@
-
-
-
-
-%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12';  % off
-%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16';  % switch10s
-%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_37/tracking_2023_10_12'; % circle light
-%data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_26/tracking_2024_01_30'; % circle light high denisty
-%data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_21/tracking_2024_01_30'; % circle dark
-%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_33/tracking_2023_10_12'; % gradient central light
-data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_34/tracking_2023_10_12'; % gradient central dark
+clear
+close all
 
 id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % folder with identification data
 
@@ -20,7 +11,11 @@ identification_file_names = ["identification_OLS_ds1_sign.txt","identification_O
                              "identification_GBCT_ds1_sign_diff.txt","identification_GBCT_ds2_sign_diff.txt","identification_GBCT_ds3_sign_diff.txt"];
 
 tags = ["OLS","GBDT","GBCT grad","GBCT diff"];
-                         
+             
+dT = 0.01;
+deltaT = 0.5;
+
+%% LOAD DATA
 identifications={};
 for i=1:size(identification_file_names,2)   % for each down sampling value
 for j=1:size(identification_file_names,1)   % for each technique
@@ -28,14 +23,61 @@ for j=1:size(identification_file_names,1)   % for each technique
 end
 end
 
+speed=load(fullfile(id_folder,'speeds_smooth.txt'));
+omega=load(fullfile(id_folder,'ang_vel_smooth.txt'));
+inputs=load(fullfile(id_folder,'inputs.txt'));
+timeInstants = [0:size(speed,1)-1] * deltaT;
+u=inputs(:,1)/255;
+%u_dot = [diff(u);0]/deltaT;
+u_dot = gradient(u)/deltaT;
+u_dot = max(u_dot,0);
+
+%% simulate average behaviour
+t_sim=0:dT:max(timeInstants);
+s_sim=nan(length(t_sim),1);
+w_sim=nan(length(t_sim),1);
+u_sim=nan(length(t_sim),2);
+for j=1:size(identification_file_names,1)       % for each technique
+    for i=1:size(identification_file_names,2)   % for each down sampling value
+        theta_s_mean=mean(identifications{j,i}.theta_s);
+        mu_s_mean=mean(identifications{j,i}.mu_s);
+        alpha_s_mean=mean(identifications{j,i}.alpha_s);
+        beta_s_mean=mean(identifications{j,i}.beta_s);
+        theta_w_mean=mean(identifications{j,i}.theta_w);
+        mu_w_mean=median(abs(omega),'all','omitnan');
+        alpha_w_mean=mean(identifications{j,i}.alpha_w);
+        beta_w_mean=mean(identifications{j,i}.beta_w);
+        s_sim(1)=mu_s_mean;
+        w_sim(1)=mu_w_mean;
+        for t=1:length(t_sim)-1                 % for each time instant
+            u_sim(t,:)= [u(ceil(t*dT/deltaT)),u_dot(ceil(t*dT/deltaT))];
+            s_sim(t+1)= s_sim(t) + (theta_s_mean * (mu_s_mean-s_sim(t)) + alpha_s_mean * u_sim(t,1) + beta_s_mean * u_sim(t,2) ) *dT;
+            w_sim(t+1)= w_sim(t) + (theta_w_mean * (mu_w_mean-w_sim(t)) + alpha_w_mean * u_sim(t,1) + beta_w_mean * u_sim(t,2) ) *dT;
+        end
+        
+        nmse_mean_speed(j,i) = goodnessOfFit(interp1(t_sim,s_sim,timeInstants)', mean(speed,2,'omitnan'), 'NMSE');
+        nmse_mean_omega(j,i) = goodnessOfFit(interp1(t_sim,w_sim,timeInstants(1:end-1))', mean(abs(omega),2,'omitnan'), 'NMSE');
+        nmse_mean_total(j,i) = norm([nmse_mean_speed(j,i), nmse_mean_omega(j,i)]);
+        
+        nmse_med_speed(j,i) = goodnessOfFit(interp1(t_sim,s_sim,timeInstants)', median(speed,2,'omitnan'), 'NMSE');
+        nmse_med_omega(j,i) = goodnessOfFit(interp1(t_sim,w_sim,timeInstants(1:end-1))', median(abs(omega),2,'omitnan'), 'NMSE');
+        nmse_med_total(j,i) = norm([nmse_med_speed(j,i), nmse_med_omega(j,i)]);
+    end
+end
+
+
 
 %% PRINT RESULTS
 
-fprintf(join(['Tech','DS',repmat("%s",1,length(identifications{1,1}.Properties.VariableNames)-5),'\n'],'\t'),identifications{j,1}.Properties.VariableNames{2:end-4})
+fprintf(join(['Tech','DS',repmat("%s",1,length(identifications{1,1}.Properties.VariableNames)-5)],'\t'),identifications{j,1}.Properties.VariableNames{2:end-4})
+fprintf('\t\tNMSE mean s \tNMSE mean w \tNMSE mean tot \tNMSE med s \tNMSE med w \tNMSE med tot\n')
 for j=1:size(identification_file_names,1) % for each technique
     disp(tags(j))
     for i=1:size(identification_file_names,2) % for each down sampling value
-        fprintf(join(['',num2str(i),repmat("%.2f",1,length(identifications{j,i}.Properties.VariableNames)-5),'\n'],'\t'),mean(identifications{j,i}{:,2:end-4}))
+        % print average parameters value
+        fprintf(join(['',num2str(i),repmat("%.2f",1,length(identifications{j,i}.Properties.VariableNames)-5)],'\t'),mean(identifications{j,i}{:,2:end-4}))
+        % print NMSE metrics
+        fprintf('\t\t%.2f\t\t%.2f\t\t%.2f\t\t%.2f\t\t%.2f\t\t%.2f\n',nmse_mean_speed(j,i),nmse_mean_omega(j,i),nmse_mean_total(j,i),nmse_med_speed(j,i),nmse_med_omega(j,i),nmse_med_total(j,i))
     end
 end
 
@@ -54,4 +96,41 @@ for k=1:10 % for each parameter
     xticks([1,2,3])
     title(identifications{1}.Properties.VariableNames(k+1))
 end
+
+figure
+for j=1:size(identification_file_names,1) % for each technique
+    subplot(3,2,1); hold on
+    plot([1,2,3], nmse_mean_speed(j,:), 'color', colors(j,:))
+    title('NMSE mean s')
+    legend(tags(1:j))
+    xticks([1,2,3])
+    subplot(3,2,2); hold on
+    plot([1,2,3], nmse_med_speed(j,:), 'color', colors(j,:))
+    title('NMSE med s')
+    legend(tags(1:j))
+    xticks([1,2,3])
+    
+    subplot(3,2,3); hold on
+    plot([1,2,3], nmse_mean_omega(j,:), 'color', colors(j,:))
+    title('NMSE mean w')
+    legend(tags(1:j))
+    xticks([1,2,3])
+    subplot(3,2,4); hold on
+    plot([1,2,3], nmse_med_omega(j,:), 'color', colors(j,:))
+    title('NMSE med w')
+    legend(tags(1:j))
+    xticks([1,2,3])
+    
+    subplot(3,2,5); hold on
+    plot([1,2,3], nmse_mean_total(j,:), 'color', colors(j,:))
+    title('NMSE mean tot')
+    legend(tags(1:j))
+    xticks([1,2,3])
+    subplot(3,2,6); hold on
+    plot([1,2,3], nmse_med_total(j,:), 'color', colors(j,:))
+    title('NMSE med tot')
+    legend(tags(1:j))
+    xticks([1,2,3])
+end
+
 

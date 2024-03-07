@@ -18,9 +18,9 @@ D=2;                        % number of dimensions [2 or 3]
 
 defaultParam;               % load default parameters
 
-N=1500;
+N=700;
 
-%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12';  % off
+data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12';  % off
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16';  % switch10s
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_37/tracking_2023_10_12'; % circle light
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_26/tracking_2024_01_30'; % circle light high denisty
@@ -63,8 +63,7 @@ if isfile(fullfile(data_folder,'inputs.txt'))   % time varying inputs
 else                                            % spatial inputs
     inputs=imread(fullfile(fileparts(data_folder),'patterns_cam/pattern_10.0.jpeg'));
     u=double(inputs(:,:,3))'/255;    %select blue channel and scale in [0,1]
-    K=ones(51)/51^2;
-    u=conv2(u,K,'same');
+    u = movmean2(u,51);
     Environment.Inputs.Points = {linspace(-Simulation.arena(1),Simulation.arena(1),size(inputs,2))/2, linspace(-Simulation.arena(2),Simulation.arena(2),size(inputs,1))/2};
     %Environment.Inputs.Values = linspace(-1,1,length(Environment.Inputs.Points{1}))' * ones(1,length(Environment.Inputs.Points{2}));
     Environment.Inputs.Values = u;
@@ -200,42 +199,68 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     window = [-Simulation.arena(1),Simulation.arena(1),-Simulation.arena(2),Simulation.arena(2)]/2;
     [density_by_input, bins, norm_slope, c_coeff, coefficents] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, xFinal_inWindow, window);
     
-    figure % light distribution
+    figure % simulation light distribution
     bar((bins(1:end-1)+bins(2:end))/2,density_by_input, 1)
     hold on
-    plot(bins,coefficents(1)+coefficents(2)*bins);
+    plot(bins,coefficents(1)+coefficents(2)*bins,LineWidth=2);
     xlabel('Input intensity')
     ylabel('Density of agents')
-    title('Final distribution w.r.t. light intensity')
-    yticklabels([]);
-    %text(max(bins),max(density_by_input),['\rho=',num2str(c_coeff,3)],'HorizontalAlignment','right','FontSize',14)
-    text(max(bins),max(density_by_input),['norm slope=',num2str(norm_slope,3)],'HorizontalAlignment','right','FontSize',14)
+    yticks([0:0.25:1]);
+    text(max(bins),max(density_by_input)*1.1,['\rho=',num2str(c_coeff,'%.2f')],'HorizontalAlignment','right','FontSize',14)
+    text(max(bins),max(density_by_input)*1.05,['norm slope=',num2str(norm_slope,'%.2f')],'HorizontalAlignment','right','FontSize',14)
+    ylim([0,max(density_by_input)*1.15])
+    xlim([-0.1,1.1])
+    xticks(round(bins,2))
+    title('Simulated light distribution')
     if outputDir
-    saveas(gcf, fullfile(path, 'light_distribution'))
-    saveas(gcf, fullfile(path, 'light_distribution'),'png')
+        saveas(gcf, fullfile(path, 'light_distribution'))
+        saveas(gcf, fullfile(path, 'light_distribution'),'png')
     end
     
-     
+    
+    % experimental positions
+    figure
     img=imread(fullfile(fileparts(data_folder),'images/fig_180.0.jpeg'));
     img_grey = double(img(:,:,1))/255;
     th=0.3;
     mask=img_grey>th;
     x_vec = linspace(window(1),window(2),size(mask,2));
     y_vec = linspace(window(3),window(4),size(mask,1));
-    figure; imagesc(x_vec,y_vec,img_grey); axis('equal')
-    figure; imagesc(x_vec,y_vec,mask); axis('equal'); title(['mask=',num2str(th)])
+    box on    
+    hold on
+    cmap = linspace2([1,1,1], [1,0.5,0.5], 100)';
+    colormap(cmap)
+    imagesc(x_vec,y_vec,u')
+    I=imagesc(x_vec,y_vec,cat(3,zeros(size(mask)),zeros(size(mask)),mask));
+    set(I, 'AlphaData', mask);
+    axis('equal')
+    axis(window)
+    xticks([])
+    yticks([])
+    title('Experimental')
+    if outputDir
+        saveas(gcf, fullfile(path, 'exp_positions'))
+        saveas(gcf, fullfile(path, 'exp_positions'),'png')
+    end
     
     figure % light distribution
     [density_by_input, bins, norm_slope, c_coeff, coefficents] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, mask, window);
     bar((bins(1:end-1)+bins(2:end))/2,density_by_input, 1)
     hold on
-    plot(bins,coefficents(1)+coefficents(2)*bins);
+    plot(bins,coefficents(1)+coefficents(2)*bins,LineWidth=2);
     xlabel('Input intensity')
     ylabel('Density of agents')
-    title('Final distribution w.r.t. light intensity')
-    yticklabels([]);
-    %text(max(bins),max(density_by_input),['\rho=',num2str(c_coeff,3)],'HorizontalAlignment','right','FontSize',14)
-    text(max(bins),max(density_by_input),['norm slope=',num2str(norm_slope,3)],'HorizontalAlignment','right','FontSize',14)
+    yticks([0:0.25:1]);
+    text(max(bins),max(density_by_input)*1.1,['\rho=',num2str(c_coeff,'%.2f')],'HorizontalAlignment','right','FontSize',14)
+    text(max(bins),max(density_by_input)*1.05,['norm slope=',num2str(norm_slope,'%.2f')],'HorizontalAlignment','right','FontSize',14)
+    ylim([0,max(density_by_input)*1.15])
+    xlim([-0.1,1.1])
+    xticks(round(bins,2))
+    title('Experimental light distribution')
+    if outputDir
+        saveas(gcf, fullfile(path, 'exp_light_distribution'))
+        saveas(gcf, fullfile(path, 'exp_light_distribution'),'png')
+    end
 end
 
 % COMPARE RESULTS
