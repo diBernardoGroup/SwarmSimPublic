@@ -26,17 +26,21 @@ data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_1
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_26/tracking_2024_01_30'; % circle light high denisty
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_21/tracking_2024_01_30'; % circle dark
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_33/tracking_2023_10_12'; % gradient central light
-data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_34/tracking_2023_10_12'; % gradient central dark
+data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_23_Euglena_9/tracking_2023_10_12'; % gradient central dark
+%data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_34/tracking_2023_10_12'; % BCL
 
 id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % folder with identification data
-identification_file_name = 'identification_OLS_ds3_sign.txt';
+identification_file_name = 'identification_OLS_ds1_sign.txt';
 
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
+
+brightness_thresh = 0.3;
+background_sub = true;
 
 %% Loads experiment data
 Simulation.arena = [1920,1080]; % size of the simulation window
 Simulation.deltaT = 0.5;        % sampling time step
-Simulation.dT =     0.01;   % integration time step
+Simulation.dT =     0.01;       % integration time step
 Simulation.Tmax = 180;          % maximum simulation time
 timeInstants = [0:Simulation.deltaT:Simulation.Tmax];
 
@@ -49,6 +53,7 @@ Dynamics=struct('model','IndependentSDEsWithInput', ...
     'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', agents.alpha_w, 'gainDerOmega', agents.beta_w,...
     'omega', normrnd(0,agents.std_w,N,1), 'oldInput', zeros(N,1));
 
+% % parameters for strong photodispersion
 % Dynamics=struct('model','IndependentSDEsWithInput', ...
 %     'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s, 'gainSpeed', 0, 'gainDerSpeed', -50,...
 %     'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', 0, 'gainDerOmega', 5,...
@@ -61,12 +66,9 @@ if isfile(fullfile(data_folder,'inputs.txt'))   % time varying inputs
     Environment.Inputs.Times  = timeInstants;
     Environment.Inputs.Values = u;
 else                                            % spatial inputs
-    inputs=imread(fullfile(fileparts(data_folder),'patterns_cam/pattern_10.0.jpeg'));
-    u=double(inputs(:,:,3))'/255;    %select blue channel and scale in [0,1]
-    u = movmean2(u,51);
-    Environment.Inputs.Points = {linspace(-Simulation.arena(1),Simulation.arena(1),size(inputs,2))/2, linspace(-Simulation.arena(2),Simulation.arena(2),size(inputs,1))/2};
-    %Environment.Inputs.Values = linspace(-1,1,length(Environment.Inputs.Points{1}))' * ones(1,length(Environment.Inputs.Points{2}));
-    Environment.Inputs.Values = u;
+    [mask, u]= analyseDOMEspatial(fileparts(data_folder), background_sub, brightness_thresh);
+    Environment.Inputs.Points = {linspace(-Simulation.arena(1),Simulation.arena(1),size(u,1))/2, linspace(-Simulation.arena(2),Simulation.arena(2),size(u,2))/2};
+    Environment.Inputs.Values = flip(u,2);
 end
 
 %% Create Initial Conditions
@@ -194,21 +196,21 @@ end
 % axis(window)
 % box on
 
-% light distribution
+% SPATIAL INPUTS
 if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     window = [-Simulation.arena(1),Simulation.arena(1),-Simulation.arena(2),Simulation.arena(2)]/2;
-    [density_by_input, bins, norm_slope, c_coeff, coefficents] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, xFinal_inWindow, window);
+    [density_by_input_sim, bins, norm_slope_sim, c_coeff_sim, coefficents, ~,~, u_values_sim] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, xFinal_inWindow, window);
     
     figure % simulation light distribution
-    bar((bins(1:end-1)+bins(2:end))/2,density_by_input, 1)
+    bar((bins(1:end-1)+bins(2:end))/2,density_by_input_sim, 1)
     hold on
     plot(bins,coefficents(1)+coefficents(2)*bins,LineWidth=2);
     xlabel('Input intensity')
     ylabel('Density of agents')
     yticks([0:0.25:1]);
-    text(max(bins),max(density_by_input)*1.1,['\rho=',num2str(c_coeff,'%.2f')],'HorizontalAlignment','right','FontSize',14)
-    text(max(bins),max(density_by_input)*1.05,['norm slope=',num2str(norm_slope,'%.2f')],'HorizontalAlignment','right','FontSize',14)
-    ylim([0,max(density_by_input)*1.15])
+    text(max(bins),max(density_by_input_sim)*1.1,['\rho=',num2str(c_coeff_sim,'%.2f')],'HorizontalAlignment','right','FontSize',14)
+    text(max(bins),max(density_by_input_sim)*1.05,['norm slope=',num2str(norm_slope_sim,'%.2f')],'HorizontalAlignment','right','FontSize',14)
+    ylim([0,max(density_by_input_sim)*1.15])
     xlim([-0.1,1.1])
     xticks(round(bins,2))
     title('Simulated light distribution')
@@ -217,13 +219,10 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
         saveas(gcf, fullfile(path, 'light_distribution'),'png')
     end
     
-    
-    % experimental positions
+    % get distribution wrt light intensity
+    [density_by_input_exp, bins, norm_slope_exp, c_coeff_exp, coefficents, ~,~, u_values_exp] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, mask, window);
+
     figure
-    img=imread(fullfile(fileparts(data_folder),'images/fig_180.0.jpeg'));
-    img_grey = double(img(:,:,1))/255;
-    th=0.3;
-    mask=img_grey>th;
     x_vec = linspace(window(1),window(2),size(mask,2));
     y_vec = linspace(window(3),window(4),size(mask,1));
     box on    
@@ -243,28 +242,52 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
         saveas(gcf, fullfile(path, 'exp_positions'),'png')
     end
     
-    figure % light distribution
-    [density_by_input, bins, norm_slope, c_coeff, coefficents] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, mask, window);
-    bar((bins(1:end-1)+bins(2:end))/2,density_by_input, 1)
+    figure % experimental light distribution
+    bar((bins(1:end-1)+bins(2:end))/2,density_by_input_exp, 1)
     hold on
     plot(bins,coefficents(1)+coefficents(2)*bins,LineWidth=2);
     xlabel('Input intensity')
     ylabel('Density of agents')
     yticks([0:0.25:1]);
-    text(max(bins),max(density_by_input)*1.1,['\rho=',num2str(c_coeff,'%.2f')],'HorizontalAlignment','right','FontSize',14)
-    text(max(bins),max(density_by_input)*1.05,['norm slope=',num2str(norm_slope,'%.2f')],'HorizontalAlignment','right','FontSize',14)
-    ylim([0,max(density_by_input)*1.15])
+    text(max(bins),max(density_by_input_exp)*1.1,['\rho=',num2str(c_coeff_exp,'%.2f')],'HorizontalAlignment','right','FontSize',14)
+    text(max(bins),max(density_by_input_exp)*1.05,['norm slope=',num2str(norm_slope_exp,'%.2f')],'HorizontalAlignment','right','FontSize',14)
+    ylim([0,max(density_by_input_exp)*1.15])
     xlim([-0.1,1.1])
     xticks(round(bins,2))
     title('Experimental light distribution')
+    box
     if outputDir
         saveas(gcf, fullfile(path, 'exp_light_distribution'))
         saveas(gcf, fullfile(path, 'exp_light_distribution'),'png')
     end
-end
+    
+    figure % difference between light distribution
+    tvd = 0.5 * norm(density_by_input_exp-density_by_input_sim,1); % Total Variation Distance
+    hold on
+    b_exp = bar((bins(1:end-1)+bins(2:end))/2,density_by_input_exp, 1, FaceColor = 'b', FaceAlpha = 0.5);
+    b_sim = bar((bins(1:end-1)+bins(2:end))/2,density_by_input_sim, 1, FaceColor = 'k', FaceAlpha = 0.4);
+    %[f,xi] = ksdensity(u_values_exp, support=[-0.001,1.001], BoundaryCorrection='reflection');
+    %f=f/sum(f);
+    %plot(xi,f)
+    legend({'REAL','SIMULATED'},'FontSize',14)
+    xlabel('Input intensity','FontSize',14)
+    ylabel('Density of agents','FontSize',14)
+    yticks([0:0.25:1]);
+    text(mean(bins),max(density_by_input_exp)*1.10,['TVD=',num2str(tvd,'%.2f')],'HorizontalAlignment','center','FontSize',14)
+    ylim([0,max(density_by_input_exp)*1.15])
+    xlim([-0.1,1.1])
+    xticks(round(bins,2))
+    box
+    if outputDir
+        saveas(gcf, fullfile(path, 'difference_light_distribution'))
+        saveas(gcf, fullfile(path, 'difference_light_distribution'),'png')
+    end
+    
+else % TEMPORAL INPUTS
 
-% COMPARE RESULTS
-% [MSE_speed,MSE_omega,NMSE_speed,NMSE_omega,NMSE_total] = compareResults({data_folder,path}, path);
+    [MSE_speed,MSE_omega,NMSE_speed,NMSE_omega,NMSE_total] = compareResults({data_folder,path}, path);
+
+end
 
 % figure % TIME PLOT - SPEED and ANGULAR VELOCITY
 % subplot(2,4,[1 2 3])

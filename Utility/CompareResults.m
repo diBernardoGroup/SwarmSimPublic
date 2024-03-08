@@ -2,23 +2,6 @@
 
 function [mse_speed,mse_omega,nmse_speed,nmse_omega,nmse_total] = compareResults(experiment_paths, outputDir)
 
-% experiment_paths = {'/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12';
-%                 '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/2023_10_26_IndependentSDEs_9';
-%                 '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/2023_10_26_IndependentSDEs_8';
-%                 '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/2023_10_26_IndependentSDEs_7';
-%                 %'/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/2023_10_26_IndependentSDEs_6';
-%                 %'/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/2023_10_26_IndependentSDEs_5';
-%                 %'/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/2023_10_26_IndependentSDEs_4';
-%                 %'/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/2023_10_26_IndependentSDEs_3';
-%                 %'/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/2023_10_26_IndependentSDEs_1';
-%                 %'/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/2023_10_25_IndependentSDEs_4';
-%                 %'/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/2023_10_25_IndependentSDEs_3';
-%                 %'/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/2023_10_25_IndependentSDEs_2';
-%                 %'/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/2023_10_25_IndependentSDEs_1'
-%                 };
-            
-% outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison';
-
 arguments
     experiment_paths
     outputDir = ''

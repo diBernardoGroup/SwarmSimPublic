@@ -33,7 +33,8 @@ seed=-1;                 % seed for random generator, if negative it is not set
 
 %% Loads DOME experiment data
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_33/tracking_2023_10_12'; % gradient central light
-data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_34/tracking_2023_10_12'; % gradient central dark
+% data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_34/tracking_2023_10_12'; % gradient central dark
+experiments_folder = '/Volumes/DOMEPEN/Experiments';
 
 id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % folder with identification data
 identification_file_name = 'identification_OLS_ds2_sign.txt';
@@ -62,18 +63,8 @@ Dynamics=struct('model','IndependentSDEsWithInput', ...
 %     'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', 0, 'gainDerOmega', 0,...
 %     'omega', normrnd(0,agents.std_w,N,1), 'oldInput', zeros(N,1));
 
-% load inputs data
-if isfile(fullfile(data_folder,'inputs.txt'))   % time varying inputs
-    inputs=load(fullfile(data_folder,'inputs.txt'));
-    u=inputs(:,1)/255;              %select blue channel and scale in [0,1]
-    Environment.Inputs.Times  = timeInstants;
-    Environment.Inputs.Values = u;
-else                                            % spatial inputs
-    inputs=imread(fullfile(fileparts(data_folder),'patterns_cam/pattern_10.0.jpeg'));
-    u=double(inputs(:,:,3))'/255;    %select blue channel and scale in [0,1]
-    Environment.Inputs.Points = {linspace(-Simulation.arena(1),Simulation.arena(1),size(inputs,2))/2, linspace(-Simulation.arena(2),Simulation.arena(2),size(inputs,1))/2};
-    Environment.Inputs.Values = flip(u,2);
-end
+brightness_thresh = 0.3;
+background_sub = true;
 
 %% variable parameters
 % One or multiple parameters can be modified at the same time.
@@ -90,6 +81,10 @@ end
 % parameters(2).name='Dynamics.gainDerOmega';
 % parameters(2).values=[-1,-0.5,-0.2,-0.1,0,0.1,0.2,0.5,1]*5;
 % parameters(2).values=[-10,10];
+
+experiment = '';
+parameters(1).name='experiment';
+parameters(1).values=["2023_06_14_E_10","2023_06_15_E_15","2023_06_23_E_7"];
 
 %% Preallocate
 p=cartesianProduct({parameters.values});
@@ -129,8 +124,26 @@ for i_times=1:Nconfig
             assert(isfield(eval(string(args(1))), string(args(2))), ["Structure "+ string(args(1)) + " do not have field " + string(args(2))])
         end
         
-        evalin('base', [parameters(j).name, '=', num2str(p(i_times,j)), ';'] );
+        if isa(p(i_times,j),'string')
+            evalin('base', strjoin([parameters(j).name, '="', p(i_times,j), '";'],'') );
+        else
+            evalin('base', [parameters(j).name, '=', num2str(p(i_times,j)), ';'] );
+        end
         disp(['> ',parameters(j).name,' = ', num2str(p(i_times,j)) ])
+    end
+    
+    % load inputs data
+    experiment = strrep(experiment,'_E_','_Euglena_');
+    data_folder = fullfile(experiments_folder, experiment);
+    if isfile(fullfile(data_folder,'inputs.txt'))   % time varying inputs
+        inputs=load(fullfile(data_folder,'inputs.txt'));
+        u=inputs(:,1)/255;              %select blue channel and scale in [0,1]
+        Environment.Inputs.Times  = timeInstants;
+        Environment.Inputs.Values = u;
+    else                                            % spatial inputs
+        [mask, u]= analyseDOMEspatial(data_folder, background_sub, brightness_thresh);
+        Environment.Inputs.Points = {linspace(-Simulation.arena(1),Simulation.arena(1),size(u,1))/2, linspace(-Simulation.arena(2),Simulation.arena(2),size(u,2))/2};
+        Environment.Inputs.Values = flip(u,2);
     end
     
     % create initial conditions
@@ -149,7 +162,7 @@ for i_times=1:Nconfig
         %x0Data(k_times,:,:) = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D ) + randCircle(N, delta, D); % initial conditions on a deformed lattice
     end
     
-    parfor k_times=1:Ntimes
+    for k_times=1:Ntimes
         % run simulation
         [xVec] = Simulator(squeeze(x0Data(k_times,:,:)), v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction, Environment);
         
@@ -164,7 +177,7 @@ for i_times=1:Nconfig
         rigid_vec(i_times,k_times) = rank(M)==D*N-D*(D+1)/2;
         e_d_max_vec(i_times,k_times) = getMaxLinkLengthError(xFinal, 1, 0, Rmax);   % max distance from the deisred link length.
         
-        [density_by_input, bins, norm_sl, c_coeff] = agentsDensityByInput(Environment.Inputs, xFinal_inWindow, window);
+        [density_by_input, bins, norm_sl, c_coeff] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, xFinal_inWindow, window);
         norm_slope(i_times,k_times) = norm_sl;
     end
     fprintf('Elapsed time is %.2f s.\n\n',toc)
@@ -227,35 +240,44 @@ end
 
 % plot if Nparameters==1
 if Nparameters==1
+    if isnumeric(parameters(1).values)
+        figure %e_d_max and rigidity
+        set(0, 'DefaultFigureRenderer', 'painters');
+        subplot(2,1,1)
+        hold on
+        line=plotWithShade(parameters(1).values, mean(e_d_max_vec,2), min(e_d_max_vec,[],2), max(e_d_max_vec,[],2), 'b', 0.1); %e_d_max_mean(:,1),e_d_max_mean(:,2),e_d_max_mean(:,3), 'b', 0.1);
+        yline(Rmax-1,'--','LineWidth',2)
+        yticks(sort([0:0.1:1, Rmax-1]))
+        xticks(parameters(1).values)
+        set(gca,'FontSize',14)
+        ylabel('$e$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
+        box on
+        grid
+        
+        subplot(2,1,2)
+        rigidity_line=plot(parameters(1).values, mean(rigid_vec,2),'Marker','o','Color','r','LineWidth',2,'MarkerSize',6);
+        xticks(parameters(1).values)
+        yticks([0:0.25:1])
+        xlabel(parameters(1).name)
+        set(gca,'FontSize',14)
+        xlabel('$\delta$', 'Interpreter','latex','FontSize',22)
+        ylabel('$\rho$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
+        box on
+        grid
+        if outputDir
+            saveas(gcf,fullfile(path, 'e_rho'))
+            saveas(gcf,fullfile(path, 'e_rho'),'png')
+        end
     
-    figure %e_d_max and rigidity
-    set(0, 'DefaultFigureRenderer', 'painters');
-    subplot(2,1,1)
-    hold on
-    line=plotWithShade(parameters(1).values, mean(e_d_max_vec,2), min(e_d_max_vec,[],2), max(e_d_max_vec,[],2), 'b', 0.1); %e_d_max_mean(:,1),e_d_max_mean(:,2),e_d_max_mean(:,3), 'b', 0.1);
-    yline(Rmax-1,'--','LineWidth',2)
-    yticks(sort([0:0.1:1, Rmax-1]))
-    xticks(parameters(1).values)
-    set(gca,'FontSize',14)
-    ylabel('$e$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
-    box on
-    grid
-    
-    subplot(2,1,2)
-    rigidity_line=plot(parameters(1).values, mean(rigid_vec,2),'Marker','o','Color','r','LineWidth',2,'MarkerSize',6);
-    xticks(parameters(1).values)
-    yticks([0:0.25:1])
-    xlabel(parameters(1).name)
-    set(gca,'FontSize',14)
-    xlabel('$\delta$', 'Interpreter','latex','FontSize',22)
-    ylabel('$\rho$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
-    box on
-    grid
-    if outputDir
-        saveas(gcf,fullfile(path, 'e_rho'))
-        saveas(gcf,fullfile(path, 'e_rho'),'png')
+    else
+        figure
+        scatter([1:Nconfig],norm_slope,'b')
+        xticks([1:Nconfig])
+        xticklabels(parameters(1).values)
+        set(gca, 'TickLabelInterpreter', 'none');
+        xlim([0,Nconfig+1])
+        box on
     end
-    
     
 elseif Nparameters==2
     % average over the initial conditions
