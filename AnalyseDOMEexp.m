@@ -4,24 +4,26 @@ clear
 
 data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12'; % off
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
+data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10'; % switch10s combo
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
 
-identification_file_name = 'identification_GBCT_ds3_sign_grad.txt';
-identification_method = 'GreyBoxCT';
-downSampling = 3;
+identification_file_name = 'identification_OLS_ds1_sign_grad.txt';
+identification_method = 'OLS';
+downSampling = 1;
+
 deltaT = 0.5;
 dT = 0.01;
-thresholdfactor = 3;
+thresholdfactor = 3; % parameters outliers detection
 
 current_folder = fileparts(which('AnalyseDOMEexp'));
 addpath(genpath(current_folder));
 
 %% Load data
 %identification=readtable(fullfile(current_folder,'identification.txt'));
-speed=load(fullfile(data_folder,'speeds_smooth.txt'));
-omega=load(fullfile(data_folder,'ang_vel_smooth.txt'));
+speed  = load(fullfile(data_folder,'speeds_smooth.txt'));
+omega  = load(fullfile(data_folder,'ang_vel_smooth.txt'));
 
-inputs=load(fullfile(data_folder,'inputs.txt'));
+inputs = load(fullfile(data_folder,'inputs.txt'));
 
 speed  = speed(1:downSampling:end,:);
 omega  = omega(1:downSampling:end,:);
@@ -113,6 +115,8 @@ disp(['Saved as ',identification_file_name])
 
 %% PLOTS
 [~,f,~]=fileparts(identification_file_name);
+if ~exist(fullfile(data_folder,'plots'),'dir'); mkdir(fullfile(data_folder,'plots')); end
+
 figure % PARAMETERS BOXPLOTS
 for i=1:10 
     ax=subplot(2,5,i);

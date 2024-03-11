@@ -35,9 +35,10 @@ seed=-1;                 % seed for random generator, if negative it is not set
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_33/tracking_2023_10_12'; % gradient central light
 % data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_34/tracking_2023_10_12'; % gradient central dark
 experiments_folder = '/Volumes/DOMEPEN/Experiments';
+experiment = '/comparisons/Euglena_switch_10';
 
-id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % folder with identification data
-identification_file_name = 'identification_OLS_ds2_sign.txt';
+id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10';  % folder with identification data
+identification_file_name = 'identification_OLS_ds3_sign_grad.txt';
 
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 
@@ -81,10 +82,9 @@ background_sub = true;
 % parameters(2).name='Dynamics.gainDerOmega';
 % parameters(2).values=[-1,-0.5,-0.2,-0.1,0,0.1,0.2,0.5,1]*5;
 % parameters(2).values=[-10,10];
-
-experiment = '';
+ 
 parameters(1).name='experiment';
-parameters(1).values=["2023_06_14_E_10","2023_06_15_E_15","2023_06_23_E_7"];
+parameters(1).values=["/comparisons/Euglena_switch_10"];
 
 %% Preallocate
 p=cartesianProduct({parameters.values});
@@ -171,14 +171,15 @@ for i_times=1:Nconfig
         x_f(i_times,k_times,:,:) = xFinal;
         xFinal_inWindow = squeeze(xVec(end,(xVec(end,:,1)>window(1) & xVec(end,:,1)<window(2) & xVec(end,:,2)>window(3) & xVec(end,:,2)<window(4)),:));
         
-        B = buildIncidenceMatrix(xFinal, Rmax);
-        links(i_times,k_times)=size(B,2);
-        M = buildRigidityMatrix(xFinal, B);
-        rigid_vec(i_times,k_times) = rank(M)==D*N-D*(D+1)/2;
-        e_d_max_vec(i_times,k_times) = getMaxLinkLengthError(xFinal, 1, 0, Rmax);   % max distance from the deisred link length.
         
-        [density_by_input, bins, norm_sl, c_coeff] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, xFinal_inWindow, window);
-        norm_slope(i_times,k_times) = norm_sl;
+        if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
+            [density_by_input, bins, norm_sl, c_coeff] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, xFinal_inWindow, window);
+            norm_slope(i_times,k_times) = norm_sl;
+        else
+            NMSE_speed(i_times,k_times) = goodnessOfFit(median(experiments{2}.speed(:,1:overlap),1,'omitnan')', median(experiments{1}.speed(:,1:overlap),1,'omitnan')', 'NMSE');
+            NMSE_omega(i_times,k_times)
+            NMSE_total(i_times,k_times)
+        end
     end
     fprintf('Elapsed time is %.2f s.\n\n',toc)
 end

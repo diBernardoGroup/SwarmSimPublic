@@ -81,7 +81,7 @@ for j=1:size(identification_file_names,1) % for each technique
     end
 end
 
-figure
+figure % Parameters
 colors = get(gca,'ColorOrder');
 for k=1:10 % for each parameter
     ax=subplot(2,5,k);
@@ -97,40 +97,46 @@ for k=1:10 % for each parameter
     title(identifications{1}.Properties.VariableNames(k+1))
 end
 
-figure
+figure % NMSE
 for j=1:size(identification_file_names,1) % for each technique
     subplot(3,2,1); hold on
-    plot([1,2,3], nmse_mean_speed(j,:), 'color', colors(j,:))
+    plot([1,2,3], nmse_mean_speed(j,:), 'color', colors(j,:), 'marker', 'o')
     title('NMSE mean s')
     legend(tags(1:j))
     xticks([1,2,3])
+    ylim([0 inf])
     subplot(3,2,2); hold on
-    plot([1,2,3], nmse_med_speed(j,:), 'color', colors(j,:))
+    plot([1,2,3], nmse_med_speed(j,:), 'color', colors(j,:), 'marker', 'o')
     title('NMSE med s')
     legend(tags(1:j))
     xticks([1,2,3])
-    
+    ylim([0 inf])
+   
     subplot(3,2,3); hold on
-    plot([1,2,3], nmse_mean_omega(j,:), 'color', colors(j,:))
+    plot([1,2,3], nmse_mean_omega(j,:), 'color', colors(j,:), 'marker', 'o')
     title('NMSE mean w')
     legend(tags(1:j))
     xticks([1,2,3])
+    ylim([0 inf])
     subplot(3,2,4); hold on
-    plot([1,2,3], nmse_med_omega(j,:), 'color', colors(j,:))
+    plot([1,2,3], nmse_med_omega(j,:), 'color', colors(j,:), 'marker', 'o')
     title('NMSE med w')
     legend(tags(1:j))
     xticks([1,2,3])
+    ylim([0 inf])
     
     subplot(3,2,5); hold on
-    plot([1,2,3], nmse_mean_total(j,:), 'color', colors(j,:))
+    plot([1,2,3], nmse_mean_total(j,:), 'color', colors(j,:), 'marker', 'o')
     title('NMSE mean tot')
     legend(tags(1:j))
     xticks([1,2,3])
+    ylim([0 inf])
     subplot(3,2,6); hold on
-    plot([1,2,3], nmse_med_total(j,:), 'color', colors(j,:))
+    plot([1,2,3], nmse_med_total(j,:), 'color', colors(j,:), 'marker', 'o')
     title('NMSE med tot')
     legend(tags(1:j))
     xticks([1,2,3])
+    ylim([0 inf])
 end
 
 

@@ -18,19 +18,21 @@ D=2;                        % number of dimensions [2 or 3]
 
 defaultParam;               % load default parameters
 
-N=700;
+N=150;
 
-data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12';  % off
-%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16';  % switch10s
+% data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12';  % off
+% data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16';  % switch10s
+data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10';  % switch10s combo
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_37/tracking_2023_10_12'; % circle light
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_26/tracking_2024_01_30'; % circle light high denisty
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_21/tracking_2024_01_30'; % circle dark
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_33/tracking_2023_10_12'; % gradient central light
-data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_23_Euglena_9/tracking_2023_10_12'; % gradient central dark
+%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_23_Euglena_9/tracking_2023_10_12';  % gradient central dark
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_34/tracking_2023_10_12'; % BCL
 
-id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % folder with identification data
-identification_file_name = 'identification_OLS_ds1_sign.txt';
+%id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % folder with identification data
+id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10';  % folder with identification data
+identification_file_name = 'identification_OLS_ds3_sign_grad.txt';
 
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 
@@ -95,16 +97,17 @@ timeInstants = 0:Simulation.deltaT:Simulation.Tmax;
 % derivate quantities
 [~, vVec_grad] = gradient(xVec, 1, Simulation.deltaT, 1);
 vVec_diff = diff(xVec)/Simulation.deltaT;
-speed = vecnorm(vVec,2,3);
 speed_grad = vecnorm(vVec_grad,2,3);
 speed_diff = [speeds0'; vecnorm(vVec_diff,2,3)];
+vVec_diff = [(xVec(2,:,:)-xVec(1,:,:))/Simulation.deltaT; vVec_diff];
+speed = speed_grad;
 
-theta = atan2(vVec(:,:,2), vVec(:,:,1));
+theta = atan2(vVec_grad(:,:,2), vVec_grad(:,:,1));
 for i=1:length(timeInstants)-1
     % angular velocity
-    omega(i,:) = angleBetweenVectors(squeeze(vVec(i,:,:)),squeeze(vVec(i+1,:,:)))';
+    omega(i,:) = angleBetweenVectors(squeeze(vVec_grad(i,:,:)),squeeze(vVec_grad(i+1,:,:)))';
 end
-omega(length(timeInstants),:) = angleBetweenVectors(squeeze(vVec(length(timeInstants)-1,:,:)),squeeze(vVec(length(timeInstants),:,:)))';
+omega(length(timeInstants),:) = angleBetweenVectors(squeeze(vVec_grad(length(timeInstants)-1,:,:)),squeeze(vVec_grad(length(timeInstants),:,:)))';
 omega=omega/Simulation.deltaT;
 
 xFinal_inWindow = squeeze(xVec(end,(xVec(end,:,1)>-Simulation.arena(1)/2 & xVec(end,:,1)<Simulation.arena(1)/2 ...
