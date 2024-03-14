@@ -7,9 +7,9 @@ data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_1
 data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10'; % switch10s combo
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
 
-identification_file_name = 'identification_OLS_ds1_sign_grad.txt';
-identification_method = 'OLS';
-downSampling = 1;
+identification_file_name = 'identification_GBCT_ds3_sign_grad.txt';
+identification_method = 'GreyBoxCT';
+downSampling = 3;
 
 deltaT = 0.5;
 dT = 0.01;

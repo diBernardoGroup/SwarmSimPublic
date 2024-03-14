@@ -1,16 +1,20 @@
 clear
 close all
 
-id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % folder with identification data
+% id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % folder with identification data
+id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10';
 
+% identification_file_names = ["identification_OLS_ds1_sign.txt","identification_OLS_ds2_sign.txt","identification_OLS_ds3_sign.txt";
+%                              %"identification_OLS_ds1_abs.txt","identification_OLS_ds2_abs.txt","identification_OLS_ds3_abs.txt";
+%                              "identification_GB_ds1_sign.txt","identification_GB_ds2_sign.txt","identification_GB_ds3_sign.txt";
+%                              "identification_GBCT_ds1_sign_grad.txt","identification_GBCT_ds2_sign_grad.txt","identification_GBCT_ds3_sign_grad.txt";
+%                              "identification_GBCT_ds1_sign_diff.txt","identification_GBCT_ds2_sign_diff.txt","identification_GBCT_ds3_sign_diff.txt"];
+                         
+identification_file_names = ["identification_OLS_ds1_sign_grad.txt","identification_OLS_ds2_sign_grad.txt","identification_OLS_ds3_sign_grad.txt";
+                             "identification_GBCT_ds1_sign_grad.txt","identification_GBCT_ds2_sign_grad.txt","identification_GBCT_ds3_sign_grad.txt"];
 
-identification_file_names = ["identification_OLS_ds1_sign.txt","identification_OLS_ds2_sign.txt","identification_OLS_ds3_sign.txt";
-                             %"identification_OLS_ds1_abs.txt","identification_OLS_ds2_abs.txt","identification_OLS_ds3_abs.txt";
-                             "identification_GB_ds1_sign.txt","identification_GB_ds2_sign.txt","identification_GB_ds3_sign.txt";
-                             "identification_GBCT_ds1_sign_grad.txt","identification_GBCT_ds2_sign_grad.txt","identification_GBCT_ds3_sign_grad.txt";
-                             "identification_GBCT_ds1_sign_diff.txt","identification_GBCT_ds2_sign_diff.txt","identification_GBCT_ds3_sign_diff.txt"];
-
-tags = ["OLS","GBDT","GBCT grad","GBCT diff"];
+% tags = ["OLS","GBDT","GBCT grad","GBCT diff"];
+tags = ["OLS","Grey Box"];
              
 dT = 0.01;
 deltaT = 0.5;
@@ -40,13 +44,13 @@ u_sim=nan(length(t_sim),2);
 for j=1:size(identification_file_names,1)       % for each technique
     for i=1:size(identification_file_names,2)   % for each down sampling value
         theta_s_mean=mean(identifications{j,i}.theta_s);
-        mu_s_mean=mean(identifications{j,i}.mu_s);
+        mu_s_mean   =mean(identifications{j,i}.mu_s);
         alpha_s_mean=mean(identifications{j,i}.alpha_s);
-        beta_s_mean=mean(identifications{j,i}.beta_s);
+        beta_s_mean =mean(identifications{j,i}.beta_s);
         theta_w_mean=mean(identifications{j,i}.theta_w);
-        mu_w_mean=median(abs(omega),'all','omitnan');
+        mu_w_mean   =median(abs(omega),'all','omitnan');
         alpha_w_mean=mean(identifications{j,i}.alpha_w);
-        beta_w_mean=mean(identifications{j,i}.beta_w);
+        beta_w_mean =mean(identifications{j,i}.beta_w);
         s_sim(1)=mu_s_mean;
         w_sim(1)=mu_w_mean;
         for t=1:length(t_sim)-1                 % for each time instant
@@ -57,11 +61,11 @@ for j=1:size(identification_file_names,1)       % for each technique
         
         nmse_mean_speed(j,i) = goodnessOfFit(interp1(t_sim,s_sim,timeInstants)', mean(speed,2,'omitnan'), 'NMSE');
         nmse_mean_omega(j,i) = goodnessOfFit(interp1(t_sim,w_sim,timeInstants(1:end-1))', mean(abs(omega),2,'omitnan'), 'NMSE');
-        nmse_mean_total(j,i) = norm([nmse_mean_speed(j,i), nmse_mean_omega(j,i)]);
+        nmse_mean_total(j,i) = mean([nmse_mean_speed(j,i), nmse_mean_omega(j,i)]);
         
         nmse_med_speed(j,i) = goodnessOfFit(interp1(t_sim,s_sim,timeInstants)', median(speed,2,'omitnan'), 'NMSE');
         nmse_med_omega(j,i) = goodnessOfFit(interp1(t_sim,w_sim,timeInstants(1:end-1))', median(abs(omega),2,'omitnan'), 'NMSE');
-        nmse_med_total(j,i) = norm([nmse_med_speed(j,i), nmse_med_omega(j,i)]);
+        nmse_med_total(j,i) = mean([nmse_med_speed(j,i), nmse_med_omega(j,i)]);
     end
 end
 
@@ -92,51 +96,52 @@ for k=1:10 % for each parameter
         quartiles3 = [quantile(identifications{j,1}{:,k+1},0.75), quantile(identifications{j,2}{:,k+1},0.75), quantile(identifications{j,3}{:,k+1},0.75)];
         line=plotWithShade([1,2,3],medians,quartiles1,quartiles3, colors(j,:), 0.3);
     end
-    legend({'',tags(1),'',tags(2),'',tags(3),'',tags(4)})
+    legend({'',tags(1),'',tags(2)})
     xticks([1,2,3])
     title(identifications{1}.Properties.VariableNames(k+1))
 end
 
 figure % NMSE
+rng = max([nmse_med_speed,nmse_mean_speed,nmse_med_omega,nmse_mean_omega],[],'all');
 for j=1:size(identification_file_names,1) % for each technique
     subplot(3,2,1); hold on
     plot([1,2,3], nmse_mean_speed(j,:), 'color', colors(j,:), 'marker', 'o')
     title('NMSE mean s')
     legend(tags(1:j))
     xticks([1,2,3])
-    ylim([0 inf])
+    ylim([0 rng])
     subplot(3,2,2); hold on
     plot([1,2,3], nmse_med_speed(j,:), 'color', colors(j,:), 'marker', 'o')
     title('NMSE med s')
     legend(tags(1:j))
     xticks([1,2,3])
-    ylim([0 inf])
+    ylim([0 rng])
    
     subplot(3,2,3); hold on
     plot([1,2,3], nmse_mean_omega(j,:), 'color', colors(j,:), 'marker', 'o')
     title('NMSE mean w')
     legend(tags(1:j))
     xticks([1,2,3])
-    ylim([0 inf])
+    ylim([0 rng])
     subplot(3,2,4); hold on
     plot([1,2,3], nmse_med_omega(j,:), 'color', colors(j,:), 'marker', 'o')
     title('NMSE med w')
     legend(tags(1:j))
     xticks([1,2,3])
-    ylim([0 inf])
+    ylim([0 rng])
     
     subplot(3,2,5); hold on
     plot([1,2,3], nmse_mean_total(j,:), 'color', colors(j,:), 'marker', 'o')
     title('NMSE mean tot')
     legend(tags(1:j))
     xticks([1,2,3])
-    ylim([0 inf])
+    ylim([0 rng])
     subplot(3,2,6); hold on
     plot([1,2,3], nmse_med_total(j,:), 'color', colors(j,:), 'marker', 'o')
     title('NMSE med tot')
     legend(tags(1:j))
     xticks([1,2,3])
-    ylim([0 inf])
+    ylim([0 rng])
 end
 
 
