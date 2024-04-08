@@ -24,8 +24,13 @@ theta=nan(number_of_series,1);
 sigma=nan(number_of_series,1);
 alpha=nan(number_of_series,number_of_inputs);
 
+% GreyBox estimation options
+opt = nlgreyestOptions;
+opt.EstimateCovariance = false;
+%opt.Regularization.Lambda = 1;
+%opt.SearchOptions.FunctionTolerance = 10e-9;
+%opt.Display = 'on';
 
-% epsilon = 0.001;
 figure
 series_to_plot = round(linspace(1,number_of_series,min(number_of_series,5)));
 ii=1;
@@ -87,11 +92,6 @@ for i=1:number_of_series
             sys.Parameters(2).Name = 'alpha'; 
             sys.Parameters(3).Name = 'mu';      %sys.Parameters(3).Minimum = 0;
             %y = sim(sys, data);
-            opt = nlgreyestOptions;
-            opt.EstimateCovariance = false;
-            %opt.Regularization.Lambda = 1;
-            %opt.SearchOptions.FunctionTolerance = 10e-9;
-            %opt.Display = 'on';
             sys_id = nlgreyest(data, sys, opt);
             t = sys_id.Parameters(1).Value;
             a = sys_id.Parameters(2).Value;
