@@ -9,7 +9,7 @@
 %
 
 %% Clear environment
-close all
+%close all
 clear
 
 %% Parameters
@@ -18,11 +18,11 @@ D=2;                        % number of dimensions [2 or 3]
 
 defaultParam;               % load default parameters
 
-N=150;
+N=1500;
 
 % data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12';  % off
 % data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16';  % switch10s
-data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10';  % switch10s combo
+data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo';  % switch10s combo
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_37/tracking_2023_10_12'; % circle light
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_26/tracking_2024_01_30'; % circle light high denisty
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_21/tracking_2024_01_30'; % circle dark
@@ -31,11 +31,13 @@ data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10';  % s
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_34/tracking_2023_10_12'; % BCL
 
 %id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % folder with identification data
-id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10';  % folder with identification data
-identification_file_name = 'identification_OLS_ds3_sign_grad.txt';
+id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo';  % folder with identification data
+%identification_file_name = 'identification_OLS_ds3_sign_grad.txt';
+identification_file_name = 'identification_OLS_dscombo.txt';
 
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 
+% spatial analysis parameters
 brightness_thresh = 0.3;
 background_sub = true;
 
@@ -288,7 +290,7 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     
 else % TEMPORAL INPUTS
 
-    [MSE_speed,MSE_omega,NMSE_speed,NMSE_omega,NMSE_total] = compareResults({data_folder,path}, path);
+    [NMSE_speed,NMSE_omega,NMSE_total] = compareResults({data_folder,path}, path);
 
 end
 
@@ -362,49 +364,3 @@ end
 % saveas(gcf,fullfile(path, 'scatter_plot'))
 % saveas(gcf,fullfile(path, 'scatter_plot'),'png')
 % end
- 
-% figure % e_d_max
-% set(gca,'FontSize',14)
-% set(0, 'DefaultFigureRenderer', 'painters');
-% set(gcf,'Position',[100 100 560 420*0.6])
-% hold on
-% line=plot(timeInstants, e_d_max, 'b');
-% yline(Rmax-1,'--','LineWidth',2)
-% yticks(sort([0:0.1:1, Rmax-1]))
-% ylabel('$e$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
-% xlabel('t', 'Interpreter','latex','FontSize',22)
-% box
-% grid
-% if outputDir
-%     saveas(gcf,fullfile(path, 'e_d_max'))
-%     saveas(gcf,fullfile(path, 'e_d_max'),'png')
-% end
-% 
-% figure % links
-% plot(timeInstants,links)
-% title('links', 'Interpreter','latex','FontSize',22)
-% xlabel('t', 'Interpreter','latex','FontSize',22)
-% set(gca,'FontSize',14)
-% box
-% grid
-% if outputDir
-%     saveas(gcf,fullfile(path, 'links'))
-%     saveas(gcf,fullfile(path, 'links'),'png')
-% end
-% 
-% figure % rigidity
-% set(gca,'FontSize',14)
-% set(gcf,'Position',[100 100 560 420*0.6])
-% hold on
-% plot(timeInstants,rigidity,'r')
-% axis([-inf inf -0.05 1.05])
-% title('$\rho$', 'Interpreter','latex','FontSize',22)
-% xlabel('t', 'Interpreter','latex','FontSize',22)
-% box
-% grid
-% if outputDir
-%     saveas(gcf,fullfile(path, 'rigidity'))
-%     saveas(gcf,fullfile(path, 'rigidity'),'png')
-% end
-
-

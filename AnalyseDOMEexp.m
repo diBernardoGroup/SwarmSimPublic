@@ -4,11 +4,11 @@ clear
 
 data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12'; % off
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
-data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10'; % switch10s combo
+data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo'; % switch10s combo
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
 
-identification_file_name = 'identification_GBCT_ds3_sign_grad.txt';
-identification_method = 'GreyBoxCT';
+identification_file_name = 'identification_OLS_ds3_sign_grad.txt';
+identification_method = 'OLS';
 downSampling = 3;
 
 deltaT = 0.5;
@@ -69,18 +69,17 @@ for i=["mu_s","theta_s","sigma_s","alpha_s","beta_s","mu_w","theta_w","sigma_w",
     identification(isoutlier(identification.(i),'quartiles',thresholdfactor=thresholdfactor),:) = [];
 end
 disp(['identified ',num2str(size(identification,1)),' valid agents out of ',num2str(length(agents))])
-disp([num2str(sum(nan_ids)),' removed because nans, ' num2str(length(agents)-size(identification,1)-sum(nan_ids)),' removed because non valid values or outliers'])
+disp([num2str(sum(isnan(mean(speed,'omitnan')))),' empty tracks, ', num2str(sum(nan_ids)-sum(isnan(mean(speed,'omitnan')))),' removed during identification, ' num2str(length(agents)-size(identification,1)-sum(nan_ids)),' removed because non valid values or outliers'])
 
 
 writetable(identification,fullfile(data_folder, identification_file_name) ,'Delimiter',' ')
 
-% simulate average behaviour
+%% simulate average behaviour
 t_sim=0:dT:max(timeInstants);
 s_sim=nan(length(t_sim),1);
 w_sim=nan(length(t_sim),1);
 u_sim=nan(length(t_sim),2);
-s_sim(1)=mean(identification.mu_s);
-w_sim_abs(1)=mean(identification.mu_w);
+s_sim(1)=median(identification.mu_s);
 w_sim(1)=median(abs(omega),'all','omitnan');
 for i=1:length(t_sim)-1
     u_sim(i,:)= [u(ceil(i*dT/deltaT)),u_dot(ceil(i*dT/deltaT))]; 
@@ -91,9 +90,8 @@ for i=1:length(t_sim)-1
 %     else
 %         u_sim(i,2)=(u_sim(i,1)-u_sim(i-1,1))/dT;
 %     end
-    s_sim(i+1)= s_sim(i) + (mean(identification.theta_s)*(mean(identification.mu_s)-s_sim(i)) + mean(identification.alpha_s)*u_sim(i,1) + mean(identification.beta_s)*u_sim(i,2) )*dT;
-    w_sim_abs(i+1)= w_sim_abs(i) + (mean(identification.theta_w)*(mean(identification.mu_w)-w_sim_abs(i)) + mean(identification.alpha_w)*u_sim(i,1) + mean(identification.beta_w)*u_sim(i,2) )*dT;
-    w_sim(i+1)= w_sim(i) + (mean(identification.theta_w)*(median(abs(omega),'all','omitnan')-w_sim(i)) + mean(identification.alpha_w)*u_sim(i,1) + mean(identification.beta_w)*u_sim(i,2) )*dT;
+    s_sim(i+1)= s_sim(i) + (median(identification.theta_s)*(median(identification.mu_s)-s_sim(i)) + median(identification.alpha_s)*u_sim(i,1) + median(identification.beta_s)*u_sim(i,2) )*dT;
+    w_sim(i+1)= w_sim(i) + (median(identification.theta_w)*(median(abs(omega),'all','omitnan')-w_sim(i)) + median(identification.alpha_w)*u_sim(i,1) + median(identification.beta_w)*u_sim(i,2) )*dT;
 end
 
 mse_speed = mean((mean(speed,2,'omitnan')-interp1(t_sim,s_sim,timeInstants)').^2);

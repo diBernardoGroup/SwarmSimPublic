@@ -1,6 +1,6 @@
 %% COMPARE EXPERIMENTS
 
-function [mse_speed,mse_omega,nmse_speed,nmse_omega,nmse_total] = compareResults(experiment_paths, outputDir, plots)
+function [nmse_speed_med,nmse_omega_med,nmse_total_med] = compareResults(experiment_paths, outputDir, plots)
 
 arguments
     experiment_paths
@@ -42,8 +42,8 @@ if number_of_exp>2
     for i=1:number_of_exp
         for j=1:number_of_exp
             overlap = min(size(experiments{i}.speed,2),size(experiments{j}.speed,2));
-            nmse_speed(i,j) = goodnessOfFit(mean(experiments{i}.speed(:,1:overlap),1,'omitnan')', mean(experiments{j}.speed(:,1:overlap),1,'omitnan')', 'NMSE');
-            nmse_omega(i,j) = goodnessOfFit(mean(abs(experiments{i}.omega(:,1:overlap)),1,'omitnan')', mean(abs(experiments{j}.omega(:,1:overlap)),1,'omitnan')', 'NMSE');
+            nmse_speed(i,j) = goodnessOfFit(median(experiments{i}.speed(:,1:overlap),1,'omitnan')', median(experiments{j}.speed(:,1:overlap),1,'omitnan')', 'NMSE');
+            nmse_omega(i,j) = goodnessOfFit(median(abs(experiments{i}.omega(:,1:overlap)),1,'omitnan')', median(abs(experiments{j}.omega(:,1:overlap)),1,'omitnan')', 'NMSE');
         end
     end
 else
