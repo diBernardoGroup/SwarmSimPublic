@@ -65,6 +65,10 @@ else
         elseif( isstruct(mystruct.(fn{k})) )
             fprintStruct(fileID,mystruct.(fn{k}));
         
+        elseif( isstring(mystruct.(fn{k})) )
+            fprintf(fileID,'%s= ',fn{k});
+            fprintf(fileID,'%s, ',mystruct.(fn{k}));
+            fprintf(fileID,'\n');
         else
             fprintf(fileID,'%s= %s\n',fn{k},mystruct.(fn{k}));
         end

@@ -2,14 +2,24 @@ clear
 close all
 
 sim_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/2024_04_08_IndependentSDEsWithInput_8'; % folder simulation data
-data_folders = ["/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo",
-    "/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16",
-    "/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_23/tracking_2023_10_12",
-    "/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_24/tracking_2024_04_08",
-    "/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_15/tracking_2023_10_12",
-    "/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_16/tracking_2024_04_08"]; % experiments data folders
+experiments_folder = "/Volumes/DOMEPEN/Experiments";
 
-dT = 0.01;
+% switch 10s all
+experiments_names = ["comparisons/Euglena_switch_10/combo5",
+    "2023_06_15_Euglena_7/tracking_2023_10_16",
+    "2023_06_26_Euglena_23/tracking_2023_10_12",
+    "2023_06_26_Euglena_24/tracking_2024_04_08",
+    "2023_07_10_Euglena_15/tracking_2023_10_12",
+    "2023_07_10_Euglena_16/tracking_2024_04_08"];
+
+% switch 10s selected
+experiments_names = ["comparisons/Euglena_switch_10/combo3",
+    "2023_06_15_Euglena_7/tracking_2023_10_16",
+    "2023_06_26_Euglena_24/tracking_2024_04_08",
+    "2023_07_10_Euglena_15/tracking_2023_10_12"];
+
+output_folder = sim_folder;
+
 deltaT = 0.5;
 timeInstants = [0:deltaT:180];
 
@@ -18,7 +28,8 @@ timeInstants = [0:deltaT:180];
 %     [NMSE_speed,NMSE_omega,NMSE_total] = compareResults({data_folders(i),sim_folder}, char(data_folders(1)));
 % end
 
-for i=1:length(data_folders)   % for experiment
+for i=1:length(experiments_names)   % for experiment
+    data_folders(i) =  fullfile(experiments_folder,experiments_names(i));
     speeds{i}  = load(fullfile(data_folders(i),'speeds_smooth.txt'));
     omegas{i}  = load(fullfile(data_folders(i),'ang_vel_smooth.txt'));
     
@@ -42,14 +53,23 @@ for i=1:length(data_folders)   % for experiment
 end
 
 
-
-
 %% PRINT RESULTS
+
+fileID = fopen(fullfile(output_folder, 'multi_exp_comparison.txt'),'wt');
+fprintf(fileID,'DOME multi experiment comparison\n\n');
+fprintf(fileID,'Date: %s\n',datestr(now, 'dd/mm/yy'));
+fprintf(fileID,'Time: %s\n\n',datestr(now, 'HH:MM'));
+fprintf(fileID,'Experiment\t\t\t\t\tNMSE speed\tNMSE omega\tNMSE tot\n');
+for i=1:length(experiments_names)
+    fprintf(fileID,'%s\t',experiments_names(i));
+    fprintf(fileID,'%.2f\t\t%.2f\t\t%.2f\n',nmse_speed_med(i),nmse_omega_med(i),nmse_total_med(i));
+end
+fclose(fileID);
 
 figure %time plot
 subplot(2,1,1)
 hold on
-for i=2:length(data_folders)
+for i=2:length(experiments_names)
     plot(timeInstants, median(speeds{i},2,'omitnan'),'b', color=[0.5,0.5,1]);
 end
 l1=plot(timeInstants, median(speeds{1},2,'omitnan'),'b',LineWidth=2);
@@ -80,22 +100,24 @@ if isvarname('u')
 end
 legend([l1,l2],'REAL','SIMULATED')
 box on
-if outputDir
-    saveas(gcf,fullfile(data_folders(1), 'comparison_time_plot'))
-    saveas(gcf,fullfile(data_folders(1), 'comparison_time_plot'),'png')
-end
+saveas(gcf,fullfile(output_folder, 'multi_exp_comparison_time_plot'))
+saveas(gcf,fullfile(output_folder, 'multi_exp_comparison_time_plot'),'png')
+
 
 figure % NMSE
 hold on
 rng = max([nmse_speed_med,nmse_omega_med],[],'all');
 plot(ones(size(nmse_speed_med(2:end)))*1, nmse_speed_med(2:end), 'o','color', [0.5,0.5,1])
-plot([1], nmse_speed_med(1), 'o','color', 'b', 'LineWidth', 2)
+plot_speed = plot([1], nmse_speed_med(1), 'o','color', 'b', 'LineWidth', 2);
 plot(ones(size(nmse_omega_med(2:end)))*2, nmse_omega_med(2:end), 'o','color', [1,0.5,0.5])
-plot([2], nmse_omega_med(1), 'o','color', 'r', 'LineWidth', 2)
+plot_omega = plot([2], nmse_omega_med(1), 'o','color', 'r', 'LineWidth', 2);
 plot(ones(size(nmse_total_med(2:end)))*3, nmse_total_med(2:end), 'o','color', [0.5,0.5,0.5])
-plot([3], nmse_total_med(1), 'o','color', 'k', 'LineWidth', 2)
+plot_total = plot([3], nmse_total_med(1), 'o','color', 'k', 'LineWidth', 2);
 title('NMSE')
+legend([plot_speed,plot_omega,plot_total], 'NMSE_v', 'NMSE_\omega', 'NMSE_{tot}' )
 xlim([0,4])
-
+ylim([0,rng*1.1])
+saveas(gcf,fullfile(output_folder, 'multi_exp_comparison_NMSE'))
+saveas(gcf,fullfile(output_folder, 'multi_exp_comparison_NMSE'),'png')
 
 

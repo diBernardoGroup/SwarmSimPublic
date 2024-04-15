@@ -1,4 +1,5 @@
 function highlightInputs(x, inputs, color, alpha, axis)
+    hold on
     inputs = fillmissing(inputs, 'constant', NaN);
     if size(inputs,1) > size(inputs,2); inputs=inputs'; end
     input_differences = [0,diff(inputs)];
@@ -12,11 +13,11 @@ function highlightInputs(x, inputs, color, alpha, axis)
         axis = gca;
     end
 
-    on_value = max(max(input_differences), 1);
-    off_value = min(min(input_differences), -1);
+    on_value  = max(quantile(input_differences,0.75),0.001);
+    off_value = min(quantile(input_differences,0.25),-0.001);
 
-    ons = find(input_differences == on_value);
-    offs = find(input_differences == off_value);
+    ons = find(input_differences >= on_value);
+    offs = find(input_differences <= off_value);
 
     if ~isempty(ons) && ~isempty(offs)
         if max(ons) > max(offs)
@@ -45,7 +46,7 @@ function highlightInputs(x, inputs, color, alpha, axis)
         x_end = x(offs(i));
         a = area([x_start, x_end], [1,1]*axis.YLim(2));
         a.FaceColor = color;
-        a.FaceAlpha = alpha;
+        a.FaceAlpha = alpha*inputs(ons(i))/max(inputs);
         a.EdgeAlpha = 0;
         a.Tag = 'highlighted_area';
     end

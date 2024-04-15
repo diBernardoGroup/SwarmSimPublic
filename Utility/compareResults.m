@@ -69,7 +69,7 @@ if plots
     set(gca,'FontSize',12)
     for i=1:number_of_exp; data_to_plot{i} = mean(experiments{i}.speed,'omitnan'); end
     myboxplot(data_to_plot,true, 3, {'b','k'})
-    ylabel('$v$ [px/s]','Interpreter','Latex','FontSize',16)
+    ylabel('$v$ [$\mu$m/s]','Interpreter','Latex','FontSize',16)
     xticklabels({'REAL','SIMULATED'})
     title('Average over agents')
     subplot(2,1,2)
@@ -89,7 +89,7 @@ if plots
     set(gca,'FontSize',12)
     for i=1:number_of_exp; data_to_plot{i} = mean(experiments{i}.speed,2,'omitnan'); end
     myboxplot(data_to_plot,true, 3, {'b','k'})
-    ylabel('$v$ [px/s]','Interpreter','Latex','FontSize',16)
+    ylabel('$v$ [$\mu$m/s]','Interpreter','Latex','FontSize',16)
     xticklabels({'REAL','SIMULATED'})
     title('Average over time')
     subplot(2,1,2)
@@ -109,7 +109,7 @@ if plots
     set(gca,'FontSize',12)
     for i=1:number_of_exp; data_to_plot{i} = experiments{i}.speed(:); end
     myboxplot(data_to_plot, true, 3, {'b','k'})
-    ylabel('$v$ [px/s]','Interpreter','Latex','FontSize',16)
+    ylabel('$v$ [$\mu$m/s]','Interpreter','Latex','FontSize',16)
     xticklabels({'REAL','SIMULATED'})
     title('All points')
     subplot(2,1,2)
@@ -132,7 +132,7 @@ if plots
     for i=1:number_of_exp; y_to_plot = [y_to_plot,  mean(abs(experiments{i}.omega),2,'omitnan')']; end
     for i=1:number_of_exp; grouping = [grouping,  i*ones(1,length(mean(experiments{i}.speed,2,'omitnan')))]; end
     s=scatterhist(x_to_plot, y_to_plot, 'Location','NorthEast','Direction','out','Group', grouping ,'Color','bk','Kernel','on');%,'Marker','.', 'MarkerSize', 15);
-    xlabel(s,'mean $v$ [px/s]','Interpreter','Latex','FontSize',16)
+    xlabel(s,'mean $v$ [$\mu$m/s]','Interpreter','Latex','FontSize',16)
     ylabel(s,'mean $|\omega|$ [rad/s]','Interpreter','Latex','FontSize',16)
     s(1).YAxisLocation = 'left';
     s(1).XAxisLocation = 'bottom';
@@ -151,17 +151,17 @@ if plots
     
     figure % TIME PLOT - SPEED and ANGULAR VELOCITY
     subplot(2,1,1)
-    l1=plotWithShade(timeInstants, median(experiments{1}.speed,1,'omitnan'), min(experiments{1}.speed, [], 1,'omitnan'), max(experiments{1}.speed, [], 1,'omitnan'), 'b', 0.3);
-    l2=plotWithShade(timeInstants, median(experiments{2}.speed,1,'omitnan'), min(experiments{2}.speed, [], 1,'omitnan'), max(experiments{2}.speed, [], 1,'omitnan'), 'k', 0.3);
     xlim([0,max(timeInstants)])
+    ylim([0,120])
     if isvarname('u')
         highlightInputs(timeInstants, u, 'r', 0.25)
     end
+    l1=plotWithShade(timeInstants, median(experiments{1}.speed,1,'omitnan'), quantile(experiments{1}.speed, 0.1, 1), quantile(experiments{1}.speed, 0.9, 1), 'b', 0.3);
+    l2=plotWithShade(timeInstants, median(experiments{2}.speed,1,'omitnan'), quantile(experiments{2}.speed, 0.1, 1), quantile(experiments{2}.speed, 0.9, 1), 'k', 0.3);
     xlabel('$t$ [s]','Interpreter','Latex','FontSize',16)
-    ylabel('$v$ [px/s]','Interpreter','Latex','FontSize',16)
+    ylabel('$v$ [$\mu$m/s]','Interpreter','Latex','FontSize',16)
     legend([l1,l2],'REAL','SIMULATED')
     rng=ylim;
-    ylim([0,120])
     box on
     % subplot(2,4,4)
     % hold on
@@ -170,17 +170,17 @@ if plots
     % ylim(rng);
     % set(gca,'xtick',[])
     subplot(2,1,2)
-    l1=plotWithShade(timeInstants, median(abs(experiments{1}.omega),1,'omitnan'), min(abs(experiments{1}.omega), [], 1,'omitnan'), max(abs(experiments{1}.omega), [], 1,'omitnan'), 'b', 0.3);
-    l2=plotWithShade(timeInstants, median(abs(experiments{2}.omega),1,'omitnan'), min(abs(experiments{2}.omega), [], 1,'omitnan'), max(abs(experiments{2}.omega), [], 1,'omitnan'), 'k', 0.3);
     xlim([0,max(timeInstants)])
+    ylim([0,2])
     if isvarname('u')
         highlightInputs(timeInstants, u, 'r', 0.25)
     end
+    l1=plotWithShade(timeInstants, median(abs(experiments{1}.omega),1,'omitnan'), quantile(abs(experiments{1}.omega), 0.1, 1), quantile(abs(experiments{1}.omega), 0.9, 1), 'b', 0.3);
+    l2=plotWithShade(timeInstants, median(abs(experiments{2}.omega),1,'omitnan'), quantile(abs(experiments{2}.omega), 0.1, 1), quantile(abs(experiments{2}.omega), 0.9, 1), 'k', 0.3);
     xlabel('$t$ [s]','Interpreter','Latex','FontSize',16)
     ylabel('$|\omega|$ [rad/s]','Interpreter','Latex','FontSize',16)
     legend([l1,l2],'REAL','SIMULATED')
     rng=ylim;
-    ylim([0,3])
     box on
     % subplot(2,4,8)
     % hold on

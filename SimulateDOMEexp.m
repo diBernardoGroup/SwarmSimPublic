@@ -18,11 +18,11 @@ D=2;                        % number of dimensions [2 or 3]
 
 defaultParam;               % load default parameters
 
-N=1500;
+N=500;
 
 % data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12';  % off
 % data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16';  % switch10s
-data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo';  % switch10s combo
+data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo3';  % switch10s combo
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_37/tracking_2023_10_12'; % circle light
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_26/tracking_2024_01_30'; % circle light high denisty
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_21/tracking_2024_01_30'; % circle dark
@@ -30,10 +30,8 @@ data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo'
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_23_Euglena_9/tracking_2023_10_12';  % gradient central dark
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_34/tracking_2023_10_12'; % BCL
 
-%id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % folder with identification data
-id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo';  % folder with identification data
-%identification_file_name = 'identification_OLS_ds3_sign_grad.txt';
-identification_file_name = 'identification_OLS_dscombo.txt';
+id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % folder with identification data
+identification_file_name = 'identification_OLS+GB_ds1.txt';
 
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 
@@ -133,7 +131,7 @@ if outputDir
     fileID = fopen(fullfile(path, 'parameters.txt'),'wt');
     fprintf(fileID,'SimulateDOMEexp\n\n');
     fprintf(fileID,'Experiment: %s\n',data_folder);
-    fprintf(fileID,'Parameters: %s\n\n',identification_file_name);
+    fprintf(fileID,'Identification: %s\n\n',fullfile(id_folder,identification_file_name));
     fprintf(fileID,'Date: %s\n',datestr(now, 'dd/mm/yy'));
     fprintf(fileID,'Time: %s\n\n',datestr(now, 'HH:MM'));
     fprintf(fileID,'Parameters:\n\n');

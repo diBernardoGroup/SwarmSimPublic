@@ -4,12 +4,12 @@ clear
 
 data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12'; % off
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
-data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo'; % switch10s combo
+data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5'; % switch10s combo
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
 
-identification_file_name = 'identification_OLS_ds3_sign_grad.txt';
-identification_method = 'OLS';
-downSampling = 3;
+identification_file_name = 'identification_OLS+GB_ds1.txt';
+identification_method = 'OLS+GB';
+downSampling = 1;
 
 deltaT = 0.5;
 dT = 0.01;

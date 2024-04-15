@@ -23,22 +23,22 @@ clear
 
 %% Parameters
 
-Ntimes=2;              % How many simulations are launched for each configuration
+Ntimes=4;              % How many simulations are launched for each configuration
 
 D=2;                    % number of dimensions [2 or 3]
 
 defaultParam;           % load default parameters
 
+N=500;
+
 seed=-1;                 % seed for random generator, if negative it is not set
 
 %% Loads DOME experiment data
-%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_33/tracking_2023_10_12'; % gradient central light
-% data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_34/tracking_2023_10_12'; % gradient central dark
 experiments_folder = '/Volumes/DOMEPEN/Experiments';
-experiment = '/comparisons/Euglena_switch_10';
+experiment = '/comparisons/Euglena_switch_10/combo5';
 
-id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10';  % folder with identification data
-identification_file_name = 'identification_OLS_ds3_sign_grad.txt';
+id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % folder with identification data
+identification_file_name = 'identification_OLS_ds3.txt';
 
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 
@@ -50,20 +50,6 @@ timeInstants = [0:Simulation.deltaT:Simulation.Tmax];
 Simulation.drawON=false;        % draw swarm during simulation (if N is large slows down the simulation)
 Simulation.recordVideo=false;   % record video of the simulation (if true drawON must be true)
 
-% load identification data and instantiate simulated agents
-identification=readtable(fullfile(id_folder,identification_file_name));
-ids=randsample(length(identification.agents),N, true, ones(length(identification.agents),1));
-agents = identification(ids,:); 
-Dynamics=struct('model','IndependentSDEsWithInput', ...
-    'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s, 'gainSpeed', agents.alpha_s, 'gainDerSpeed', agents.beta_s,...
-    'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', agents.alpha_w, 'gainDerOmega', agents.beta_w,...
-    'omega', normrnd(0,agents.std_w,N,1), 'oldInput', zeros(N,1));
-
-% Dynamics=struct('model','IndependentSDEsWithInput', ...
-%     'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s, 'gainSpeed', 0, 'gainDerSpeed', 0,...
-%     'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', 0, 'gainDerOmega', 0,...
-%     'omega', normrnd(0,agents.std_w,N,1), 'oldInput', zeros(N,1));
-
 brightness_thresh = 0.3;
 background_sub = true;
 
@@ -71,20 +57,9 @@ background_sub = true;
 % One or multiple parameters can be modified at the same time.
 % Parameters must be existing variables.
 % The values specified here overwrite the default ones.
-% parameters(1).name='delta';
-% parameters(1).values=[0:0.5:1];
-% parameters(2).name='N';
-% parameters(2).values=[50, 100, 150];
-
-% parameters(1).name='Dynamics.gainDerSpeed';
-% parameters(1).values=[-10,-5,-2,-1,0,1,2,5,10]*5;
-% parameters(1).values=[-10,10];
-% parameters(2).name='Dynamics.gainDerOmega';
-% parameters(2).values=[-1,-0.5,-0.2,-0.1,0,0.1,0.2,0.5,1]*5;
-% parameters(2).values=[-10,10];
  
-parameters(1).name='experiment';
-parameters(1).values=["/comparisons/Euglena_switch_10"];
+parameters(1).name='identification_file_name';
+parameters(1).values=["identification_OLS_ds3.txt","identification_OLS_dscombo.txt","identification_OLS+GB_ds3.txt","identification_OLS+GB_ds1.txt"];
 
 %% Preallocate
 p=cartesianProduct({parameters.values});
@@ -97,13 +72,6 @@ window = [-Simulation.arena(1),Simulation.arena(1),-Simulation.arena(2),Simulati
 
 xVec=nan(length(timeInstants),N,D);
 x_f = nan(Nconfig,Ntimes,N,D);
-e_L=nan(Nconfig,Ntimes);
-e_theta=nan(Nconfig,Ntimes);
-Tr_vec=nan(Nconfig,Ntimes);
-success_vec = nan(Nconfig,Ntimes);
-e_d_max_vec = nan(Nconfig, Ntimes);
-V_vec = nan(Nconfig, Ntimes);
-rigid_vec = nan(Nconfig, Ntimes);
 norm_slope = nan(Nconfig, Ntimes);
 
 
@@ -132,11 +100,22 @@ for i_times=1:Nconfig
         disp(['> ',parameters(j).name,' = ', num2str(p(i_times,j)) ])
     end
     
+    % load identification data and instantiate simulated agents
+    identification=readtable(fullfile(id_folder,identification_file_name));
+    ids=randsample(length(identification.agents),N, true, ones(length(identification.agents),1));
+    agents = identification(ids,:);
+    Dynamics=struct('model','IndependentSDEsWithInput', ...
+        'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s, 'gainSpeed', agents.alpha_s, 'gainDerSpeed', agents.beta_s,...
+        'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', agents.alpha_w, 'gainDerOmega', agents.beta_w,...
+        'omega', normrnd(0,agents.std_w,N,1), 'oldInput', zeros(N,1));
+
     % load inputs data
     experiment = strrep(experiment,'_E_','_Euglena_');
     data_folder = fullfile(experiments_folder, experiment);
     if isfile(fullfile(data_folder,'inputs.txt'))   % time varying inputs
-        inputs=load(fullfile(data_folder,'inputs.txt'));
+        inputs    = load(fullfile(data_folder,'inputs.txt'));
+        speed_exp = load(fullfile(data_folder,'speeds_smooth.txt'));
+        omega_exp = load(fullfile(data_folder,'ang_vel_smooth.txt'));
         u=inputs(:,1)/255;              %select blue channel and scale in [0,1]
         Environment.Inputs.Times  = timeInstants;
         Environment.Inputs.Values = u;
@@ -176,9 +155,18 @@ for i_times=1:Nconfig
             [density_by_input, bins, norm_sl, c_coeff] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, xFinal_inWindow, window);
             norm_slope(i_times,k_times) = norm_sl;
         else
-            NMSE_speed(i_times,k_times) = goodnessOfFit(median(experiments{2}.speed(:,1:overlap),1,'omitnan')', median(experiments{1}.speed(:,1:overlap),1,'omitnan')', 'NMSE');
-            NMSE_omega(i_times,k_times)
-            NMSE_total(i_times,k_times)
+            [~, vVec] = gradient(xVec, 1, Simulation.deltaT, 1);
+            speed = vecnorm(vVec,2,3);
+            theta = atan2(vVec(:,:,2), vVec(:,:,1));
+            for i=1:length(timeInstants)-1
+                % angular velocity
+                omega(i,:) = angleBetweenVectors(squeeze(vVec(i,:,:)),squeeze(vVec(i+1,:,:)))';
+            end
+            omega(length(timeInstants),:) = angleBetweenVectors(squeeze(vVec(length(timeInstants)-1,:,:)),squeeze(vVec(length(timeInstants),:,:)))';
+            omega=omega/Simulation.deltaT;
+            NMSE_speed(i_times,k_times) = goodnessOfFit(median(speed,2,'omitnan'), median(speed_exp,2,'omitnan'), 'NMSE');
+            NMSE_omega(i_times,k_times) = goodnessOfFit(median(abs(omega(1:end-1,:)),2,'omitnan'), median(abs(omega_exp),2,'omitnan'), 'NMSE');
+            NMSE_total(i_times,k_times) = mean([NMSE_speed(i_times,k_times), NMSE_omega(i_times,k_times)]);
         end
     end
     fprintf('Elapsed time is %.2f s.\n\n',toc)
@@ -201,6 +189,12 @@ for i_times=1:Nconfig
 end
 
 %% Plots
+
+metrics_of_interest = {norm_slope};
+metrics_of_interest = {NMSE_speed, NMSE_omega, NMSE_total};
+combine_metrics = true;
+metrics_color = ['b','r','k'];
+metrics_tags = ["NMSE_v", "NMSE_\omega", "NMSE_{tot}"];
 
 % create folder, save data and parameters
 if outputDir
@@ -225,7 +219,7 @@ if outputDir
     fprintStruct(fileID,Simulation)
     fprintf(fileID,'Changing parameters:\n');
     fprintStruct(fileID,parameters)
-    fprintf(fileID,'Dynamics:\n');
+    fprintf(fileID,'\nDynamics:\n');
     fprintStruct(fileID,Dynamics)
     fprintf(fileID,'Environment:\n');
     fprintStruct(fileID,Environment)
@@ -272,12 +266,22 @@ if Nparameters==1
     
     else
         figure
-        scatter([1:Nconfig],norm_slope,'b')
+        hold on
+        for i=1:length(metrics_of_interest)
+        plots(i,:)=scatter([1:Nconfig]-(length(metrics_of_interest)-1)*0.1+(i-1)*0.2,metrics_of_interest{i},metrics_color(i));
+        end
         xticks([1:Nconfig])
         xticklabels(parameters(1).values)
         set(gca, 'TickLabelInterpreter', 'none');
         xlim([0,Nconfig+1])
+        ylim([0, max([metrics_of_interest{:}],[],'all')*1.1])
+        legend(plots(:,1),metrics_tags)
+        set(gca,'FontSize',14)
         box on
+        if outputDir
+        saveas(gcf,fullfile(path, 'metrics'))
+        saveas(gcf,fullfile(path, 'metrics'),'png')
+        end
     end
     
 elseif Nparameters==2

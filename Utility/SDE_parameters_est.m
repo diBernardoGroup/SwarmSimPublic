@@ -2,7 +2,7 @@ function [mu, theta, sigma, alpha] = SDE_parameters_est(x, u, deltaT, method)
 %SDE_parameters_est Regularized estimation of the parameters of a SDE in the form
 %         dX = [ theta * (mu - X) + alpha * u] * dt + sigma * dW
 %     where dW is gaussian white noise.
-%     
+%
 %     The algorithm is described in "Calibrating the Ornstein-Uhlenbeck (Vasicek) model" by van den Berg (2011).
 
 arguments
@@ -59,17 +59,27 @@ for i=1:number_of_series
             a = p(1);
             b = p(2:end);
             c = FitInfo.Intercept(FitInfo.Index1SE);
+            %compute continuous time parameters
+            residuals = x_new - (a*x_old + u_current*b + c);
+            s=std(residuals);
+            [theta(i), alpha(i,:), mu(i), sigma(i)] = dt2ct_parameters(a,b,c,s, deltaT);
+            
             
         % OLS regression
-        elseif strcmp(method,'OLS')
+        elseif strcmp(method,'OLS') || strcmp(method,'OLS+GB')
             predictors = [x_old, u_current, ones(length(x_old),1)];
             p = predictors\x_new;
             a = p(1);
             b = p(2:end-1);
             c = p(end);
-        
+            %compute continuous time parameters
+            residuals = x_new - (a*x_old + u_current*b + c);
+            s=std(residuals);
+            [theta(i), alpha(i,:), mu(i), sigma(i)] = dt2ct_parameters(a,b,c,s, deltaT);
+            
+            
         % MATLAB DT grey box estimation
-        elseif strcmp(method,'GreyBox')
+        elseif strcmp(method,'GreyBoxDT')
             data = iddata(x_old, u_current, deltaT);
             sys = idnlgrey('discretizedSys',[1 number_of_inputs 1], {0, [0;0], 0}, x_old(1), deltaT);
             sys.Parameters(1).Name = 'a'; sys.Parameters(1).Minimum = 0; sys.Parameters(1).Maximum = 1;
@@ -83,14 +93,25 @@ for i=1:number_of_series
             a = sys_id.Parameters(1).Value;
             b = sys_id.Parameters(2).Value;
             c = sys_id.Parameters(3).Value;
-            
-        % MATLAB direct CT grey box estimation
-        elseif strcmp(method,'GreyBoxCT')
+            %compute continuous time parameters
+            residuals = x_new - (a*x_old + u_current*b + c);
+            s=std(residuals);
+            [theta(i), alpha(i,:), mu(i), sigma(i)] = dt2ct_parameters(a,b,c,s, deltaT);
+        end
+        
+        % MATLAB CT grey box estimation
+        if strcmp(method,'GreyBoxCT') || strcmp(method,'OLS+GB')
             data = iddata(x_old, u_current, deltaT);
             sys = idnlgrey('continouosSys',[1 number_of_inputs 1], {1, [0;0], mean(x_old)}, x_old(1), 0);
             sys.Parameters(1).Name = 'theta';   sys.Parameters(1).Minimum = 0; %sys.Parameters(1).Maximum = 1;
-            sys.Parameters(2).Name = 'alpha'; 
+            sys.Parameters(2).Name = 'alpha';
             sys.Parameters(3).Name = 'mu';      %sys.Parameters(3).Minimum = 0;
+            if strcmp(method,'OLS+GB')
+                %sys = idnlgrey('continouosSys',[1 number_of_inputs 1], {theta(i), alpha(i,:), mu(i)}, x_old(1), 0);
+                sys.Parameters(1).Value = max(sys.Parameters(1).Minimum, theta(i));
+                sys.Parameters(2).Value = alpha(i,:);
+                sys.Parameters(3).Value = mu(i);
+            end
             %y = sim(sys, data);
             sys_id = nlgreyest(data, sys, opt);
             t = sys_id.Parameters(1).Value;
@@ -114,24 +135,9 @@ for i=1:number_of_series
             alpha(i,:) = a;
             mu(i)    = m;
             sigma(i) = s;
-        
-        else
-            error('Use a valid identification method!')
         end
         
         if exist('b','var')
-            %compute continuous time parameters
-            residuals = x_new - (a*x_old + u_current*b + c);
-            mu(i) = real(c/(1-a));
-            alpha(i,:) = real(inv(a-1)*log(a)/deltaT*b);
-            if a ~= 0
-                theta(i) = real(-1/deltaT * log(a));
-                sigma(i) = real(std(residuals) * sqrt(-2*log(a) / (1-a^2) / deltaT));
-            else
-                theta(i) = 0;
-                sigma(i) = 0;
-            end
-            
             % plot
             if i >= series_to_plot(ii)
                 subplot(1,length(series_to_plot),ii)
@@ -142,33 +148,6 @@ for i=1:number_of_series
                 ii=ii+1;
             end
         end
-    %     x_old = x(1:end-1,i);
-    %     x_new = x(2:end,i) - x;
-    %     assert(length(x_old)==length(x_new))
-    %     
-    %     % invert forward Euler integration equation
-    %     X = [x];
-    %     [B,FitInfo] = lasso(X,x_new,'CV',10 ,'Standardize', false, 'Intercept',true);
-    %     p=B(:,FitInfo.IndexMinMSE);
-    %     a = p(1);
-    %     b = FitInfo.Intercept(FitInfo.IndexMinMSE);
-    %     
-    %     residuals = x_new - (a*x + b);
-    %     residuals_constant = x_new - mean(x_new);    
-    % %     if norm(residuals_constant) < norm(residuals) + 0.01
-    % %         residuals = residuals_constant;
-    % %         b=mean(x_new);
-    % %         a=0;
-    % %     end
-    %     
-    %     % compute estimated parameters
-    %     theta(i) = -a/deltaT;
-    %     if abs(a) < epsilon
-    %         mu(i) = mean(x);
-    %     else
-    %         mu(i) = -b/a;
-    %     end
-    %     sigma(i) = std(residuals) / sqrt(deltaT);
     end
     
 end
