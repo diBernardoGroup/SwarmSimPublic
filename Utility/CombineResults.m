@@ -4,56 +4,62 @@ close all
 simulations_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 experiments_folder = "/Volumes/DOMEPEN/Experiments";
 
-% switch 10s all
-% tag = 'switch_10';
-% sim_name = '2024_04_17_switch_10_2';
+% % switch 10s all
+% tags = "switch_10";
+% sim_names = "2024_04_17_switch_10_2";
 % experiments_names = ["comparisons/Euglena_switch_10/combo5", "2023_06_15_Euglena_7", "2023_06_26_Euglena_23","2023_06_26_Euglena_24", "2023_07_10_Euglena_15", "2023_07_10_Euglena_16"];
-
+% 
 % % switch 10s selected
-% tag = 'switch_10';
-% sim_name = '2024_04_17_switch_10_2';
+% tags = "switch_10";
+% sim_names = "2024_04_17_switch_10_2";
 % experiments_names = ["comparisons/Euglena_switch_10/combo3","2023_06_15_Euglena_7", "2023_06_26_Euglena_24", "2023_07_10_Euglena_15"];
 % 
 % % switch 5s
-% tag = 'switch_5';
-% sim_name = '2024_04_17_switch_5_1';
+% tags = "switch_5";
+% sim_names = "2024_04_17_switch_5_1";
 % experiments_names = ["comparisons/Euglena_switch_5/combo", "2023_06_15_Euglena_8", "2023_06_26_Euglena_25", "2023_07_10_Euglena_18"];
 % 
 % % switch 1s
-% tag = 'switch_1';
-% sim_name = '2024_04_17_switch_1_2';
+% tags = "switch_1";
+% sim_names = "2024_04_17_switch_1_2";
 % experiments_names = ["comparisons/Euglena_switch_1/combo", "2023_06_15_Euglena_11", "2023_06_26_Euglena_28", "2023_07_10_Euglena_19"];
 % 
 % % off
-% tag = 'OFF';
-% sim_name = '2024_04_17_OFF_2';
+% tags = "OFF";
+% sim_names = "2024_04_17_OFF_2";
 % experiments_names = ["comparisons/Euglena_OFF/combo", "2023_06_15_Euglena_1", "2023_06_26_Euglena_13", "2023_07_10_Euglena_6"];
 % 
 % % OFF-ON-OFF 75
-% tag = '75_ON';
-% sim_name = '2024_04_17_75_ON_1';
+% tags = "75_ON";
+% sim_names = "2024_04_17_75_ON_1";
 % experiments_names = ["comparisons/Euglena_75_ON/combo", "2023_06_15_Euglena_2", "2023_06_26_Euglena_16", "2023_07_10_Euglena_8"];
 % 
 % % OFF-ON-OFF 150
-% tag = '150_ON';
-% sim_name = '2024_04_17_150_ON_3';
+% tags = "150_ON";
+% sim_names = "2024_04_17_150_ON_3";
 % experiments_names = ["comparisons/Euglena_150_ON/combo", "2023_06_15_Euglena_3", "2023_06_26_Euglena_18", "2023_07_10_Euglena_10"];
 % 
 % % OFF-ON-OFF 255
-% tag = '255_ON';
-% sim_name = '2024_04_17_255_ON_3';
+% tags = "255_ON";
+% sim_names = "2024_04_17_255_ON_3";
 % experiments_names = ["comparisons/Euglena_255_ON/combo", "2023_06_15_Euglena_4", "2023_06_26_Euglena_20", "2023_07_10_Euglena_12"];
 % 
 % % Ramp
-% tag = 'ramp';
-% sim_name = '2024_04_17_ramp_2';
-%experiments_names = ["comparisons/Euglena_ramp/combo", "2023_06_15_Euglena_6", "2023_06_26_Euglena_22", "2023_07_10_Euglena_14"];
+% tags = "ramp";
+% sim_names = "2024_04_17_ramp_2";
+% experiments_names = ["comparisons/Euglena_ramp/combo", "2023_06_15_Euglena_6", "2023_06_26_Euglena_22", "2023_07_10_Euglena_14"];
 
 % all
-tags = ["switch_10","switch_5"];
-sim_names = ["2024_04_17_switch_10_2", "2024_04_17_switch_5_1"];
+tags = ["switch_10","switch_5","switch_1","75_ON", "150_ON", "255_ON", "OFF", "ramp"];
+sim_names = ["2024_04_17_switch_10_2", "2024_04_17_switch_5_1", "2024_04_17_switch_1_2", "2024_04_17_75_ON_1", "2024_04_17_150_ON_3", "2024_04_17_255_ON_3", "2024_04_17_OFF_2", "2024_04_17_ramp_2"];
 experiments_names = ["comparisons/Euglena_switch_10/combo3","2023_06_15_Euglena_7", "2023_06_26_Euglena_24", "2023_07_10_Euglena_15";
-                     "comparisons/Euglena_switch_5/combo", "2023_06_15_Euglena_8", "2023_06_26_Euglena_25", "2023_07_10_Euglena_18"];
+                     "comparisons/Euglena_switch_5/combo", "2023_06_15_Euglena_8", "2023_06_26_Euglena_25", "2023_07_10_Euglena_18";
+                     "comparisons/Euglena_switch_1/combo", "2023_06_15_Euglena_11", "2023_06_26_Euglena_28", "2023_07_10_Euglena_19";
+                     "comparisons/Euglena_75_ON/combo", "2023_06_15_Euglena_2", "2023_06_26_Euglena_16", "2023_07_10_Euglena_8";
+                     "comparisons/Euglena_150_ON/combo", "2023_06_15_Euglena_3", "2023_06_26_Euglena_18", "2023_07_10_Euglena_10";
+                     "comparisons/Euglena_255_ON/combo", "2023_06_15_Euglena_4", "2023_06_26_Euglena_20", "2023_07_10_Euglena_12";
+                     "comparisons/Euglena_OFF/combo", "2023_06_15_Euglena_1", "2023_06_26_Euglena_13", "2023_07_10_Euglena_6";
+                     "comparisons/Euglena_ramp/combo", "2023_06_15_Euglena_6", "2023_06_26_Euglena_22", "2023_07_10_Euglena_14"];
 
                  
 output_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison';
@@ -63,7 +69,7 @@ timeInstants = [0:deltaT:180];
 
 
 %% LOAD DATA
-
+assert((length(tags)==length(sim_names)) && (length(sim_names)==size(experiments_names,1)))
 for i = 1:size(experiments_names,1)  % for each experiment
 
 % load simulation data
@@ -71,6 +77,7 @@ sim_folder = fullfile(simulations_folder,sim_names(i));
 sim_data = load(fullfile(sim_folder,'data.mat'));
 speed_sim{i} = sim_data.speed;
 omega_sim{i} = sim_data.omega(1:end-1,:);
+u{i} = sim_data.u;
 
 % load experiment data
 for j=1:size(experiments_names,2)   % for each replicate
@@ -83,12 +90,14 @@ for j=1:size(experiments_names,2)   % for each replicate
     speeds{i,j}  = load(fullfile(data_folder,'speeds_smooth.txt'));
     omegas{i,j}  = load(fullfile(data_folder,'ang_vel_smooth.txt'));
     
-    if j==1
-        inputs = load(fullfile(data_folder,'inputs.txt'));
-        u{i}=inputs(:,1)/255;              %select blue channel and scale in [0,1]
-    else
-        assert( all(inputs==load(fullfile(data_folder,'inputs.txt')),'all') )
-    end
+    inputs = load(fullfile(data_folder,'inputs.txt'));
+    assert( all(inputs(:,1)/255==u{i},'all') )
+%     if j==1
+%         inputs = load(fullfile(data_folder,'inputs.txt'));
+%         u{i}=inputs(:,1)/255;              %select blue channel and scale in [0,1]
+%     else
+%         assert( all(inputs==load(fullfile(data_folder,'inputs.txt')),'all') )
+%     end
 end
 
 % evaluate quality of fit
@@ -174,6 +183,7 @@ saveas(gcf,fullfile(fullfile(simulations_folder,sim_names(i)), 'multi_exp_compar
 
 end
 
+if size(experiments_names,1) > 1
 main_fig = figure('Position',[100 100 1900 600]);
 for i = 1:size(experiments_names,1)  % for each experiment
 subplot(3,size(experiments_names,1),i)
@@ -241,4 +251,4 @@ box on
 set(gca,'XGrid','off','YGrid','on')
 saveas(gcf,fullfile(output_folder, 'multi_exp_comparison_NMSE'))
 saveas(gcf,fullfile(output_folder, 'multi_exp_comparison_NMSE'),'png')
-
+end
