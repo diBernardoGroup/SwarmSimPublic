@@ -10,7 +10,7 @@ end
 
 if strcmp(option,'default')
     error = mean(abs((A-F)./A));
-elseif strcmp(option,'onMean')
+elseif strcmp(option,'wMAPE')
     error = mean(abs(A-F))/mean(A);
 elseif strcmp(option,'symmetric')
     error = 2*mean(abs(A-F)./(abs(A)+abs(F)));
