@@ -19,8 +19,11 @@ defaultParam;               % load default parameters
 Simulation.drawON=true;     % draw swarm during simulation (if N is large slows down the simulation)
 delta=0.2;
 
-Environment.Inputs.Points = {[-3:3], [-5:5]};
-Environment.Inputs.Values = linspace(-1,1,length(Environment.Inputs.Points{1}))' * ones(1,length(Environment.Inputs.Points{2}));
+Environment.Inputs.Times  = [0, 5, 10]; 
+Environment.Inputs.Values = [0, 1, 1];
+% Environment.Inputs.Points = {[-3:3], [-5:5]};
+% Environment.Inputs.Values = linspace(-1,1,length(Environment.Inputs.Points{1}))' * ones(1,length(Environment.Inputs.Points{2}));
+Environment.Inputs.InterpMethod = 'previous';
 
 %% Create Initial Conditions
 %rng(1,'twister'); % set the randomn seed to have reproducible results
@@ -40,25 +43,53 @@ v0 = speeds0 .* [cos(theta0), sin(theta0)];
 [xVec, uVec, vVec] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction, Environment);
 
 %% Analysis
-if smoothing
-    xVec = movmean(xVec,3);
-    %xVec = movmean(xVec,3);
-end
+% if smoothing
+%     xVec = movmean(xVec,3);
+% end
 
 timeInstants = 0:Simulation.deltaT:Simulation.Tmax;
 
 % derivate quantities
 [~, vVec_grad] = gradient(xVec, 1, Simulation.deltaT, 1);
-speed = vecnorm(vVec,2,3);
+vVec_fe = [diff(xVec); xVec(end,:,:)-xVec(end-1,:,:)]/Simulation.deltaT;
+vVec_be = [xVec(2,:,:)-xVec(1,:,:); diff(xVec)]/Simulation.deltaT;
 speed_grad = vecnorm(vVec_grad,2,3);
+speed_fe = vecnorm(vVec_fe,2,3);
+speed_be = vecnorm(vVec_be,2,3);
+speed = speed_be;
 
-theta = atan2(vVec(:,:,2), vVec(:,:,1));
+theta = atan2(vVec_grad(:,:,2), vVec_grad(:,:,1));
 for i=1:length(timeInstants)-1
     % angular velocity
-    omega(i,:) = angleBetweenVectors(squeeze(vVec(i,:,:)),squeeze(vVec(i+1,:,:)))';
+    omega_grad(i,:) = angleBetweenVectors(squeeze(vVec_grad(i,:,:)),squeeze(vVec_grad(i+1,:,:)))';
 end
-omega(length(timeInstants),:) = angleBetweenVectors(squeeze(vVec(length(timeInstants)-1,:,:)),squeeze(vVec(length(timeInstants),:,:)))';
-omega=omega/Simulation.deltaT;
+omega_grad(length(timeInstants),:) = angleBetweenVectors(squeeze(vVec_grad(length(timeInstants)-1,:,:)),squeeze(vVec_grad(length(timeInstants),:,:)))';
+omega_grad=omega_grad/Simulation.deltaT;
+
+for i=1:length(timeInstants)-1
+    % angular velocity
+    omega_fe(i,:) = angleBetweenVectors(squeeze(vVec_fe(i,:,:)),squeeze(vVec_fe(i+1,:,:)))';
+end
+omega_fe(length(timeInstants),:) = angleBetweenVectors(squeeze(vVec_fe(length(timeInstants)-1,:,:)),squeeze(vVec_fe(length(timeInstants),:,:)))';
+omega_fe=omega_fe/Simulation.deltaT;
+
+omega_be(1,:) = angleBetweenVectors(squeeze(xVec(2,:,:)-xVec(1,:,:)),squeeze(xVec(3,:,:)-xVec(2,:,:)))';
+omega_be(2,:) = angleBetweenVectors(squeeze(xVec(2,:,:)-xVec(1,:,:)),squeeze(xVec(3,:,:)-xVec(2,:,:)))';
+for i=3:length(timeInstants)
+    % angular velocity
+    omega_be(i,:) = angleBetweenVectors(squeeze(vVec_be(i-1,:,:)),squeeze(vVec_be(i,:,:)))';
+end
+omega_be=omega_be/Simulation.deltaT;
+
+omega_ce(1,:) = angleBetweenVectors(squeeze(xVec(2,:,:)-xVec(1,:,:)),squeeze(xVec(3,:,:)-xVec(2,:,:)))';
+for i=2:length(timeInstants)-1
+    % angular velocity
+    omega_ce(i,:) = angleBetweenVectors(squeeze(xVec(i,:,:)-xVec(i-1,:,:)),squeeze(xVec(i+1,:,:)-xVec(i,:,:)))';
+end
+omega_ce(length(timeInstants),:) = angleBetweenVectors(squeeze(xVec(end-1,:,:)-xVec(end-2,:,:)),squeeze(xVec(end,:,:)-xVec(end-1,:,:)))';
+omega_ce=omega_ce/Simulation.deltaT;
+
+omega = omega_be;
 
 % metrics
 for i=1:length(timeInstants) % for each time instant...

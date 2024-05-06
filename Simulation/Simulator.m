@@ -123,10 +123,9 @@ while t<Simulation.Tmax
     % Compute environmental inputs
     if isfield(Environment,'Inputs')
         if isfield(Environment.Inputs,'Points')
-            %envInput = interpn(Environment.Inputs.Points{1}, Environment.Inputs.Points{2}, Environment.Inputs.Values, x(:,1),x(:,2), linear, nearest);
             envInput = F(x(:,1),x(:,2));
         else
-            envInput = ones(N,1) * interp1(Environment.Inputs.Times, Environment.Inputs.Values, t);
+            envInput = ones(N,1) * interp1(Environment.Inputs.Times, Environment.Inputs.Values, t, Environment.Inputs.InterpMethod);
         end
     end
     

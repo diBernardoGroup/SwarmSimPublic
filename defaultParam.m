@@ -32,9 +32,9 @@ MaxSensingRadius=3;         % sensing radius of the agents (R_s)
 %% Simulation parameters
 % All these fields are mandatory
 Simulation=struct();
-Simulation.Tmax =   5;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
-Simulation.deltaT = 0.01;   % sampling time step
-Simulation.dT =     0.001;   % integration time step
+Simulation.Tmax =   10;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
+Simulation.deltaT = 0.5;   % sampling time step
+Simulation.dT =     0.01;   % integration time step
 Simulation.arena =  [10,10];    % size of the simulation window
 Simulation.drawON=false;    % draw swarm during simulation (if N is large slows down the simulation)
 Simulation.drawTraj=0;   % draw trajectories of the agents (if N is large slows down the simulation)
@@ -52,7 +52,7 @@ sigmaSpeed0 = 0.1;
 %Dynamics=struct('model','IndependentSDEs', 'avgSpeed',avgSpeed0, 'rateSpeed', 1, 'sigmaSpeed', sigmaSpeed0, 'rateOmega', 0.5, 'sigmaOmega', 3, 'omega', normrnd(0,0,N,1));
 Dynamics=struct('model','IndependentSDEsWithInput', ...
     'avgSpeed',avgSpeed0, 'rateSpeed', 1, 'sigmaSpeed', sigmaSpeed0, 'gainSpeed', -1, 'gainDerSpeed', -1,...
-    'rateOmega', 1, 'sigmaOmega', 0.1, 'gainOmega', 1, 'gainDerOmega', 1,...
+    'rateOmega', 1, 'sigmaOmega', 0, 'gainOmega', 1, 'gainDerOmega', 1,...
     'omega', normrnd(0,1,N,1), 'oldInput', zeros(N,1));
 %Dynamics=struct('model','CoupledSDEs', 'avgSpeed', avgSpeed0, 'rateSpeed', 1, 'sigmaSpeed', 1, 'rateOmega', 1, 'sigmaOmega', @(x)2*max(1-x/3,0), 'omega', zeros(N,1));
 %Dynamics=struct('model','LevyWalk', 'alpha',0.005, 'sigma', 0);
@@ -82,6 +82,8 @@ LocalIntFunction=struct('function','None');
 
 %% Simulation Environment
 Environment = struct();
+Environment.Inputs.InterpMethod = 'previous';
+% Environment.Inputs.InterpMethod = 'linear';
 % Environment.Inputs.Times  = 'None'; 
 % Environment.Inputs.Values = 'None'; 
 
