@@ -1,5 +1,5 @@
 clear
-% close all
+close all
 
 
 data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12'; % off
@@ -7,9 +7,9 @@ data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_1
 data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5'; % switch10s combo
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
 
-identification_file_name = 'identification_OLS+GB_ds1.txt';
+identification_file_name = 'identification_OLS+GB_ds3_diff.txt';
 identification_method = 'OLS+GB';
-downSampling = 1;
+downSampling = 3;
 
 deltaT = 0.5;
 dT = 0.01;
@@ -34,14 +34,14 @@ N = size(speed,2);
 timeInstants = [0:size(speed,1)-1] * deltaT;
 agents = [0:N-1]';
 u=inputs(:,1)/255;
-%u_dot = [diff(u);0]/deltaT;
-u_dot = gradient(u)/deltaT;
+u_dot = [0;diff(u)]/deltaT;
+%u_dot = gradient(u)/deltaT;
 u_dot = max(u_dot,0);
 u_matrix = [u, u_dot];
 
 u_signw={};
 for i=1:N
-    u_signw{i} = u_matrix(1:end-1,:) .* sign(omega(:,i));
+    u_signw{i} = u_matrix(1:size(omega,1),:) .* sign(omega(:,i));
 end
 
 %% Identification
@@ -95,17 +95,17 @@ for i=1:length(t_sim)-1
 end
 
 mse_speed = mean((mean(speed,2,'omitnan')-interp1(t_sim,s_sim,timeInstants)').^2);
-mse_omega = mean((mean(abs(omega),2,'omitnan')-interp1(t_sim,w_sim,timeInstants(1:end-1))').^2);
+mse_omega = mean((mean(abs(omega),2,'omitnan')-interp1(t_sim,w_sim,timeInstants)').^2);
 nmse_speed = goodnessOfFit(interp1(t_sim,s_sim,timeInstants)', mean(speed,2,'omitnan'), 'NMSE');
-nmse_omega = goodnessOfFit(interp1(t_sim,w_sim,timeInstants(1:end-1))', mean(abs(omega),2,'omitnan'), 'NMSE');
+nmse_omega = goodnessOfFit(interp1(t_sim,w_sim,timeInstants)', mean(abs(omega),2,'omitnan'), 'NMSE');
 nmse_total = mean([nmse_speed, nmse_omega]);
 %disp(['MSE from mean for speed: ',num2str(mse_speed),' and omega: ',num2str(mse_omega)])
 disp(['NMSE from mean for speed:',num2str(nmse_speed),' and omega: ',num2str(nmse_omega),' total: ', num2str(nmse_total)])
 
 mse_speed = mean((median(speed,2,'omitnan')-interp1(t_sim,s_sim,timeInstants)').^2);
-mse_omega = mean((median(abs(omega),2,'omitnan')-interp1(t_sim,w_sim,timeInstants(1:end-1))').^2);
+mse_omega = mean((median(abs(omega),2,'omitnan')-interp1(t_sim,w_sim,timeInstants)').^2);
 nmse_speed = goodnessOfFit(interp1(t_sim,s_sim,timeInstants)', median(speed,2,'omitnan'), 'NMSE');
-nmse_omega = goodnessOfFit(interp1(t_sim,w_sim,timeInstants(1:end-1))', median(abs(omega),2,'omitnan'), 'NMSE');
+nmse_omega = goodnessOfFit(interp1(t_sim,w_sim,timeInstants)', median(abs(omega),2,'omitnan'), 'NMSE');
 nmse_total = mean([nmse_speed, nmse_omega]);
 %disp(['MSE from median for speed: ',num2str(mse_speed),' and omega: ',num2str(mse_omega)])
 disp(['NMSE from median for speed:',num2str(nmse_speed),' and omega: ',num2str(nmse_omega),' total: ', num2str(nmse_total)])
@@ -144,8 +144,8 @@ h=histogram(speed(:),'Orientation','horizontal');
 ylim(rng);
 set(gca,'xtick',[])
 subplot(2,4,[5 6 7])
-line1=plotWithShade(timeInstants(1:end-1), median(abs(omega),2,'omitnan'), min(abs(omega), [], 2,'omitnan'), max(abs(omega), [], 2,'omitnan'), 'b', 0.3);
-line2=plot(timeInstants(1:end-1), mean(abs(omega),2,'omitnan'),'g',LineWidth = 2);
+line1=plotWithShade(timeInstants, median(abs(omega),2,'omitnan'), min(abs(omega), [], 2,'omitnan'), max(abs(omega), [], 2,'omitnan'), 'b', 0.3);
+line2=plot(timeInstants, mean(abs(omega),2,'omitnan'),'g',LineWidth = 2);
 line3=plot(t_sim,abs(w_sim),'r',LineWidth = 1);
 highlightInputs(timeInstants, u, 'r', 0.25)
 legend([line1,line2,line3],'experiment (median)', 'experiment (mean)', 'simulation')

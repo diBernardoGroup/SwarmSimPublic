@@ -20,11 +20,11 @@ defaultParam;               % load default parameters
 
 N=500;
 
-% data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12';  % off
-% data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16';  % switch10s
-% tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo3';  % switch10s combo
+% tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_15/tracking_2023_10_12';  % switch10s
+tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo3';  % switch10s combo
+tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % switch10s combo 5
 % tag='switch_5'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_5/combo';  % switch5s combo
-tag='switch_1'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_1/combo';  % switch1s combo
+% tag='switch_1'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_1/combo';  % switch1s combo
 % tag='75_ON'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_75_ON/combo';  % OFF-ON-OFF 75 combo
 % tag='150_ON'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_150_ON/combo';  % OFF-ON-OFF 150 combo
 % tag='255_ON'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_255_ON/combo';  % OFF-ON-OFF 255 combo
@@ -32,7 +32,7 @@ tag='switch_1'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_
 % tag='ramp'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_ramp/combo';  % ramp combo
 
 id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % folder with identification data
-identification_file_name = 'identification_OLS+GB_ds1.txt';
+identification_file_name = 'identification_OLS+GB_ds3_diff.txt';
 
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 
@@ -105,31 +105,31 @@ speed_be = vecnorm(vVec_be,2,3);
 speed = speed_be;
 
 theta = atan2(vVec_grad(:,:,2), vVec_grad(:,:,1));
+% angular velocity - gradient
 for i=1:length(timeInstants)-1
-    % angular velocity
     omega_grad(i,:) = angleBetweenVectors(squeeze(vVec_grad(i,:,:)),squeeze(vVec_grad(i+1,:,:)))';
 end
 omega_grad(length(timeInstants),:) = angleBetweenVectors(squeeze(vVec_grad(length(timeInstants)-1,:,:)),squeeze(vVec_grad(length(timeInstants),:,:)))';
 omega_grad=omega_grad/Simulation.deltaT;
 
+% angular velocity - Forward Euler
 for i=1:length(timeInstants)-1
-    % angular velocity
     omega_fe(i,:) = angleBetweenVectors(squeeze(vVec_fe(i,:,:)),squeeze(vVec_fe(i+1,:,:)))';
 end
 omega_fe(length(timeInstants),:) = angleBetweenVectors(squeeze(vVec_fe(length(timeInstants)-1,:,:)),squeeze(vVec_fe(length(timeInstants),:,:)))';
 omega_fe=omega_fe/Simulation.deltaT;
 
+% angular velocity - Backward Euler
 omega_be(1,:) = angleBetweenVectors(squeeze(xVec(2,:,:)-xVec(1,:,:)),squeeze(xVec(3,:,:)-xVec(2,:,:)))';
 omega_be(2,:) = angleBetweenVectors(squeeze(xVec(2,:,:)-xVec(1,:,:)),squeeze(xVec(3,:,:)-xVec(2,:,:)))';
 for i=3:length(timeInstants)
-    % angular velocity
     omega_be(i,:) = angleBetweenVectors(squeeze(vVec_be(i-1,:,:)),squeeze(vVec_be(i,:,:)))';
 end
 omega_be=omega_be/Simulation.deltaT;
 
+% angular velocity - Central Derivative
 omega_ce(1,:) = angleBetweenVectors(squeeze(xVec(2,:,:)-xVec(1,:,:)),squeeze(xVec(3,:,:)-xVec(2,:,:)))';
 for i=2:length(timeInstants)-1
-    % angular velocity
     omega_ce(i,:) = angleBetweenVectors(squeeze(xVec(i,:,:)-xVec(i-1,:,:)),squeeze(xVec(i+1,:,:)-xVec(i,:,:)))';
 end
 omega_ce(length(timeInstants),:) = angleBetweenVectors(squeeze(xVec(end-1,:,:)-xVec(end-2,:,:)),squeeze(xVec(end,:,:)-xVec(end-1,:,:)))';
@@ -318,7 +318,7 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     
 else % TEMPORAL INPUTS
 
-    [NMSE_speed,NMSE_omega,NMSE_total] = compareResults({data_folder,path}, path);
+    [metrics_of_interest] = compareResults({data_folder,path}, path);
 
 end
 

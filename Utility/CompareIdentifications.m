@@ -2,7 +2,7 @@ clear
 close all
 
 % id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % folder with identification data
-id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo';
+id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5_old';
 
 % identification_file_names = ["identification_OLS_ds1_sign.txt","identification_OLS_ds2_sign.txt","identification_OLS_ds3_sign.txt";
 %                              %"identification_OLS_ds1_abs.txt","identification_OLS_ds2_abs.txt","identification_OLS_ds3_abs.txt";
@@ -13,7 +13,7 @@ id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo';
 identification_file_names = ["identification_OLS_ds1_sign_grad.txt","identification_OLS_ds2_sign_grad.txt","identification_OLS_ds3_sign_grad.txt";
                              "identification_GBCT_ds1_sign_grad.txt","identification_GBCT_ds2_sign_grad.txt","identification_GBCT_ds3_sign_grad.txt"];
 
-identification_file_names = ["identification_OLS_ds1_sign_grad.txt","identification_OLS_dscombo.txt","identification_OLS_ds3_sign_grad.txt"];
+identification_file_names = ["identification_OLS_ds1.txt","identification_OLS_dscombo.txt","identification_OLS_ds3.txt"];
 
 % tags = ["OLS","GBDT","GBCT grad","GBCT diff"];
 tags = ["OLS","Grey Box"];

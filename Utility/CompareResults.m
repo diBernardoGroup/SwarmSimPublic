@@ -1,11 +1,11 @@
 %% COMPARE EXPERIMENTS
 
-function [nmse_speed_med,nmse_omega_med,nmse_total_med] = compareResults(experiment_paths, outputDir, plots)
+function [metrics_of_interest] = compareResults(experiment_paths, outputDir, make_plots)
 
 arguments
     experiment_paths
     outputDir = ''
-    plots = true
+    make_plots = true
 end
 
 %% Add subfolders to the Matlab path
@@ -16,6 +16,7 @@ number_of_exp = length(experiment_paths);
 experiments={};
 
 %% Load data
+timeInstants = 0:0.5:180;
 for i=1:number_of_exp
     exp = experiment_paths{i};
     data_path = fullfile(exp,'data.mat');
@@ -24,11 +25,20 @@ for i=1:number_of_exp
         omega = d.omega';
         speed = d.speed';
         timeInstants = d.timeInstants;
-        u = d.u;
+        if i==1
+            u = d.u;
+        else
+            assert(all(u == d.u),'Experiments must have the same inputs')
+        end
     else                % load data from experiment
-        speed = load(fullfile(exp,'speeds_smooth.txt'));
-        speed = speed(1:end-1,:)';
+        speed = load(fullfile(exp,'speeds_smooth.txt'))';
         omega = load(fullfile(exp,'ang_vel_smooth.txt'))';
+        inputs=load(fullfile(exp,'inputs.txt'));
+        if i==1
+            u=inputs(:,1)/255;              %select blue channel and scale in [0,1]
+        else
+            assert(all(u == inputs(:,1)/255),'Experiments must have the same inputs')
+        end
     end
     
     data = table(speed, omega);
@@ -47,23 +57,34 @@ if number_of_exp>2
         end
     end
 else
-    overlap = min(size(experiments{1}.speed,2),size(experiments{2}.speed,2));
+    overlap = min(size(experiments{1}.omega,2),size(experiments{2}.omega,2));
     mse_speed = mean((mean(experiments{1}.speed(:,1:overlap),1,'omitnan')-mean(experiments{2}.speed(:,1:overlap),1,'omitnan')).^2);
     mse_omega = mean((mean(abs(experiments{1}.omega(:,1:overlap)),1,'omitnan')-mean(abs(experiments{2}.omega(:,1:overlap)),1,'omitnan')).^2);
+    
     nmse_speed = goodnessOfFit(mean(experiments{2}.speed(:,1:overlap),1,'omitnan')', mean(experiments{1}.speed(:,1:overlap),1,'omitnan')', 'NMSE');
     nmse_omega = goodnessOfFit(mean(abs(experiments{2}.omega(:,1:overlap)),1,'omitnan')', mean(abs(experiments{1}.omega(:,1:overlap)),1,'omitnan')', 'NMSE');
     nmse_total = mean([nmse_speed, nmse_omega]);
-    %disp(['MSE between mean for   speed:',num2str(mse_speed),' and omega: ',num2str(mse_omega)])
-    disp(['NMSE between mean for   speed:',num2str(nmse_speed,'%.2f'),' and omega: ',num2str(nmse_omega,'%.2f'),' total: ', num2str(nmse_total,'%.2f')])
     
     nmse_speed_med = goodnessOfFit(median(experiments{2}.speed(:,1:overlap),1,'omitnan')', median(experiments{1}.speed(:,1:overlap),1,'omitnan')', 'NMSE');
     nmse_omega_med = goodnessOfFit(median(abs(experiments{2}.omega(:,1:overlap)),1,'omitnan')', median(abs(experiments{1}.omega(:,1:overlap)),1,'omitnan')', 'NMSE');
     nmse_total_med = mean([nmse_speed_med, nmse_omega_med]);
-    disp(['NMSE between median for speed:',num2str(nmse_speed_med,'%.2f'),' and omega: ',num2str(nmse_omega_med,'%.2f'),' total: ', num2str(nmse_total_med,'%.2f')])
+    
+    wmape_speed = mape(median(experiments{2}.speed(:,1:overlap),1,'omitnan'), median(experiments{1}.speed(:,1:overlap),1,'omitnan'),'wMAPE');
+    wmape_omega = mape(median(abs(experiments{2}.omega(:,1:overlap)),1,'omitnan'), median(abs(experiments{1}.omega(:,1:overlap)),1,'omitnan'),'wMAPE');
+    wmape_total = mean([wmape_speed, wmape_omega]);
+        
+    % metrics_of_interest = {NMSE_speed, NMSE_omega, NMSE_total}; metrics_tags = ["NMSE_v", "NMSE_\omega", "NMSE_{tot}"];
+    % metrics_of_interest = {mape_speed, mape_omega, mape_total}; metrics_tags = ["mape_v", "mape_\omega", "mape_{tot}"];
+    metrics_of_interest = {wmape_speed, wmape_omega, wmape_total}; metrics_tags = ["wmape_v", "wmape_\omega", "wmape_{tot}"];
+    % metrics_of_interest = {NMSE_total, mape_total, wmape_total}; metrics_tags = ["NMSE_{tot}", "mape_{tot}", "wmape_{tot}"];
+
+    for m=1:length(metrics_tags)
+        disp(metrics_tags(m)+" = "+num2str(metrics_of_interest{m},'%.2f'))
+    end
 end
 
 %% POLTS
-if plots
+if make_plots
     figure % BOX PLOT - SPEED and ANGULAR VELOCITY - MEAN OVER AGENTS
     subplot(2,1,1)
     set(gca,'FontSize',12)

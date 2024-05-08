@@ -81,6 +81,12 @@ experiments_names = ["comparisons/Euglena_OFF/combo", "2023_06_15_Euglena_1", "2
 output_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Euglena input/Scenario intensity';
 
 
+% compare identifications
+tags = [ "grad_grad", "diff_grad", "diff_diff_ds1", "diff_diff_ds2", "diff_diff_ds3"];
+sim_names = ["2024_05_08_switch_10_4", "2024_05_08_switch_10_5", "2024_05_08_switch_10_6", "2024_05_08_switch_10_8", "2024_05_08_switch_10_9"];
+experiments_names = ["comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"];
+output_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';
+
 deltaT = 0.5;
 timeInstants = [0:deltaT:180];
 
@@ -93,7 +99,8 @@ for i = 1:size(experiments_names,1)  % for each experiment
     sim_folder = fullfile(simulations_folder,sim_names(i));
     sim_data = load(fullfile(sim_folder,'data.mat'));
     speed_sim{i} = sim_data.speed;
-    omega_sim{i} = sim_data.omega(1:end-1,:);
+    %omega_sim{i} = sim_data.omega(1:end-1,:);
+    omega_sim{i} = sim_data.omega;
     u{i} = sim_data.u;
     
     % load experiment data
@@ -119,9 +126,9 @@ for i = 1:size(experiments_names,1)  % for each experiment
     
     % evaluate quality of fit
     for j=1:size(experiments_names,2)   % for each replicate
-        NMSE_speed(i,j) = goodnessOfFit(median(speed_sim{i},2,'omitnan'), median(speeds{i,j},2,'omitnan'), 'NMSE');
-        NMSE_omega(i,j) = goodnessOfFit(median(abs(omega_sim{i}),2,'omitnan'), median(abs(omegas{i,j}),2,'omitnan'), 'NMSE');
-        NMSE_total(i,j) = mean([NMSE_speed(i,j), NMSE_omega(i,j)]);
+        nmse_speed(i,j) = goodnessOfFit(median(speed_sim{i},2,'omitnan'), median(speeds{i,j},2,'omitnan'), 'NMSE');
+        nmse_omega(i,j) = goodnessOfFit(median(abs(omega_sim{i}),2,'omitnan'), median(abs(omegas{i,j}),2,'omitnan'), 'NMSE');
+        nmse_total(i,j) = mean([nmse_speed(i,j), nmse_omega(i,j)]);
         
         mape_speed(i,j) = mape(median(speed_sim{i},2,'omitnan'), median(speeds{i,j},2,'omitnan'));
         mape_omega(i,j) = mape(median(abs(omega_sim{i}),2,'omitnan'), median(abs(omegas{i,j}),2,'omitnan'));
@@ -135,10 +142,10 @@ end
 
 %% PRINT RESULTS
 
-metrics_of_interest = {NMSE_speed, NMSE_omega, NMSE_total}; metrics_tags = ["NMSE_v", "NMSE_\omega", "NMSE_{tot}"];
+% metrics_of_interest = {nmse_speed, nmse_omega, nmse_total}; metrics_tags = ["nmse_v", "nmse_\omega", "nmse_{tot}"];
 % metrics_of_interest = {mape_speed, mape_omega, mape_total}; metrics_tags = ["mape_v", "mape_\omega", "mape_{tot}"];
-% metrics_of_interest = {wmape_speed, wmape_omega, wmape_total}; metrics_tags = ["wmape_v", "wmape\omega", "wmape_{tot}"];
-% metrics_of_interest = {NMSE_total, mape_total, wmape_total}; metrics_tags = ["NMSE_{tot}", "mape_{tot}", "wmape_{tot}"];
+metrics_of_interest = {wmape_speed, wmape_omega, wmape_total}; metrics_tags = ["wmape_v", "wmape\omega", "wmape_{tot}"];
+% metrics_of_interest = {nmse_total, mape_total, wmape_total}; metrics_tags = ["nmse_{tot}", "mape_{tot}", "wmape_{tot}"];
 metrics_color = ['b','r','k'];
 
 % % Single experiment plots
@@ -151,7 +158,7 @@ metrics_color = ['b','r','k'];
 %     fprintf(fileID,'Experiment\t\tNMSE speed\tNMSE omega\tNMSE tot\n');
 %     for j=1:size(experiments_names,2)
 %         fprintf(fileID,'%s\t',experiments_names(i,j));
-%         fprintf(fileID,'%.2f\t\t%.2f\t\t%.2f\n',NMSE_speed(i,j),NMSE_omega(i,j),NMSE_total(i,j));
+%         fprintf(fileID,'%.2f\t\t%.2f\t\t%.2f\n',nmse_speed(i,j),nmse_omega(i,j),nmse_total(i,j));
 %     end
 %     fclose(fileID);
 %     
@@ -230,10 +237,10 @@ if size(experiments_names,1) > 1
         ylim([0,1.5])
         highlightInputs(timeInstants, u{i}, 'r', 0.25)
         for j=2:size(experiments_names,2)
-            plot(timeInstants(1:end-1), median(abs(omegas{i,j}),2,'omitnan'),'b', color=[0.5,0.5,1]);
+            plot(timeInstants, median(abs(omegas{i,j}),2,'omitnan'),'b', color=[0.5,0.5,1]);
         end
-        l1=plot(timeInstants(1:end-1), median(abs(omegas{i,1}),2,'omitnan'),'b',LineWidth=2);
-        l2=plot(timeInstants(1:end-1), median(abs(omega_sim{i}),2,'omitnan'),'k',LineWidth=2);
+        l1=plot(timeInstants, median(abs(omegas{i,1}),2,'omitnan'),'b',LineWidth=2);
+        l2=plot(timeInstants, median(abs(omega_sim{i}),2,'omitnan'),'k',LineWidth=2);
         xlim([0,max(timeInstants)])
         xlabel('$t$ [s]','Interpreter','Latex','FontSize',16)
         %ylabel('$|\omega|$ [rad/s]','Interpreter','Latex','FontSize',16)

@@ -107,7 +107,6 @@ for i=1:number_of_series
             sys.Parameters(2).Name = 'alpha';
             sys.Parameters(3).Name = 'mu';      %sys.Parameters(3).Minimum = 0;
             if strcmp(method,'OLS+GB')
-                %sys = idnlgrey('continouosSys',[1 number_of_inputs 1], {theta(i), alpha(i,:), mu(i)}, x_old(1), 0);
                 sys.Parameters(1).Value = max(sys.Parameters(1).Minimum, theta(i));
                 sys.Parameters(2).Value = alpha(i,:);
                 sys.Parameters(3).Value = mu(i);
