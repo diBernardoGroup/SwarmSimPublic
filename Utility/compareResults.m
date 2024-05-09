@@ -31,6 +31,10 @@ for i=1:number_of_exp
             assert(all(u == d.u),'Experiments must have the same inputs')
         end
     else                % load data from experiment
+        if ~isfile(fullfile(exp,'speeds_smooth.txt'))
+            tracking = getLastTracking(exp);
+            exp = fullfile(exp,tracking);
+        end
         speed = load(fullfile(exp,'speeds_smooth.txt'))';
         omega = load(fullfile(exp,'ang_vel_smooth.txt'))';
         inputs=load(fullfile(exp,'inputs.txt'));
@@ -89,14 +93,14 @@ if make_plots
     subplot(2,1,1)
     set(gca,'FontSize',12)
     for i=1:number_of_exp; data_to_plot{i} = mean(experiments{i}.speed,'omitnan'); end
-    myboxplot(data_to_plot,true, 3, {'b','k'})
+    myboxplot(data_to_plot,true, 3, {'b','k','r'})
     ylabel('$v$ [$\mu$m/s]','Interpreter','Latex','FontSize',16)
     xticklabels({'REAL','SIMULATED'})
     title('Average over agents')
     subplot(2,1,2)
     set(gca,'FontSize',12)
     for i=1:number_of_exp; data_to_plot{i} = mean(abs(experiments{i}.omega),'omitnan'); end
-    myboxplot(data_to_plot,true, 3, {'b','k'})
+    myboxplot(data_to_plot,true, 3, {'b','k','r'})
     ylabel('$|\omega|$ [rad/s]','Interpreter','Latex','FontSize',16)
     xticklabels({'REAL','SIMULATED'})
     set(gcf,'position',[300,300,300,420])
@@ -109,14 +113,14 @@ if make_plots
     subplot(2,1,1)
     set(gca,'FontSize',12)
     for i=1:number_of_exp; data_to_plot{i} = mean(experiments{i}.speed,2,'omitnan'); end
-    myboxplot(data_to_plot,true, 3, {'b','k'})
+    myboxplot(data_to_plot,true, 3, {'b','k','r'})
     ylabel('$v$ [$\mu$m/s]','Interpreter','Latex','FontSize',16)
     xticklabels({'REAL','SIMULATED'})
     title('Average over time')
     subplot(2,1,2)
     set(gca,'FontSize',12)
     for i=1:number_of_exp; data_to_plot{i} = mean(abs(experiments{i}.omega),2,'omitnan'); end
-    myboxplot(data_to_plot,true, 3, {'b','k'})
+    myboxplot(data_to_plot,true, 3, {'b','k','r'})
     ylabel('$|\omega|$ [rad/s]','Interpreter','Latex','FontSize',16)
     xticklabels({'REAL','SIMULATED'})
     set(gcf,'position',[300,300,300,420])
@@ -129,14 +133,14 @@ if make_plots
     subplot(2,1,1)
     set(gca,'FontSize',12)
     for i=1:number_of_exp; data_to_plot{i} = experiments{i}.speed(:); end
-    myboxplot(data_to_plot, true, 3, {'b','k'})
+    myboxplot(data_to_plot, true, 3, {'b','k','r'})
     ylabel('$v$ [$\mu$m/s]','Interpreter','Latex','FontSize',16)
     xticklabels({'REAL','SIMULATED'})
     title('All points')
     subplot(2,1,2)
     set(gca,'FontSize',12)
     for i=1:number_of_exp; data_to_plot{i} = abs(experiments{i}.omega(:)); end
-    myboxplot(data_to_plot, true, 3, {'b','k'})%, [0,0.4470,0.7410])
+    myboxplot(data_to_plot, true, 3, {'b','k','r'})%, [0,0.4470,0.7410])
     ylabel('$|\omega|$ [rad/s]','Interpreter','Latex','FontSize',16)
     xticklabels({'REAL','SIMULATED'})
     set(gcf,'position',[300,300,300,420])

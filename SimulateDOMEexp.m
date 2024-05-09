@@ -21,18 +21,19 @@ defaultParam;               % load default parameters
 N=500;
 
 % tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_15/tracking_2023_10_12';  % switch10s
-tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo3';  % switch10s combo
-tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % switch10s combo 5
-% tag='switch_5'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_5/combo';  % switch5s combo
+% tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo3';  % switch10s combo
+% tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % switch10s combo 5
+tag='switch_5'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_5/combo';  % switch5s combo
 % tag='switch_1'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_1/combo';  % switch1s combo
-% tag='75_ON'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_75_ON/combo';  % OFF-ON-OFF 75 combo
-% tag='150_ON'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_150_ON/combo';  % OFF-ON-OFF 150 combo
-% tag='255_ON'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_255_ON/combo';  % OFF-ON-OFF 255 combo
+tag='75_ON'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_75_ON/combo';  % OFF-ON-OFF 75 combo
+tag='150_ON'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_150_ON/combo';  % OFF-ON-OFF 150 combo
+tag='255_ON'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_255_ON/combo';  % OFF-ON-OFF 255 combo
 % tag='OFF'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_OFF/combo';  % OFF combo
-% tag='ramp'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_ramp/combo';  % ramp combo
+tag='ramp'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_ramp/combo';  % ramp combo
 
 id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % folder with identification data
-identification_file_name = 'identification_OLS+GB_ds3_diff.txt';
+%id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5_old';  % folder with identification data
+identification_file_name = 'identification_OLS+GB_ds1_diff.txt';
 
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 
@@ -179,6 +180,7 @@ if outputDir
     fclose(fileID);
 end
 
+if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
 % SWARM initial
 figure
 if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
@@ -209,6 +211,7 @@ if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.draw
 if outputDir
     saveas(gcf, fullfile(path, 'x_final'))
     saveas(gcf, fullfile(path, 'x_final'),'png')
+end
 end
 
 % figure % colored trajectories

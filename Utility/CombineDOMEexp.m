@@ -27,19 +27,20 @@ experiments_names = ["2023_06_15_Euglena_1", "2023_06_26_Euglena_13", "2023_07_1
 
 % OFF-ON-OFF 75
 tag = 'Euglena_75_ON';
-experiments_names = ["2023_06_15_Euglena_2", "2023_06_26_Euglena_16", "2023_07_10_Euglena_8"];
+experiments_names = ["2023_06_15_Euglena_2", "2023_06_26_Euglena_16", "2023_07_10_Euglena_8"]; % old
+experiments_names = ["2023_06_15_Euglena_2", "2023_06_26_Euglena_15", "2023_07_10_Euglena_8"]; % old
 
-% OFF-ON-OFF 150
-tag = 'Euglena_150_ON';
-experiments_names = ["2023_06_15_Euglena_3", "2023_06_26_Euglena_18", "2023_07_10_Euglena_10"];
-
-% OFF-ON-OFF 255
-tag = 'Euglena_255_ON';
-experiments_names = ["2023_06_15_Euglena_4", "2023_06_26_Euglena_20", "2023_07_10_Euglena_12"];
-
-% Ramp
-tag = 'Euglena_ramp';
-experiments_names = ["2023_06_15_Euglena_6", "2023_06_26_Euglena_22", "2023_07_10_Euglena_14"];
+% % OFF-ON-OFF 150
+% tag = 'Euglena_150_ON';
+% experiments_names = ["2023_06_15_Euglena_3", "2023_06_26_Euglena_18", "2023_07_10_Euglena_10"];
+% 
+% % OFF-ON-OFF 255
+% tag = 'Euglena_255_ON';
+% experiments_names = ["2023_06_15_Euglena_4", "2023_06_26_Euglena_20", "2023_07_10_Euglena_12"];
+% 
+% % Ramp
+% tag = 'Euglena_ramp';
+% experiments_names = ["2023_06_15_Euglena_6", "2023_06_26_Euglena_22", "2023_07_10_Euglena_14"];
 
 output_folder = fullfile("/Volumes/DOMEPEN/Experiments/comparisons/",tag,"/combo");
 

@@ -7,9 +7,9 @@ data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_1
 data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5'; % switch10s combo
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
 
-identification_file_name = 'identification_OLS+GB_ds3_diff.txt';
+identification_file_name = 'identification_OLS+GB_ds1_diff_smooth.txt';
 identification_method = 'OLS+GB';
-downSampling = 3;
+downSampling = 1;
 
 deltaT = 0.5;
 dT = 0.01;
@@ -23,6 +23,9 @@ addpath(genpath(current_folder));
 speed  = load(fullfile(data_folder,'speeds_smooth.txt'));
 omega  = load(fullfile(data_folder,'ang_vel_smooth.txt'));
 
+% speed = movmean(speed,5,'omitnan');
+% omega = movmean(omega,5,'omitnan');
+
 inputs = load(fullfile(data_folder,'inputs.txt'));
 
 speed  = speed(1:downSampling:end,:);
@@ -34,8 +37,9 @@ N = size(speed,2);
 timeInstants = [0:size(speed,1)-1] * deltaT;
 agents = [0:N-1]';
 u=inputs(:,1)/255;
-u_dot = [0;diff(u)]/deltaT;
-%u_dot = gradient(u)/deltaT;
+u_dot_BE = [0;diff(u)]/deltaT;
+u_dot_grad = gradient(u)/deltaT;
+u_dot = u_dot_BE;
 u_dot = max(u_dot,0);
 u_matrix = [u, u_dot];
 
