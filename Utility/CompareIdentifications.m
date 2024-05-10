@@ -2,7 +2,7 @@ clear
 close all
 
 % id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % folder with identification data
-id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5_old';
+id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';
 
 % identification_file_names = ["identification_OLS_ds1_sign.txt","identification_OLS_ds2_sign.txt","identification_OLS_ds3_sign.txt";
 %                              %"identification_OLS_ds1_abs.txt","identification_OLS_ds2_abs.txt","identification_OLS_ds3_abs.txt";
@@ -15,8 +15,12 @@ identification_file_names = ["identification_OLS_ds1_sign_grad.txt","identificat
 
 identification_file_names = ["identification_OLS_ds1.txt","identification_OLS_dscombo.txt","identification_OLS_ds3.txt"];
 
+identification_file_names = ["identification_OLS+GB_ds1_old.txt"; "identification_OLS+GB_ds1_diff.txt"; 
+                                "identification_OLS+GB_ds1_diff_selected.txt"; "identification_OLS+GB_ds1_diff_min40.txt";
+                                "identification_OLS+GB_ds1_diff_noalpha.txt"];
+
 % tags = ["OLS","GBDT","GBCT grad","GBCT diff"];
-tags = ["OLS","Grey Box"];
+tags = ["old","min=5s","min=20s","min=40s","no_alpha"];
              
 dT = 0.01;
 deltaT = 0.5;
@@ -34,8 +38,8 @@ omega=load(fullfile(id_folder,'ang_vel_smooth.txt'));
 inputs=load(fullfile(id_folder,'inputs.txt'));
 timeInstants = [0:size(speed,1)-1] * deltaT;
 u=inputs(:,1)/255;
-%u_dot = [diff(u);0]/deltaT;
-u_dot = gradient(u)/deltaT;
+u_dot = [0;diff(u)]/deltaT;
+%u_dot = gradient(u)/deltaT;
 u_dot = max(u_dot,0);
 
 %% simulate average behaviour
@@ -62,11 +66,11 @@ for j=1:size(identification_file_names,1)       % for each technique
         end
         
         nmse_mean_speed(j,i) = goodnessOfFit(interp1(t_sim,s_sim,timeInstants)', mean(speed,2,'omitnan'), 'NMSE');
-        nmse_mean_omega(j,i) = goodnessOfFit(interp1(t_sim,w_sim,timeInstants(1:end-1))', mean(abs(omega),2,'omitnan'), 'NMSE');
+        nmse_mean_omega(j,i) = goodnessOfFit(interp1(t_sim,w_sim,timeInstants)', mean(abs(omega),2,'omitnan'), 'NMSE');
         nmse_mean_total(j,i) = mean([nmse_mean_speed(j,i), nmse_mean_omega(j,i)]);
         
         nmse_med_speed(j,i) = goodnessOfFit(interp1(t_sim,s_sim,timeInstants)', median(speed,2,'omitnan'), 'NMSE');
-        nmse_med_omega(j,i) = goodnessOfFit(interp1(t_sim,w_sim,timeInstants(1:end-1))', median(abs(omega),2,'omitnan'), 'NMSE');
+        nmse_med_omega(j,i) = goodnessOfFit(interp1(t_sim,w_sim,timeInstants)', median(abs(omega),2,'omitnan'), 'NMSE');
         nmse_med_total(j,i) = mean([nmse_med_speed(j,i), nmse_med_omega(j,i)]);
     end
 end
@@ -87,6 +91,7 @@ for j=1:size(identification_file_names,1) % for each technique
     end
 end
 
+if size(identification_file_names,2)>1 % if considering multiple down sampling values
 figure % Parameters
 colors = get(gca,'ColorOrder');
 for k=1:10 % for each parameter
@@ -146,4 +151,22 @@ for j=1:size(identification_file_names,1) % for each technique
     ylim([0 rng])
 end
 
+else % if considering a signle down sampling value
+    
+    figure % PARAMETERS BOXPLOTS
+    for k=1:10 % for each parameter
+        ax=subplot(2,5,k);
+        
+        for j=1:size(identification_file_names,1); data_to_plot{j} = identifications{j,1}{:,k+1}; end
+        myboxplot(data_to_plot, false, 3);
+        xticks([])
+        set(ax,'PositionConstraint','innerposition')
+        yline(0,'Color',[0.5,0.5,0.5])
+        %l=max(identification.(i+1))*1.1;ylim([-l/15,l]);yticks([0:l/3:l])
+        xlabel(identifications{1}.Properties.VariableNames(k+1))
+        set(gca,'FontSize',16)
+    end
+    legend(tags)
+    
+end
 

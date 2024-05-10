@@ -7,9 +7,11 @@ data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_1
 data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5'; % switch10s combo
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
 
-identification_file_name = 'identification_OLS+GB_ds1_diff_smooth.txt';
+identification_file_name = 'identification_OLS+GB_ds1_diff_noalpha.txt';
 identification_method = 'OLS+GB';
 downSampling = 1;
+
+min_duration = 5; %[s]
 
 deltaT = 0.5;
 dT = 0.01;
@@ -25,6 +27,8 @@ omega  = load(fullfile(data_folder,'ang_vel_smooth.txt'));
 
 % speed = movmean(speed,5,'omitnan');
 % omega = movmean(omega,5,'omitnan');
+% speed = median(speed,2,'omitnan');
+% omega = median(abs(omega),2,'omitnan');
 
 inputs = load(fullfile(data_folder,'inputs.txt'));
 
@@ -49,8 +53,8 @@ for i=1:N
 end
 
 %% Identification
-[mu_s, theta_s, sigma_s, gains_s] = SDE_parameters_est(speed, u_matrix, deltaT, identification_method);
-[mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_signw,  deltaT, identification_method);
+[mu_s, theta_s, sigma_s, gains_s] = SDE_parameters_est(speed, u_matrix, deltaT, identification_method, min_duration);
+[mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_signw,  deltaT, identification_method, min_duration);
 %[mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(abs(omega), u_matrix, deltaT,'OLS');
 mu_s=round(mu_s,4); theta_s=round(theta_s,4); sigma_s=round(sigma_s,4); gains_s=round(gains_s,4); mu_w=round(mu_w,4); theta_w=round(theta_w,4); sigma_w=round(sigma_w,4); gains_w=round(gains_w,4);
 alpha_s = gains_s(:,1); beta_s = gains_s(:,2); alpha_w = gains_w(:,1); beta_w = gains_w(:,2);
@@ -130,6 +134,19 @@ for i=1:10
 end
 saveas(gcf,fullfile(data_folder,'plots',[f '_parameters']))
 saveas(gcf,fullfile(data_folder,'plots',[f '_parameters']),'png')
+
+figure % PARAMETERS HISTOGRAMS
+for i=1:10 
+    ax=subplot(2,5,i);
+    histogram(identification{:,i+1});
+    xlabel(identification.Properties.VariableNames{i+1})
+    set(ax,'PositionConstraint','innerposition')
+    yline(0,'Color',[0.5,0.5,0.5])
+    %l=max(identification.(i+1))*1.1;ylim([-l/15,l]);yticks([0:l/3:l])
+    set(gca,'FontSize',16)
+end
+saveas(gcf,fullfile(data_folder,'plots',[f '_parameters_hist']))
+saveas(gcf,fullfile(data_folder,'plots',[f '_parameters_hist']),'png')
 
 figure % TIME PLOT - SPEED and ANGULAR VELOCITY
 subplot(2,4,[1 2 3])
