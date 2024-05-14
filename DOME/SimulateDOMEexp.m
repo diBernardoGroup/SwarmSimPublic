@@ -33,10 +33,6 @@ identification_file_name = 'identification_OLS+GB_ds1_diff_median.txt';
 
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 
-% spatial analysis parameters
-brightness_thresh = 0.3;
-background_sub = true;
-
 %% Loads experiment data
 
 % load identification data and instantiate simulated agents
@@ -384,3 +380,8 @@ end
 % saveas(gcf,fullfile(output_path, 'scatter_plot'))
 % saveas(gcf,fullfile(output_path, 'scatter_plot'),'png')
 % end
+
+if Simulation.recordVideo
+    copyfile('./Output/video.mp4',output_path)
+end
+

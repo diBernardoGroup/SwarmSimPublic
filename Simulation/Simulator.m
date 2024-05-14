@@ -175,7 +175,7 @@ uVec(count,:,:)=forces;
 
 if Simulation.recordVideo
     close(video);
-    disp(['Video saved in ', video.Path])
+    %disp(['Video saved in ', video.Path])
 end
 
 %% PLOTS

@@ -13,13 +13,13 @@
 % Directory to save the results of the simulations.
 % Set outputDir='' to prevent automatic saving.
 outputDir='./Output';
-%outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
-outputDir='';
+outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/SwarmSim/simulations';
+% outputDir='';
 
-N=100;                      % number of agents
+N=30;                      % number of agents
 D=2;                        % number of dimensions [2 or 3]
 
-LinkNumber=6*(D-1);         % number of links per agent in the lattice configuration (L)
+LinkNumber=4*(D-1);         % number of links per agent in the lattice configuration (L)
                             % If D=2 then 6=triangular lattice, 4=square lattice, 3=hexagonal lattice
                             % If D=3 then 6=cubic lattice, 12=thetradic-octaedric lattice
                             
@@ -31,37 +31,37 @@ smoothing = false;          % smooth temporal data with moving average
 %% Simulation parameters
 % All these fields are mandatory
 Simulation=struct();
-Simulation.Tmax =   2;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
-Simulation.deltaT = 0.05;   % sampling time step
+Simulation.Tmax =   20;     % maximum simulation time (simulation is stopped earlier if steady state is reached)
+Simulation.deltaT = 0.1;   % sampling time step
 Simulation.dT =     0.001;  % integration time step
 Simulation.arena =  [10,10];% size of the simulation window
 Simulation.drawON=false;    % draw swarm during simulation (if N is large slows down the simulation)
-Simulation.drawTraj=0;      % draw trajectories of the agents (if N is large slows down the simulation)
-Simulation.recordVideo=false; % record video of the simulation (if true drawON must be true)
+Simulation.drawTraj=20;      % draw trajectories of the agents (if N is large slows down the simulation)
+Simulation.recordVideo=true; % record video of the simulation (if true drawON must be true)
 Simulation.timeInstants = [0:Simulation.deltaT:Simulation.Tmax];
 
 %% Initial conditions
 % Initial positions
 delta=(Rmax-1) * 0.5;               % maximum displacement of the initial positions. delta<=(Rmax-1)/2 preserves all the links
-x0=randCircle(N, 5, D);             % initial conditions drawn from a uniform disc
+x0=randCircle(N, 10, D);             % initial conditions drawn from a uniform disc
 %x0 = normrnd(0,0.1*sqrt(N),N,D);    % initial conditions drawn from a normal distribution
 %x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D); % initial conditions on a correct lattice
 %x0 = perfectLactice(N, LinkNumber, D) + randCircle(N, delta, D); % initial conditions on a deformed lattice
 %x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D ) + randCircle(N, delta, D); % initial conditions on a deformed lattice
 
 % Initial velocities (only for SecondOrder, PersistentTurningWalker and LevyWalk)
-% avgSpeed0   = 2.5;
-% sigmaSpeed0 = 0.1;
-% speeds0 = abs(normrnd(avgSpeed0,sigmaSpeed0,N,1));
-% theta0 = 2*pi*rand(N,1)-pi;
-% v0 = speeds0 .* [cos(theta0), sin(theta0)];
-v0 = zeros(N,D);
+avgSpeed0   = 0.2;
+sigmaSpeed0 = 0.2;
+speeds0 = abs(normrnd(avgSpeed0,sigmaSpeed0,N,1));
+theta0 = 2*pi*rand(N,1)-pi;
+v0 = speeds0 .* [cos(theta0), sin(theta0)];
+% v0 = zeros(N,D);
 
 %% Dynamic model of the agents
 % These parameters are used in integrateAgents.
 
 Dynamics=struct('model','FirstOrder', 'sigma',0, 'vMax',inf);
-%Dynamics=struct('model','SecondOrder', 'sigma',0, 'vMax', inf);
+Dynamics=struct('model','SecondOrder', 'sigma',0, 'vMax', inf);
 %Dynamics=struct('model','PTW', 'avgSpeed',avgSpeed0, 'rateSpeed', 1, 'sigmaSpeed', sigmaSpeed0, 'rateOmega', 0.5, 'sigmaOmega', 3, 'omega', normrnd(0,0,N,1));
 % Dynamics=struct('model','PTWwithInput', ...
 %     'avgSpeed',avgSpeed0, 'rateSpeed', 1, 'sigmaSpeed', sigmaSpeed0, 'gainSpeed', -1, 'gainDerSpeed', -1,...
@@ -72,11 +72,11 @@ Dynamics=struct('model','FirstOrder', 'sigma',0, 'vMax',inf);
 %% Global interaction function for long distance interactions
 % These parameters are used in globalInteractionForce.
 
-GlobalIntFunction=struct('function','Lennard-Jones','parameters',[0.5, (D-1)*12], 'MaxSensingRadius', MaxSensingRadius, 'Gain', 1);
-%GlobalIntFunction=struct('function','PowerLaw-FiniteCutoff','parameters',[1, Rmax], 'MaxSensingRadius', MaxSensingRadius, 'Gain', 0.5);
+GlobalIntFunction=struct('function','Lennard-Jones','parameters',[0.5, (D-1)*12], 'MaxSensingRadius', MaxSensingRadius, 'Gain', 2);
+% GlobalIntFunction=struct('function','PowerLaw-FiniteCutoff','parameters',[1, Rmax], 'MaxSensingRadius', MaxSensingRadius, 'Gain', 0.5);
 %GlobalIntFunction=struct('function','Spears','parameters', [2 35]);  %from Spears2004
 %GlobalIntFunction=struct('function','Morse','parameters',[0.2, 2]);
-%GlobalIntFunction=struct('function','Modified-LJ','parameters',[]);  %from Torquato2009
+%GlobalIntFunction=struct('function','Modified-LJ','parameters',[]);  %from Torquato2009 for hexagonal lattice
 %GlobalIntFunction=struct('function','None');
 
 %% Local interaction function for short distance interactions
@@ -84,9 +84,9 @@ GlobalIntFunction=struct('function','Lennard-Jones','parameters',[0.5, (D-1)*12]
 % If LocalIntFunction has a 'DistanceRange' field it is used to compute and 
 % plot the links between the agents.
 
-%LocalIntFunction=struct('function','Linear', 'LinkNumber',LinkNumber, 'DistanceRange', [0.6, 1.1], 'Gain', 1);
-LocalIntFunction=struct('function','None', 'DistanceRange', [0, Rmax]);
-%LocalIntFunction=struct('function','None');
+% LocalIntFunction=struct('function','Linear', 'LinkNumber',LinkNumber, 'DistanceRange', [0.6, 1.1], 'Gain', 1);
+%LocalIntFunction=struct('function','None', 'DistanceRange', [0, Rmax]);
+LocalIntFunction=struct('function','None');
 
 % Set an optional rotation matrix to apply non-radial local forces.
 % Normal intercations can be used to form square lattices (only in 2D).
@@ -101,8 +101,8 @@ Environment = struct();
 % Environment.Inputs.Values = [0, 1, 1];
 
 % Spatial inputs
-Environment.Inputs.Points = {[-3:3], [-5:5]};
-Environment.Inputs.Values = linspace(-1,1,length(Environment.Inputs.Points{1}))' * ones(1,length(Environment.Inputs.Points{2}));
+% Environment.Inputs.Points = {[-3:3], [-5:5]};
+% Environment.Inputs.Values = linspace(-1,1,length(Environment.Inputs.Points{1}))' * ones(1,length(Environment.Inputs.Points{2}));
 
 
 %% Add subfolders to the Matlab path

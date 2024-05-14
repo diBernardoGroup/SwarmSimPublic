@@ -98,12 +98,12 @@ if outputDir
     while exist(fullfile(outputDir,[datestr(now, 'yyyy_mm_dd_'),Dynamics.model,'_',num2str(counter)]),'dir')
         counter=counter+1;
     end
-    path=fullfile(outputDir, [datestr(now, 'yyyy_mm_dd_'),Dynamics.model,'_',num2str(counter)]);
-    mkdir(path)
-    disp('Saving data in ' + string(path))
-    save(fullfile(path, 'data'))
+    output_path=fullfile(outputDir, [datestr(now, 'yyyy_mm_dd_'),Dynamics.model,'_',num2str(counter)]);
+    mkdir(output_path)
+    disp('Saving data in ' + string(output_path))
+    save(fullfile(output_path, 'data'))
     
-    fileID = fopen(fullfile(path, 'parameters.txt'),'wt');
+    fileID = fopen(fullfile(output_path, 'parameters.txt'),'wt');
     fprintf(fileID,'StabilityAnalysis\n\n');
     fprintf(fileID,'Date: %s\n',datestr(now, 'dd/mm/yy'));
     fprintf(fileID,'Time: %s\n\n',datestr(now, 'HH:MM'));
@@ -134,8 +134,8 @@ else
 end
 if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
 if outputDir
-    saveas(gcf, fullfile(path, 'trajectories'))
-    saveas(gcf, fullfile(path, 'trajectories'),'png')
+    saveas(gcf, fullfile(output_path, 'trajectories'))
+    saveas(gcf, fullfile(output_path, 'trajectories'),'png')
 end
 
 % figure % colored trajectories
@@ -171,8 +171,8 @@ end
 %     xlabel('$z$', 'Interpreter','latex','FontSize',22)    
 %     box
 %     if outputDir
-%     saveas(gcf,fullfile(path, 'radial_inter_func'))
-%     saveas(gcf,fullfile(path, 'radial_inter_func'),'png')
+%     saveas(gcf,fullfile(output_path, 'radial_inter_func'))
+%     saveas(gcf,fullfile(output_path, 'radial_inter_func'),'png')
 %     end
 % end
 % 
@@ -222,8 +222,8 @@ h=histogram(abs(omega(:)),'Orientation','horizontal');
 ylim(rng);
 set(gca,'xtick',[])
 if outputDir
-    saveas(gcf,fullfile(path, 'time_plot'))
-    saveas(gcf,fullfile(path, 'time_plot'),'png')
+    saveas(gcf,fullfile(output_path, 'time_plot'))
+    saveas(gcf,fullfile(output_path, 'time_plot'),'png')
 end
 
 % figure % SCATTER PLOT - SPEED and ANGULAR VELOCITY
@@ -237,8 +237,8 @@ end
 % s(1).Position(3) = 0.7;
 % s(1).Position(4) = 0.7;
 % if outputDir
-% saveas(gcf,fullfile(path, 'scatter_plot'))
-% saveas(gcf,fullfile(path, 'scatter_plot'),'png')
+% saveas(gcf,fullfile(output_path, 'scatter_plot'))
+% saveas(gcf,fullfile(output_path, 'scatter_plot'),'png')
 % end
 % 
 % figure % SCATTER PLOT - MEAN SPEED and ANGULAR VELOCITY
@@ -252,15 +252,15 @@ end
 % s(1).Position(3) = 0.7;
 % s(1).Position(4) = 0.7;
 % if outputDir
-% saveas(gcf,fullfile(path, 'scatter_plot_mean'))
-% saveas(gcf,fullfile(path, 'scatter_plot_mean'),'png')
+% saveas(gcf,fullfile(output_path, 'scatter_plot_mean'))
+% saveas(gcf,fullfile(output_path, 'scatter_plot_mean'),'png')
 % end
 
 % figure % CORRELETION PLOT - SPEED and ANGULAR VELOCITY
 % corrplot([speed(1:end-1,1),speed(2:end,1),omega(1:end-1,1),omega(2:end,1)],VarNames={"v_k", "v_{k+1}", "\omega_k", "\omega_{k+1}"})
 % if outputDir
-% saveas(gcf,fullfile(path, 'scatter_plot'))
-% saveas(gcf,fullfile(path, 'scatter_plot'),'png')
+% saveas(gcf,fullfile(output_path, 'scatter_plot'))
+% saveas(gcf,fullfile(output_path, 'scatter_plot'),'png')
 % end
  
 % figure % e_d_max
@@ -276,8 +276,8 @@ end
 % box
 % grid
 % if outputDir
-%     saveas(gcf,fullfile(path, 'e_d_max'))
-%     saveas(gcf,fullfile(path, 'e_d_max'),'png')
+%     saveas(gcf,fullfile(output_path, 'e_d_max'))
+%     saveas(gcf,fullfile(output_path, 'e_d_max'),'png')
 % end
 
 % figure % links
@@ -288,8 +288,8 @@ end
 % box
 % grid
 % if outputDir
-%     saveas(gcf,fullfile(path, 'links'))
-%     saveas(gcf,fullfile(path, 'links'),'png')
+%     saveas(gcf,fullfile(output_path, 'links'))
+%     saveas(gcf,fullfile(output_path, 'links'),'png')
 % end
 
 % figure % rigidity
@@ -303,8 +303,8 @@ end
 % box
 % grid
 % if outputDir
-%     saveas(gcf,fullfile(path, 'rigidity'))
-%     saveas(gcf,fullfile(path, 'rigidity'),'png')
+%     saveas(gcf,fullfile(output_path, 'rigidity'))
+%     saveas(gcf,fullfile(output_path, 'rigidity'),'png')
 % end
 
 % light distribution
@@ -329,4 +329,8 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     xlabel('Input intensity')
     ylabel('Number of agents')
     title('Final distribution')
+end
+
+if Simulation.recordVideo
+    copyfile('./Output/video.mp4',output_path)
 end

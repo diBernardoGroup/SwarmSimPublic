@@ -25,33 +25,18 @@ clear
 
 Ntimes=4;              % How many simulations are launched for each configuration
 
-D=2;                    % number of dimensions [2 or 3]
+defaultParamMicroorg;  % load default parameters
 
-defaultParam;           % load default parameters
-
-N=500;
-
-seed=-1;                 % seed for random generator, if negative it is not set
+seed=-1;               % seed for random generator, if negative it is not set
 
 %% Loads DOME experiment data
 experiments_folder = '/Volumes/DOMEPEN/Experiments';
 experiment = '/comparisons/Euglena_switch_10/combo5';
 
 id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % folder with identification data
-identification_file_name = 'identification_OLS_ds3.txt';
+identification_file_name = 'identification_OLS+GB_ds1_diff.txt';
 
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
-
-Simulation.arena = [1920,1080]; % size of the simulation window
-Simulation.deltaT = 0.5;        % sampling time step
-Simulation.dT = 0.01;           % integration time step
-Simulation.Tmax = 180;          % maximum simulation time
-timeInstants = [0:Simulation.deltaT:Simulation.Tmax];
-Simulation.drawON=false;        % draw swarm during simulation (if N is large slows down the simulation)
-Simulation.recordVideo=false;   % record video of the simulation (if true drawON must be true)
-
-brightness_thresh = 0.3;
-background_sub = true;
 
 %% variable parameters
 % One or multiple parameters can be modified at the same time.
@@ -59,7 +44,7 @@ background_sub = true;
 % The values specified here overwrite the default ones.
  
 parameters(1).name='identification_file_name';
-parameters(1).values=["identification_OLS_ds3.txt","identification_OLS_dscombo.txt","identification_OLS+GB_ds3.txt","identification_OLS+GB_ds1.txt"];
+parameters(1).values=["identification_OLS+GB_ds1_diff.txt","identification_OLS+GB_ds1_diff_median.txt"];
 
 %% Preallocate
 p=cartesianProduct({parameters.values});
@@ -164,9 +149,15 @@ for i_times=1:Nconfig
             end
             omega(length(timeInstants),:) = angleBetweenVectors(squeeze(vVec(length(timeInstants)-1,:,:)),squeeze(vVec(length(timeInstants),:,:)))';
             omega=omega/Simulation.deltaT;
-            NMSE_speed(i_times,k_times) = goodnessOfFit(median(speed,2,'omitnan'), median(speed_exp,2,'omitnan'), 'NMSE');
-            NMSE_omega(i_times,k_times) = goodnessOfFit(median(abs(omega(1:end-1,:)),2,'omitnan'), median(abs(omega_exp),2,'omitnan'), 'NMSE');
-            NMSE_total(i_times,k_times) = mean([NMSE_speed(i_times,k_times), NMSE_omega(i_times,k_times)]);
+            
+            overlap = min(size(omega,1),size(omega_exp,1));
+%             NMSE_speed(i_times,k_times) = goodnessOfFit(median(speed,2,'omitnan'), median(speed_exp,2,'omitnan'), 'NMSE');
+%             NMSE_omega(i_times,k_times) = goodnessOfFit(median(abs(omega(1:end-1,:)),2,'omitnan'), median(abs(omega_exp),2,'omitnan'), 'NMSE');
+%             NMSE_total(i_times,k_times) = mean([NMSE_speed(i_times,k_times), NMSE_omega(i_times,k_times)]);
+            
+            wmape_speed(i_times,k_times) = mape(median(speed(1:overlap,:),2,'omitnan'), median(speed_exp(1:overlap,:),2,'omitnan'),'wMAPE');
+            wmape_omega(i_times,k_times) = mape(median(abs(omega(1:overlap,:)),2,'omitnan'), median(abs(omega_exp(1:overlap,:)),2,'omitnan'),'wMAPE');
+            wmape_total(i_times,k_times) = mean([wmape_speed(i_times,k_times), wmape_omega(i_times,k_times)]);
         end
     end
     fprintf('Elapsed time is %.2f s.\n\n',toc)
@@ -191,10 +182,9 @@ end
 %% Plots
 
 metrics_of_interest = {norm_slope};
-metrics_of_interest = {NMSE_speed, NMSE_omega, NMSE_total};
-combine_metrics = true;
+metrics_of_interest = {wmape_speed, wmape_omega, wmape_total};
 metrics_color = ['b','r','k'];
-metrics_tags = ["NMSE_v", "NMSE_\omega", "NMSE_{tot}"];
+metrics_tags = ["wMAPE_v", "wMAPE_\omega", "wMAPE_{tot}"];
 
 % create folder, save data and parameters
 if outputDir

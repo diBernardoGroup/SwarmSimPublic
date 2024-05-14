@@ -18,8 +18,11 @@ outputDir='';
 
 N=500;                      % number of agents (N)
 D=2;                        % number of dimensions [2 or 3]
-                            
+
+%% Analysis options
 smoothing = false;          % smooth temporal data with moving average
+brightness_thresh = 0.3;
+background_sub = true;
 
 %% Simulation parameters
 % All these fields are mandatory
