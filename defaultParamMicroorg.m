@@ -16,7 +16,7 @@ outputDir='./Output';
 %outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 outputDir='';
 
-N=500;                      % number of agents (N)
+N=250;                      % number of agents (N)
 D=2;                        % number of dimensions [2 or 3]
 
 %% Analysis options
@@ -27,27 +27,27 @@ background_sub = true;
 %% Simulation parameters
 % All these fields are mandatory
 Simulation=struct();
-Simulation.Tmax = 180;          % maximum simulation time
+Simulation.Tmax = 50;          % maximum simulation time
 Simulation.deltaT = 0.5;        % sampling time step
 Simulation.dT =     0.01;       % integration time step
 Simulation.arena = [1920,1080]; % size of the simulation window
 Simulation.drawON=false;        % draw swarm during simulation (if N is large slows down the simulation)
-Simulation.drawTraj=0;          % draw trajectories of the agents (if N is large slows down the simulation)
+Simulation.drawTraj=5;          % draw trajectories of the agents (if N is large slows down the simulation)
 Simulation.recordVideo=false;   % record video of the simulation (if true drawON must be true)
 Simulation.timeInstants = [0:Simulation.deltaT:Simulation.Tmax];
 
 %% Initial conditions
 % Initial positions
 delta=1;               % maximum displacement of the initial positions. delta<=(Rmax-1)/2 preserves all the links
-x0=randCircle(N, 5, D);             % initial conditions drawn from a uniform disc
+x0=randCircle(N, 1500, D);             % initial conditions drawn from a uniform disc
 %x0 = normrnd(0,0.1*sqrt(N),N,D);    % initial conditions drawn from a normal distribution
 %x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D); % initial conditions on a correct lattice
 %x0 = perfectLactice(N, LinkNumber, D) + randCircle(N, delta, D); % initial conditions on a deformed lattice
 %x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D ) + randCircle(N, delta, D); % initial conditions on a deformed lattice
 
 % Initial velocities (only for SecondOrder, PersistentTurningWalker and LevyWalk)
-avgSpeed0   = 2.5;
-sigmaSpeed0 = 0.1;
+avgSpeed0   = 50;
+sigmaSpeed0 = 10;
 speeds0 = abs(normrnd(avgSpeed0,sigmaSpeed0,N,1));
 theta0 = 2*pi*rand(N,1)-pi;
 v0 = speeds0 .* [cos(theta0), sin(theta0)];
@@ -60,8 +60,8 @@ v0 = speeds0 .* [cos(theta0), sin(theta0)];
 %Dynamics=struct('model','SecondOrder', 'sigma',0, 'vMax', inf);
 %Dynamics=struct('model','PTW', 'avgSpeed',avgSpeed0, 'rateSpeed', 1, 'sigmaSpeed', sigmaSpeed0, 'rateOmega', 0.5, 'sigmaOmega', 3, 'omega', normrnd(0,0,N,1));
 Dynamics=struct('model','PTWwithInput', ...
-    'avgSpeed',avgSpeed0, 'rateSpeed', 1, 'sigmaSpeed', sigmaSpeed0, 'gainSpeed', -1, 'gainDerSpeed', -1,...
-    'rateOmega', 1, 'sigmaOmega', 0, 'gainOmega', 1, 'gainDerOmega', 1,...
+    'avgSpeed',avgSpeed0, 'rateSpeed', 1, 'sigmaSpeed', sigmaSpeed0, 'gainSpeed', -10, 'gainDerSpeed', -10,...
+    'rateOmega', 1, 'sigmaOmega', 1, 'gainOmega', 1, 'gainDerOmega', 1,...
     'omega', normrnd(0,1,N,1), 'oldInput', zeros(N,1));
 %Dynamics=struct('model','PTWcoupled', 'avgSpeed', avgSpeed0, 'rateSpeed', 1, 'sigmaSpeed', 1, 'rateOmega', 1, 'sigmaOmega', @(x)2*max(1-x/3,0), 'omega', zeros(N,1));
 %Dynamics=struct('model','LevyWalk', 'alpha',0.005, 'sigma', 0);
@@ -91,7 +91,7 @@ LocalIntFunction=struct('function','None');
 
 %% Simulation Environment
 Environment = struct();
-Environment.Inputs.InterpMethod = 'previous';
+% Environment.Inputs.InterpMethod = 'previous';
 % Environment.Inputs.InterpMethod = 'linear';
 % Environment.Inputs.Times  = 'None'; 
 % Environment.Inputs.Values = 'None'; 

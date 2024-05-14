@@ -31,9 +31,9 @@ arguments
     RMin        double {mustBeNonnegative}
     RMax        double {mustBeNonnegative}
     windowSize  double {mustBePositive}     = 10
-    tickStep    double {mustBePositive}     = windowSize/2
+    tickStep    double                      = windowSize/2
     showGrid    logical                     = false
-    gradColor   logical                     = true
+    gradColor   logical                     = false
     thenDelete  logical                     = false
 end
     %figure
@@ -42,12 +42,17 @@ end
         windowSize = [windowSize, windowSize];
     end
     
+    if length(tickStep)==1
+        tickStep = [tickStep, tickStep];
+    end
+    
     axis('equal',[-windowSize(1)/2 windowSize(1)/2 -windowSize(2)/2 windowSize(2)/2])
-    yticks([-windowSize(2)/2:tickStep:windowSize(2)/2])
-    xticks([-windowSize(1)/2:tickStep:windowSize(1)/2])
+    xticks([-windowSize(1)/2:tickStep(1):windowSize(1)/2])
+    yticks([-windowSize(2)/2:tickStep(2):windowSize(2)/2])
     xticklabels('')
     yticklabels('')
     zticklabels('')
+    box on
     set(gca,'FontSize',14)
     set(gcf,'Position',[100 100 500 500])
     hold on

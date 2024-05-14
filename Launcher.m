@@ -16,10 +16,9 @@ clear
 
 %rng(1,'twister'); % set the randomn seed to have reproducible results
 defaultParam;               % load default parameters and create initial conditions
+% defaultParamMicroorg;
 
 Simulation.drawON=true;     % draw swarm during simulation (if N is large slows down the simulation)
-delta=0.2;
-
 
 %% Run Simulation
 [xVec, uVec, vVec] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction, Environment);
@@ -71,21 +70,21 @@ omega_ce=omega_ce/Simulation.deltaT;
 
 omega = omega_be;
 
-% metrics
-for i=1:length(Simulation.timeInstants) % for each time instant...
-    x=squeeze(xVec(i,:,:));
-    
-    e_d(i) = getAvgLinkLengthError(x, 1, 0, Rmax);          % avg distance from the deisred link length
-    e_d_max(i) = getMaxLinkLengthError(x, 1, 0, Rmax);      % max distance from the deisred link length.
-                                                            % e_d_max<=(Rmax-1)preserves all the links.
-                                                            % e_d_max(0)<= 2*delta
-    
-    B = buildIncidenceMatrix(x, Rmax);                      % incidence matrix
-    links(i)=size(B,2);                                     % number of links of the swarm
-    M = buildRigidityMatrix(x, B);                          % rigidity matrix
-    
-    rigidity(i) = rank(M)==D*N-D*(D+1)/2;                   % check infinitesimal rigidity
-end
+% % metrics
+% for i=1:length(Simulation.timeInstants) % for each time instant...
+%     x=squeeze(xVec(i,:,:));
+%     
+%     e_d(i) = getAvgLinkLengthError(x, 1, 0, Rmax);          % avg distance from the deisred link length
+%     e_d_max(i) = getMaxLinkLengthError(x, 1, 0, Rmax);      % max distance from the deisred link length.
+%                                                             % e_d_max<=(Rmax-1)preserves all the links.
+%                                                             % e_d_max(0)<= 2*delta
+%     
+%     B = buildIncidenceMatrix(x, Rmax);                      % incidence matrix
+%     links(i)=size(B,2);                                     % number of links of the swarm
+%     M = buildRigidityMatrix(x, B);                          % rigidity matrix
+%     
+%     rigidity(i) = rank(M)==D*N-D*(D+1)/2;                   % check infinitesimal rigidity
+% end
 
 %% PLOTS
 xFinal_inWindow = squeeze(xVec(end,(xVec(end,:,1)>-Simulation.arena(1)/2 & xVec(end,:,1)<Simulation.arena(1)/2 ...
@@ -195,8 +194,8 @@ end
 figure % TIME PLOT - SPEED and ANGULAR VELOCITY
 subplot(2,4,[1 2 3])
 plotWithShade(Simulation.timeInstants, median(speed,2), min(speed, [], 2), max(speed, [], 2), 'b', 0.3);
-if isfield(Environment,'EnvUniform')
-    highlightInputs(Environment.EnvUniform.Times, Environment.EnvUniform.Values, 'r', 0.25)
+if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Times')
+    highlightInputs(Environment.Inputs.Times, Environment.Inputs.Values, 'r', 0.25)
 end
 xlabel('t [s]')
 ylabel('speed')
@@ -209,8 +208,8 @@ set(gca,'xtick',[])
 subplot(2,4,[5 6 7])
 plotWithShade(Simulation.timeInstants, median(abs(omega),2), min(abs(omega), [], 2), max(abs(omega), [], 2), 'b', 0.3);
 %plotWithShade(Simulation.timeInstants, median(omega,2), min(omega, [], 2), max(omega, [], 2), 'b', 0.3);
-if isfield(Environment,'EnvUniform')
-    highlightInputs(Environment.EnvUniform.Times, Environment.EnvUniform.Values, 'r', 0.25)
+if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Times')
+    highlightInputs(Environment.Inputs.Times, Environment.Inputs.Values, 'r', 0.25)
 end
 xlabel('t [s]')
 ylabel('ang. vel. [rad/s]')
