@@ -91,11 +91,17 @@ experiments_names = ["comparisons/Euglena_OFF/combo", "2023_06_15_Euglena_1", "2
 output_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Euglena input/Scenario intensity';
 
 
-% % compare identifications
-% tags = [ "oldexp_oldsim_oldid", "newexp_newsim_oldid", "newid_BE_BE_ds1", "newid_BE_BE_ds2", "newid_BE_BE_ds3", "newid_BE_grad_ds1", "newid_BE_delgrad_ds1"];
-% sim_names = ["2024_04_17_switch_10_2", "2024_05_08_switch_10_4", "2024_05_08_switch_10_6", "2024_05_08_switch_10_8", "2024_05_08_switch_10_9", "2024_05_08_switch_10_5", "2024_05_09_switch_10_8"];
-% experiments_names = ["comparisons/Euglena_switch_10/combo5_old";"comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"];
-% output_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';
+% compare identifications
+tags = [ "oldexp_oldsim_oldid", "newexp_newsim_oldid", "newid_BE_BE_ds1", "newid_BE_BE_ds2", "newid_BE_BE_ds3", "newid_BE_grad_ds1", "newid_BE_delgrad_ds1", "newid_BE_noalpha"];
+sim_names = ["2024_04_17_switch_10_2", "2024_05_08_switch_10_4", "2024_05_08_switch_10_6", "2024_05_08_switch_10_8", "2024_05_08_switch_10_9", "2024_05_08_switch_10_5", "2024_05_13_switch_10_1", "2024_05_13_switch_10_2"];
+experiments_names = ["comparisons/Euglena_switch_10/combo5_old";"comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"];
+output_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';
+
+% compare identifications
+tags = [ "oldexp_oldsim_oldid", "newexp_newsim_oldid", "newid_BE_BE_ds1", "newid_BE_grad_ds1", "newid_BE_delgrad_ds1", "newid_BE_noalpha", "newid_BE_median"];
+sim_names = ["2024_04_17_switch_10_2", "2024_05_08_switch_10_4", "2024_05_08_switch_10_6", "2024_05_08_switch_10_5", "2024_05_13_switch_10_1", "2024_05_13_switch_10_2", "2024_05_13_switch_10_3"];
+experiments_names = ["comparisons/Euglena_switch_10/combo5_old"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"];
+output_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';
 
 deltaT = 0.5;
 timeInstants = [0:deltaT:180];
@@ -159,74 +165,74 @@ metrics_of_interest = {wmape_speed, wmape_omega, wmape_total}; metrics_tags = ["
 % metrics_of_interest = {nmse_total, mape_total, wmape_total}; metrics_tags = ["nmse_{tot}", "mape_{tot}", "wmape_{tot}"];
 metrics_color = ['b','r','k'];
 
-% Single experiment plots
-for i = 1:size(experiments_names,1)  % for each experiment
-    
-    fileID = fopen(fullfile(simulations_folder, sim_names(i), 'multi_exp_comparison.txt'),'wt');
-    fprintf(fileID,'DOME multi experiment comparison\n\n');
-    fprintf(fileID,'Date: %s\n',datestr(now, 'dd/mm/yy'));
-    fprintf(fileID,'Time: %s\n\n',datestr(now, 'HH:MM'));
-    fprintf(fileID,'Experiment\t\tNMSE speed\tNMSE omega\tNMSE tot\n');
-    for j=1:size(experiments_names,2)
-        fprintf(fileID,'%s\t',experiments_names(i,j));
-        fprintf(fileID,'%.2f\t\t%.2f\t\t%.2f\n',nmse_speed(i,j),nmse_omega(i,j),nmse_total(i,j));
-    end
-    fclose(fileID);
-    
-    figure %time plot
-    subplot(2,1,1)
-    hold on
-    ylim([0,100])
-    highlightInputs(timeInstants, u{i}, 'r', 0.25)
-    for j=2:size(experiments_names,2)
-        plot(timeInstants, median(speeds{i,j},2,'omitnan'),'b', color=[0.5,0.5,1]);
-    end
-    l1=plot(timeInstants, median(speeds{i,1},2,'omitnan'),'b',LineWidth=2);
-    l2=plot(timeInstants, median(speed_sim{i},2,'omitnan'),'k',LineWidth=2);
-    xlim([0,max(timeInstants)])
-    xlabel('$t$ [s]','Interpreter','Latex','FontSize',16)
-    ylabel('$v$ [px/s]','Interpreter','Latex','FontSize',16)
-    legend([l1,l2],'REAL','SIMULATED')
-    box on
-    subplot(2,1,2)
-    hold on
-    ylim([0,1.5])
-    highlightInputs(timeInstants, u{i}, 'r', 0.25)
-    for j=2:size(experiments_names,2)
-        plot(timeInstants, median(abs(omegas{i,j}),2,'omitnan'),'b', color=[0.5,0.5,1]);
-    end
-    l1=plot(timeInstants, median(abs(omegas{i,1}),2,'omitnan'),'b',LineWidth=2);
-    l2=plot(timeInstants, median(abs(omega_sim{i}),2,'omitnan'),'k',LineWidth=2);
-    xlabel('$t$ [s]','Interpreter','Latex','FontSize',16)
-    ylabel('$|\omega|$ [rad/s]','Interpreter','Latex','FontSize',16)
-    legend([l1,l2],'REAL','SIMULATED')
-    box on
-    saveas(gcf,fullfile(simulations_folder,sim_names(i), 'multi_exp_comparison_time_plot'))
-    saveas(gcf,fullfile(simulations_folder,sim_names(i), 'multi_exp_comparison_time_plot'),'png')
-    
-    
-    figure % NMSE scatter single exp
-    hold on
-    for k=1:length(metrics_of_interest)
-        plots(k,:)=scatter(1-(length(metrics_of_interest)-1)*0.1+(k-1)*0.2,metrics_of_interest{k}(i,:),50,metrics_color(k));
-        scatter(1-(length(metrics_of_interest)-1)*0.1+(k-1)*0.2,metrics_of_interest{k}(i,1),50,metrics_color(k),"filled");
-    end
-    xticks([1])
-    xticklabels(tags(i))
-    set(gca, 'TickLabelInterpreter', 'none');
-    xlim([0,1+1])
-    all_metrics = [metrics_of_interest{:}];
-    ylim([0, max(all_metrics(i,:),[],'all')*1.1])
-    legend(plots(:,1),metrics_tags)
-    set(gca,'FontSize',14)
-    box on
-    set(gca,'XGrid','off','YGrid','on')
-    saveas(gcf,fullfile(fullfile(simulations_folder,sim_names(i)), 'multi_exp_comparison_NMSE'))
-    saveas(gcf,fullfile(fullfile(simulations_folder,sim_names(i)), 'multi_exp_comparison_NMSE'),'png')
-    
-end
+% % Single experiment plots
+% for i = 1:size(experiments_names,1)  % for each experiment
+%     
+%     fileID = fopen(fullfile(simulations_folder, sim_names(i), 'multi_exp_comparison.txt'),'wt');
+%     fprintf(fileID,'DOME multi experiment comparison\n\n');
+%     fprintf(fileID,'Date: %s\n',datestr(now, 'dd/mm/yy'));
+%     fprintf(fileID,'Time: %s\n\n',datestr(now, 'HH:MM'));
+%     fprintf(fileID,'Experiment\t\tNMSE speed\tNMSE omega\tNMSE tot\n');
+%     for j=1:size(experiments_names,2)
+%         fprintf(fileID,'%s\t',experiments_names(i,j));
+%         fprintf(fileID,'%.2f\t\t%.2f\t\t%.2f\n',nmse_speed(i,j),nmse_omega(i,j),nmse_total(i,j));
+%     end
+%     fclose(fileID);
+%     
+%     figure %time plot
+%     subplot(2,1,1)
+%     hold on
+%     ylim([0,100])
+%     highlightInputs(timeInstants, u{i}, 'r', 0.25)
+%     for j=2:size(experiments_names,2)
+%         plot(timeInstants, median(speeds{i,j},2,'omitnan'),'b', color=[0.5,0.5,1]);
+%     end
+%     l1=plot(timeInstants, median(speeds{i,1},2,'omitnan'),'b',LineWidth=2);
+%     l2=plot(timeInstants, median(speed_sim{i},2,'omitnan'),'k',LineWidth=2);
+%     xlim([0,max(timeInstants)])
+%     xlabel('$t$ [s]','Interpreter','Latex','FontSize',16)
+%     ylabel('$v$ [px/s]','Interpreter','Latex','FontSize',16)
+%     legend([l1,l2],'REAL','SIMULATED')
+%     box on
+%     subplot(2,1,2)
+%     hold on
+%     ylim([0,1.5])
+%     highlightInputs(timeInstants, u{i}, 'r', 0.25)
+%     for j=2:size(experiments_names,2)
+%         plot(timeInstants, median(abs(omegas{i,j}),2,'omitnan'),'b', color=[0.5,0.5,1]);
+%     end
+%     l1=plot(timeInstants, median(abs(omegas{i,1}),2,'omitnan'),'b',LineWidth=2);
+%     l2=plot(timeInstants, median(abs(omega_sim{i}),2,'omitnan'),'k',LineWidth=2);
+%     xlabel('$t$ [s]','Interpreter','Latex','FontSize',16)
+%     ylabel('$|\omega|$ [rad/s]','Interpreter','Latex','FontSize',16)
+%     legend([l1,l2],'REAL','SIMULATED')
+%     box on
+%     saveas(gcf,fullfile(simulations_folder,sim_names(i), 'multi_exp_comparison_time_plot'))
+%     saveas(gcf,fullfile(simulations_folder,sim_names(i), 'multi_exp_comparison_time_plot'),'png')
+%     
+%     
+%     figure % NMSE scatter single exp
+%     hold on
+%     for k=1:length(metrics_of_interest)
+%         plots(k,:)=scatter(1-(length(metrics_of_interest)-1)*0.1+(k-1)*0.2,metrics_of_interest{k}(i,:),50,metrics_color(k));
+%         scatter(1-(length(metrics_of_interest)-1)*0.1+(k-1)*0.2,metrics_of_interest{k}(i,1),50,metrics_color(k),"filled");
+%     end
+%     xticks([1])
+%     xticklabels(tags(i))
+%     set(gca, 'TickLabelInterpreter', 'none');
+%     xlim([0,1+1])
+%     all_metrics = [metrics_of_interest{:}];
+%     ylim([0, max(all_metrics(i,:),[],'all')*1.1])
+%     legend(plots(:,1),metrics_tags)
+%     set(gca,'FontSize',14)
+%     box on
+%     set(gca,'XGrid','off','YGrid','on')
+%     saveas(gcf,fullfile(fullfile(simulations_folder,sim_names(i)), 'multi_exp_comparison_NMSE'))
+%     saveas(gcf,fullfile(fullfile(simulations_folder,sim_names(i)), 'multi_exp_comparison_NMSE'),'png')
+%     
+% end
 
-if size(experiments_names,1) > 1
+if size(experiments_names,1) > 1 % multi-exp comparison
     main_fig = figure('Position',[100 100 1900 600]);
     for i = 1:size(experiments_names,1)  % for each experiment
         subplot(3,size(experiments_names,1),i)

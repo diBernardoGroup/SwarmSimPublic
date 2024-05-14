@@ -7,7 +7,7 @@ data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_1
 data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5'; % switch10s combo
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
 
-identification_file_name = 'identification_OLS+GB_ds1_diff_noalpha.txt';
+identification_file_name = 'identification_OLS+GB_ds1_diff_median.txt';
 identification_method = 'OLS+GB';
 downSampling = 1;
 
@@ -27,8 +27,8 @@ omega  = load(fullfile(data_folder,'ang_vel_smooth.txt'));
 
 % speed = movmean(speed,5,'omitnan');
 % omega = movmean(omega,5,'omitnan');
-% speed = median(speed,2,'omitnan');
-% omega = median(abs(omega),2,'omitnan');
+speed = median(speed,2,'omitnan');
+omega = median(abs(omega),2,'omitnan');
 
 inputs = load(fullfile(data_folder,'inputs.txt'));
 

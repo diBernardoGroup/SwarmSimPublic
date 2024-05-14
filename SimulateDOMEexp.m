@@ -34,7 +34,7 @@ tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena
 id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % folder with identification data
 %id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5_old';  % folder with identification data
 identification_file_name = 'identification_OLS+GB_ds1_diff.txt';
-identification_file_name = 'identification_OLS+GB_ds1_diff_selected.txt';
+identification_file_name = 'identification_OLS+GB_ds1_diff_median.txt';
 
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 
