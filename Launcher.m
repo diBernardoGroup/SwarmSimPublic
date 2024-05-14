@@ -14,40 +14,20 @@ clear
 
 %% Parameters
 
-defaultParam;               % load default parameters
+%rng(1,'twister'); % set the randomn seed to have reproducible results
+defaultParam;               % load default parameters and create initial conditions
 
 Simulation.drawON=true;     % draw swarm during simulation (if N is large slows down the simulation)
 delta=0.2;
 
-Environment.Inputs.Times  = [0, 5, 10]; 
-Environment.Inputs.Values = [0, 1, 1];
-% Environment.Inputs.Points = {[-3:3], [-5:5]};
-% Environment.Inputs.Values = linspace(-1,1,length(Environment.Inputs.Points{1}))' * ones(1,length(Environment.Inputs.Points{2}));
-Environment.Inputs.InterpMethod = 'previous';
-
-%% Create Initial Conditions
-%rng(1,'twister'); % set the randomn seed to have reproducible results
-
-x0=randCircle(N, 5, D);                 % initial conditions drawn from a uniform disc
-%x0 = normrnd(0,0.1*sqrt(N),N,D);    % initial conditions drawn from a normal distribution
-%x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D); % initial conditions on a correct lattice
-%x0 = perfectLactice(N, LinkNumber, D) + randCircle(N, delta, D); % initial conditions on a deformed lattice
-%x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D ) + randCircle(N, delta, D); % initial conditions on a deformed lattice
-
-speeds0 = abs(normrnd(avgSpeed0,sigmaSpeed0,N,1));
-theta0 = 2*pi*rand(N,1)-pi;
-v0 = speeds0 .* [cos(theta0), sin(theta0)];
-%v0 = zeros(size(x0));
 
 %% Run Simulation
 [xVec, uVec, vVec] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction, Environment);
 
 %% Analysis
-% if smoothing
-%     xVec = movmean(xVec,3);
-% end
-
-timeInstants = 0:Simulation.deltaT:Simulation.Tmax;
+if smoothing
+    xVec = movmean(xVec,3);
+end
 
 % derivate quantities
 [~, vVec_grad] = gradient(xVec, 1, Simulation.deltaT, 1);
@@ -59,40 +39,40 @@ speed_be = vecnorm(vVec_be,2,3);
 speed = speed_be;
 
 theta = atan2(vVec_grad(:,:,2), vVec_grad(:,:,1));
-for i=1:length(timeInstants)-1
+for i=1:length(Simulation.timeInstants)-1
     % angular velocity
     omega_grad(i,:) = angleBetweenVectors(squeeze(vVec_grad(i,:,:)),squeeze(vVec_grad(i+1,:,:)))';
 end
-omega_grad(length(timeInstants),:) = angleBetweenVectors(squeeze(vVec_grad(length(timeInstants)-1,:,:)),squeeze(vVec_grad(length(timeInstants),:,:)))';
+omega_grad(length(Simulation.timeInstants),:) = angleBetweenVectors(squeeze(vVec_grad(length(Simulation.timeInstants)-1,:,:)),squeeze(vVec_grad(length(Simulation.timeInstants),:,:)))';
 omega_grad=omega_grad/Simulation.deltaT;
 
-for i=1:length(timeInstants)-1
+for i=1:length(Simulation.timeInstants)-1
     % angular velocity
     omega_fe(i,:) = angleBetweenVectors(squeeze(vVec_fe(i,:,:)),squeeze(vVec_fe(i+1,:,:)))';
 end
-omega_fe(length(timeInstants),:) = angleBetweenVectors(squeeze(vVec_fe(length(timeInstants)-1,:,:)),squeeze(vVec_fe(length(timeInstants),:,:)))';
+omega_fe(length(Simulation.timeInstants),:) = angleBetweenVectors(squeeze(vVec_fe(length(Simulation.timeInstants)-1,:,:)),squeeze(vVec_fe(length(Simulation.timeInstants),:,:)))';
 omega_fe=omega_fe/Simulation.deltaT;
 
 omega_be(1,:) = angleBetweenVectors(squeeze(xVec(2,:,:)-xVec(1,:,:)),squeeze(xVec(3,:,:)-xVec(2,:,:)))';
 omega_be(2,:) = angleBetweenVectors(squeeze(xVec(2,:,:)-xVec(1,:,:)),squeeze(xVec(3,:,:)-xVec(2,:,:)))';
-for i=3:length(timeInstants)
+for i=3:length(Simulation.timeInstants)
     % angular velocity
     omega_be(i,:) = angleBetweenVectors(squeeze(vVec_be(i-1,:,:)),squeeze(vVec_be(i,:,:)))';
 end
 omega_be=omega_be/Simulation.deltaT;
 
 omega_ce(1,:) = angleBetweenVectors(squeeze(xVec(2,:,:)-xVec(1,:,:)),squeeze(xVec(3,:,:)-xVec(2,:,:)))';
-for i=2:length(timeInstants)-1
+for i=2:length(Simulation.timeInstants)-1
     % angular velocity
     omega_ce(i,:) = angleBetweenVectors(squeeze(xVec(i,:,:)-xVec(i-1,:,:)),squeeze(xVec(i+1,:,:)-xVec(i,:,:)))';
 end
-omega_ce(length(timeInstants),:) = angleBetweenVectors(squeeze(xVec(end-1,:,:)-xVec(end-2,:,:)),squeeze(xVec(end,:,:)-xVec(end-1,:,:)))';
+omega_ce(length(Simulation.timeInstants),:) = angleBetweenVectors(squeeze(xVec(end-1,:,:)-xVec(end-2,:,:)),squeeze(xVec(end,:,:)-xVec(end-1,:,:)))';
 omega_ce=omega_ce/Simulation.deltaT;
 
 omega = omega_be;
 
 % metrics
-for i=1:length(timeInstants) % for each time instant...
+for i=1:length(Simulation.timeInstants) % for each time instant...
     x=squeeze(xVec(i,:,:));
     
     e_d(i) = getAvgLinkLengthError(x, 1, 0, Rmax);          % avg distance from the deisred link length
@@ -214,7 +194,7 @@ end
 
 figure % TIME PLOT - SPEED and ANGULAR VELOCITY
 subplot(2,4,[1 2 3])
-plotWithShade(timeInstants, median(speed,2), min(speed, [], 2), max(speed, [], 2), 'b', 0.3);
+plotWithShade(Simulation.timeInstants, median(speed,2), min(speed, [], 2), max(speed, [], 2), 'b', 0.3);
 if isfield(Environment,'EnvUniform')
     highlightInputs(Environment.EnvUniform.Times, Environment.EnvUniform.Values, 'r', 0.25)
 end
@@ -227,8 +207,8 @@ h=histogram(speed(:),'Orientation','horizontal');
 ylim(rng);
 set(gca,'xtick',[])
 subplot(2,4,[5 6 7])
-plotWithShade(timeInstants, median(abs(omega),2), min(abs(omega), [], 2), max(abs(omega), [], 2), 'b', 0.3);
-%plotWithShade(timeInstants, median(omega,2), min(omega, [], 2), max(omega, [], 2), 'b', 0.3);
+plotWithShade(Simulation.timeInstants, median(abs(omega),2), min(abs(omega), [], 2), max(abs(omega), [], 2), 'b', 0.3);
+%plotWithShade(Simulation.timeInstants, median(omega,2), min(omega, [], 2), max(omega, [], 2), 'b', 0.3);
 if isfield(Environment,'EnvUniform')
     highlightInputs(Environment.EnvUniform.Times, Environment.EnvUniform.Values, 'r', 0.25)
 end
@@ -288,7 +268,7 @@ end
 % set(0, 'DefaultFigureRenderer', 'painters');
 % set(gcf,'Position',[100 100 560 420*0.6])
 % hold on
-% line=plot(timeInstants, e_d_max, 'b');
+% line=plot(Simulation.timeInstants, e_d_max, 'b');
 % yline(Rmax-1,'--','LineWidth',2)
 % yticks(sort([0:0.1:1, Rmax-1]))
 % ylabel('$e$', 'Interpreter','latex','FontSize',22, 'rotation',0,'VerticalAlignment','middle')
@@ -301,7 +281,7 @@ end
 % end
 
 % figure % links
-% plot(timeInstants,links)
+% plot(Simulation.timeInstants,links)
 % title('links', 'Interpreter','latex','FontSize',22)
 % xlabel('t', 'Interpreter','latex','FontSize',22)
 % set(gca,'FontSize',14)
@@ -316,7 +296,7 @@ end
 % set(gca,'FontSize',14)
 % set(gcf,'Position',[100 100 560 420*0.6])
 % hold on
-% plot(timeInstants,rigidity,'r')
+% plot(Simulation.timeInstants,rigidity,'r')
 % axis([-inf inf -0.05 1.05])
 % title('$\rho$', 'Interpreter','latex','FontSize',22)
 % xlabel('t', 'Interpreter','latex','FontSize',22)

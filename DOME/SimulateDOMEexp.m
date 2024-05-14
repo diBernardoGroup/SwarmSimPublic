@@ -1,11 +1,10 @@
 %
-%Launcher Set the parameters and launch a single simulation of the swarm.
-%   Also robustness tests can be run, see AgentsRemoval, NoiseTest and dynamicLattice
+%SimulateDOMEexp Set the parameters and launch a simulation of the swarm.
 %
-%   See also: MultiLauncher, SequentialLauncher
+%   See also: Launcher
 %
-%   Authors:    Andrea Giusti and Gian Carlo Maffettone
-%   Date:       2022
+%   Authors:    Andrea Giusti
+%   Date:       2024
 %
 
 %% Clear environment
@@ -14,11 +13,7 @@ clear
 
 %% Parameters
 
-D=2;                        % number of dimensions [2 or 3]
-
-defaultParam;               % load default parameters
-
-N=500;
+defaultParamMicroorg;               % load default parameters yo simulate microorganisms
 
 % tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_15/tracking_2023_10_12';  % switch10s
 % tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo3';  % switch10s combo
@@ -43,23 +38,18 @@ brightness_thresh = 0.3;
 background_sub = true;
 
 %% Loads experiment data
-Simulation.arena = [1920,1080]; % size of the simulation window
-Simulation.deltaT = 0.5;        % sampling time step
-Simulation.dT =     0.01;       % integration time step
-Simulation.Tmax = 180;          % maximum simulation time
-timeInstants = [0:Simulation.deltaT:Simulation.Tmax];
 
 % load identification data and instantiate simulated agents
 identification=readtable(fullfile(id_folder,identification_file_name));
 ids=randsample(length(identification.agents),N, true, ones(length(identification.agents),1));
 agents = identification(ids,:); 
-Dynamics=struct('model','IndependentSDEsWithInput', ...
+Dynamics=struct('model','PTWwithInput', ...
     'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s, 'gainSpeed', agents.alpha_s, 'gainDerSpeed', agents.beta_s,...
     'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', agents.alpha_w, 'gainDerOmega', agents.beta_w,...
     'omega', normrnd(0,agents.std_w,N,1), 'oldInput', zeros(N,1));
 
 % % parameters for strong photodispersion
-% Dynamics=struct('model','IndependentSDEsWithInput', ...
+% Dynamics=struct('model','PTWwithInput', ...
 %     'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s, 'gainSpeed', 0, 'gainDerSpeed', -50,...
 %     'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', 0, 'gainDerOmega', 5,...
 %     'omega', normrnd(0,agents.std_w,N,1), 'oldInput', zeros(N,1));
@@ -68,7 +58,7 @@ Dynamics=struct('model','IndependentSDEsWithInput', ...
 if isfile(fullfile(data_folder,'inputs.txt'))   % time varying inputs
     inputs=load(fullfile(data_folder,'inputs.txt'));
     u=inputs(:,1)/255;              %select blue channel and scale in [0,1]
-    Environment.Inputs.Times  = timeInstants;
+    Environment.Inputs.Times  = Simulation.timeInstants;
     Environment.Inputs.Values = u;
 else                                            % spatial inputs
     [mask, u]= analyseDOMEspatial(fileparts(data_folder), background_sub, brightness_thresh);
@@ -95,8 +85,6 @@ if smoothing
     %xVec = movmean(xVec,3);
 end
 
-timeInstants = 0:Simulation.deltaT:Simulation.Tmax;
-
 % derivate quantities
 [~, vVec_grad] = gradient(xVec, 1, Simulation.deltaT, 1);
 vVec_fe = [diff(xVec); xVec(end,:,:)-xVec(end-1,:,:)]/Simulation.deltaT;
@@ -108,33 +96,33 @@ speed = speed_be;
 
 theta = atan2(vVec_grad(:,:,2), vVec_grad(:,:,1));
 % angular velocity - gradient
-for i=1:length(timeInstants)-1
+for i=1:length(Simulation.timeInstants)-1
     omega_grad(i,:) = angleBetweenVectors(squeeze(vVec_grad(i,:,:)),squeeze(vVec_grad(i+1,:,:)))';
 end
-omega_grad(length(timeInstants),:) = angleBetweenVectors(squeeze(vVec_grad(length(timeInstants)-1,:,:)),squeeze(vVec_grad(length(timeInstants),:,:)))';
+omega_grad(length(Simulation.timeInstants),:) = angleBetweenVectors(squeeze(vVec_grad(length(Simulation.timeInstants)-1,:,:)),squeeze(vVec_grad(length(Simulation.timeInstants),:,:)))';
 omega_grad=omega_grad/Simulation.deltaT;
 
 % angular velocity - Forward Euler
-for i=1:length(timeInstants)-1
+for i=1:length(Simulation.timeInstants)-1
     omega_fe(i,:) = angleBetweenVectors(squeeze(vVec_fe(i,:,:)),squeeze(vVec_fe(i+1,:,:)))';
 end
-omega_fe(length(timeInstants),:) = angleBetweenVectors(squeeze(vVec_fe(length(timeInstants)-1,:,:)),squeeze(vVec_fe(length(timeInstants),:,:)))';
+omega_fe(length(Simulation.timeInstants),:) = angleBetweenVectors(squeeze(vVec_fe(length(Simulation.timeInstants)-1,:,:)),squeeze(vVec_fe(length(Simulation.timeInstants),:,:)))';
 omega_fe=omega_fe/Simulation.deltaT;
 
 % angular velocity - Backward Euler
 omega_be(1,:) = angleBetweenVectors(squeeze(xVec(2,:,:)-xVec(1,:,:)),squeeze(xVec(3,:,:)-xVec(2,:,:)))';
 omega_be(2,:) = angleBetweenVectors(squeeze(xVec(2,:,:)-xVec(1,:,:)),squeeze(xVec(3,:,:)-xVec(2,:,:)))';
-for i=3:length(timeInstants)
+for i=3:length(Simulation.timeInstants)
     omega_be(i,:) = angleBetweenVectors(squeeze(vVec_be(i-1,:,:)),squeeze(vVec_be(i,:,:)))';
 end
 omega_be=omega_be/Simulation.deltaT;
 
 % angular velocity - Central Derivative
 omega_ce(1,:) = angleBetweenVectors(squeeze(xVec(2,:,:)-xVec(1,:,:)),squeeze(xVec(3,:,:)-xVec(2,:,:)))';
-for i=2:length(timeInstants)-1
+for i=2:length(Simulation.timeInstants)-1
     omega_ce(i,:) = angleBetweenVectors(squeeze(xVec(i,:,:)-xVec(i-1,:,:)),squeeze(xVec(i+1,:,:)-xVec(i,:,:)))';
 end
-omega_ce(length(timeInstants),:) = angleBetweenVectors(squeeze(xVec(end-1,:,:)-xVec(end-2,:,:)),squeeze(xVec(end,:,:)-xVec(end-1,:,:)))';
+omega_ce(length(Simulation.timeInstants),:) = angleBetweenVectors(squeeze(xVec(end-1,:,:)-xVec(end-2,:,:)),squeeze(xVec(end,:,:)-xVec(end-1,:,:)))';
 omega_ce=omega_ce/Simulation.deltaT;
 
 omega = omega_be;
@@ -155,12 +143,12 @@ if outputDir
     while exist(fullfile(outputDir,[datestr(now, 'yyyy_mm_dd_'),tag,'_',num2str(counter)]),'dir')
         counter=counter+1;
     end
-    path=fullfile(outputDir, [datestr(now, 'yyyy_mm_dd_'),tag,'_',num2str(counter)]);
-    mkdir(path)
-    disp('Saving data in ' + string(path))
-    save(fullfile(path, 'data'))
+    output_path=fullfile(outputDir, [datestr(now, 'yyyy_mm_dd_'),tag,'_',num2str(counter)]);
+    mkdir(output_path)
+    disp('Saving data in ' + string(output_path))
+    save(fullfile(output_path, 'data'))
     
-    fileID = fopen(fullfile(path, 'parameters.txt'),'wt');
+    fileID = fopen(fullfile(output_path, 'parameters.txt'),'wt');
     fprintf(fileID,'SimulateDOMEexp\n\n');
     fprintf(fileID,'Experiment: %s\n',data_folder);
     fprintf(fileID,'Identification: %s\n\n',fullfile(id_folder,identification_file_name));
@@ -194,8 +182,8 @@ else
 end
 if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
 if outputDir
-    saveas(gcf, fullfile(path, 'x_0'))
-    saveas(gcf, fullfile(path, 'x_0'),'png')
+    saveas(gcf, fullfile(output_path, 'x_0'))
+    saveas(gcf, fullfile(output_path, 'x_0'),'png')
 end
 
 % SWARM final
@@ -210,8 +198,8 @@ else
 end
 if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
 if outputDir
-    saveas(gcf, fullfile(path, 'x_final'))
-    saveas(gcf, fullfile(path, 'x_final'),'png')
+    saveas(gcf, fullfile(output_path, 'x_final'))
+    saveas(gcf, fullfile(output_path, 'x_final'),'png')
 end
 end
 
@@ -252,8 +240,8 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     xticks(round(bins,2))
     title('Simulated light distribution')
     if outputDir
-        saveas(gcf, fullfile(path, 'light_distribution'))
-        saveas(gcf, fullfile(path, 'light_distribution'),'png')
+        saveas(gcf, fullfile(output_path, 'light_distribution'))
+        saveas(gcf, fullfile(output_path, 'light_distribution'),'png')
     end
     
     % get distribution wrt light intensity
@@ -275,8 +263,8 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     yticks([])
     title('Experimental')
     if outputDir
-        saveas(gcf, fullfile(path, 'exp_positions'))
-        saveas(gcf, fullfile(path, 'exp_positions'),'png')
+        saveas(gcf, fullfile(output_path, 'exp_positions'))
+        saveas(gcf, fullfile(output_path, 'exp_positions'),'png')
     end
     
     figure % experimental light distribution
@@ -294,8 +282,8 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     title('Experimental light distribution')
     box
     if outputDir
-        saveas(gcf, fullfile(path, 'exp_light_distribution'))
-        saveas(gcf, fullfile(path, 'exp_light_distribution'),'png')
+        saveas(gcf, fullfile(output_path, 'exp_light_distribution'))
+        saveas(gcf, fullfile(output_path, 'exp_light_distribution'),'png')
     end
     
     figure % difference between light distribution
@@ -316,19 +304,19 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     xticks(round(bins,2))
     box
     if outputDir
-        saveas(gcf, fullfile(path, 'difference_light_distribution'))
-        saveas(gcf, fullfile(path, 'difference_light_distribution'),'png')
+        saveas(gcf, fullfile(output_path, 'difference_light_distribution'))
+        saveas(gcf, fullfile(output_path, 'difference_light_distribution'),'png')
     end
     
 else % TEMPORAL INPUTS
 
-    [metrics_of_interest] = compareResults({data_folder,path}, path);
+    [metrics_of_interest] = compareResults({data_folder,output_path}, output_path);
 
 end
 
 % figure % TIME PLOT - SPEED and ANGULAR VELOCITY
 % subplot(2,4,[1 2 3])
-% plotWithShade(timeInstants, median(speed,2), min(speed, [], 2), max(speed, [], 2), 'b', 0.3);
+% plotWithShade(Simulation.timeInstants, median(speed,2), min(speed, [], 2), max(speed, [], 2), 'b', 0.3);
 % if isfield(Environment,'Inputs')
 %     highlightInputs(Environment.Inputs.Times, Environment.Inputs.Values, 'r', 0.25)
 % end
@@ -341,8 +329,8 @@ end
 % ylim(rng);
 % set(gca,'xtick',[])
 % subplot(2,4,[5 6 7])
-% plotWithShade(timeInstants, median(abs(omega),2), min(abs(omega), [], 2), max(abs(omega), [], 2), 'b', 0.3);
-% %plotWithShade(timeInstants, median(omega,2), min(omega, [], 2), max(omega, [], 2), 'b', 0.3);
+% plotWithShade(Simulation.timeInstants, median(abs(omega),2), min(abs(omega), [], 2), max(abs(omega), [], 2), 'b', 0.3);
+% %plotWithShade(Simulation.timeInstants, median(omega,2), min(omega, [], 2), max(omega, [], 2), 'b', 0.3);
 % if isfield(Environment,'Inputs')
 %     highlightInputs(Environment.Inputs.Times, Environment.Inputs.Values, 'r', 0.25)
 % end
@@ -356,8 +344,8 @@ end
 % ylim(rng);
 % set(gca,'xtick',[])
 % if outputDir
-%     saveas(gcf,fullfile(path, 'time_plot'))
-%     saveas(gcf,fullfile(path, 'time_plot'),'png')
+%     saveas(gcf,fullfile(output_path, 'time_plot'))
+%     saveas(gcf,fullfile(output_path, 'time_plot'),'png')
 % end
 % 
 % figure % SCATTER PLOT - SPEED and ANGULAR VELOCITY
@@ -371,8 +359,8 @@ end
 % s(1).Position(3) = 0.7;
 % s(1).Position(4) = 0.7;
 % if outputDir
-% saveas(gcf,fullfile(path, 'scatter_plot'))
-% saveas(gcf,fullfile(path, 'scatter_plot'),'png')
+% saveas(gcf,fullfile(output_path, 'scatter_plot'))
+% saveas(gcf,fullfile(output_path, 'scatter_plot'),'png')
 % end
 % 
 % figure % SCATTER PLOT - MEAN SPEED and ANGULAR VELOCITY
@@ -386,13 +374,13 @@ end
 % s(1).Position(3) = 0.7;
 % s(1).Position(4) = 0.7;
 % if outputDir
-% saveas(gcf,fullfile(path, 'scatter_plot_mean'))
-% saveas(gcf,fullfile(path, 'scatter_plot_mean'),'png')
+% saveas(gcf,fullfile(output_path, 'scatter_plot_mean'))
+% saveas(gcf,fullfile(output_path, 'scatter_plot_mean'),'png')
 % end
 
 % figure % CORRELETION PLOT - SPEED and ANGULAR VELOCITY
 % corrplot([speed(1:end-1,1),speed(2:end,1),omega(1:end-1,1),omega(2:end,1)],VarNames={"v_k", "v_{k+1}", "\omega_k", "\omega_{k+1}"})
 % if outputDir
-% saveas(gcf,fullfile(path, 'scatter_plot'))
-% saveas(gcf,fullfile(path, 'scatter_plot'),'png')
+% saveas(gcf,fullfile(output_path, 'scatter_plot'))
+% saveas(gcf,fullfile(output_path, 'scatter_plot'),'png')
 % end

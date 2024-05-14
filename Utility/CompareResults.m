@@ -24,7 +24,11 @@ for i=1:number_of_exp
         d = load(data_path);
         omega = d.omega';
         speed = d.speed';
-        timeInstants = d.timeInstants;
+        if isfield(d,'timeInstants')
+            timeInstants = d.timeInstants;
+        else
+            timeInstants = d.Simulation.timeInstants;
+        end
         if i==1
             u = d.u;
         else
