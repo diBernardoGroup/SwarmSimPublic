@@ -3,6 +3,9 @@ close all
 
 
 data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12'; % off
+data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_OFF/combo'; % off combo
+% data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_5/combo'; % switch5s combo
+data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_255_ON/combo'; % on255 combo
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
 data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5'; % switch10s combo
 % data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
@@ -80,6 +83,30 @@ if outputDir
     saveas(gcf,fullfile(outputDir, 'time_plot'))
     saveas(gcf,fullfile(outputDir, 'time_plot'),'png')
 end
+
+figure % BOX PLOT - SPEED and ANGULAR VELOCITY - Mean over time
+hold on 
+set(gca,'FontSize',12)
+yline(0)
+myboxplot({mean(omega,1,'omitnan')}, true, 3, {'b'})%, [0,0.4470,0.7410])
+% myboxplot({omega(:)}, true, 3, {'b'})%, [0,0.4470,0.7410])
+xticks([])
+ylabel('$\omega$ [rad/s]','Interpreter','Latex','FontSize',16)
+set(gcf,'position',[300,300,300,420])
+if outputDir
+    saveas(gcf,fullfile(outputDir, 'ang_vel_boxplot_meanovertime'))
+    saveas(gcf,fullfile(outputDir, 'ang_vel_boxplot_meanovertime'),'png')
+end
+
+figure
+hold on
+yline(0)
+l1=plotWithShade(timeInstants, median(omega,2,'omitnan'), quantile(omega, 0.1, 2), quantile(omega, 0.9, 2), 'b', 0.3);
+yline(median(median(omega,2,'omitnan')),'b')
+if isvarname('u')
+    highlightInputs(timeInstants, u, 'r', 0.25)
+end
+
 
 % figure % inputs
 % subplot(3,1,1)

@@ -16,7 +16,7 @@ clear
 
 %rng(1,'twister'); % set the randomn seed to have reproducible results
 defaultParam;               % load default parameters and create initial conditions
-% defaultParamMicroorg;
+defaultParamMicroorg;
 
 Simulation.drawON=true;     % draw swarm during simulation (if N is large slows down the simulation)
 

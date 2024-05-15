@@ -27,7 +27,7 @@ background_sub = true;
 %% Simulation parameters
 % All these fields are mandatory
 Simulation=struct();
-Simulation.Tmax = 50;          % maximum simulation time
+Simulation.Tmax = 20;          % maximum simulation time
 Simulation.deltaT = 0.5;        % sampling time step
 Simulation.dT =     0.01;       % integration time step
 Simulation.arena = [1920,1080]; % size of the simulation window
@@ -91,10 +91,12 @@ LocalIntFunction=struct('function','None');
 
 %% Simulation Environment
 Environment = struct();
-% Environment.Inputs.InterpMethod = 'previous';
+Environment.Inputs.InterpMethod = 'previous';
 % Environment.Inputs.InterpMethod = 'linear';
 % Environment.Inputs.Times  = 'None'; 
 % Environment.Inputs.Values = 'None'; 
+Environment.Inputs.Times  = [0, 5, 10, Simulation.Tmax]; 
+Environment.Inputs.Values = [0, 1, 0, 0];
 
 %% Add subfolders to the Matlab path
 current_folder = fileparts(which('defaultParam'));

@@ -25,64 +25,21 @@ clear
 
 Ntimes=2;              % How many simulations are launched for each configuration
 
-D=2;                    % number of dimensions [2 or 3]
-
 defaultParam;           % load default parameters
 
-seed=-1;                 % seed for random generator, if negative it is not set
+seed=1;                 % seed for random generator, if negative it is not set
 
 %% Loads DOME experiment data
-%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_33/tracking_2023_10_12'; % gradient central light
-data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_34/tracking_2023_10_12'; % gradient central dark
-
-id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % folder with identification data
-identification_file_name = 'identification_OLS_ds2_sign.txt';
-
-outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
-
-Simulation.arena = [1920,1080]; % size of the simulation window
-Simulation.deltaT = 0.5;        % sampling time step
-Simulation.dT = 0.01;           % integration time step
-Simulation.Tmax = 180;          % maximum simulation time
-timeInstants = [0:Simulation.deltaT:Simulation.Tmax];
-Simulation.drawON=false;        % draw swarm during simulation (if N is large slows down the simulation)
-Simulation.recordVideo=false;   % record video of the simulation (if true drawON must be true)
-
-% load identification data and instantiate simulated agents
-identification=readtable(fullfile(id_folder,identification_file_name));
-ids=randsample(length(identification.agents),N, true, ones(length(identification.agents),1));
-agents = identification(ids,:); 
-Dynamics=struct('model','IndependentSDEsWithInput', ...
-    'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s, 'gainSpeed', agents.alpha_s, 'gainDerSpeed', agents.beta_s,...
-    'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', agents.alpha_w, 'gainDerOmega', agents.beta_w,...
-    'omega', normrnd(0,agents.std_w,N,1), 'oldInput', zeros(N,1));
-
-% Dynamics=struct('model','IndependentSDEsWithInput', ...
-%     'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s, 'gainSpeed', 0, 'gainDerSpeed', 0,...
-%     'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', 0, 'gainDerOmega', 0,...
-%     'omega', normrnd(0,agents.std_w,N,1), 'oldInput', zeros(N,1));
-
-% load inputs data
-if isfile(fullfile(data_folder,'inputs.txt'))   % time varying inputs
-    inputs=load(fullfile(data_folder,'inputs.txt'));
-    u=inputs(:,1)/255;              %select blue channel and scale in [0,1]
-    Environment.Inputs.Times  = timeInstants;
-    Environment.Inputs.Values = u;
-else                                            % spatial inputs
-    inputs=imread(fullfile(fileparts(data_folder),'patterns_cam/pattern_10.0.jpeg'));
-    u=double(inputs(:,:,3))'/255;    %select blue channel and scale in [0,1]
-    Environment.Inputs.Points = {linspace(-Simulation.arena(1),Simulation.arena(1),size(inputs,2))/2, linspace(-Simulation.arena(2),Simulation.arena(2),size(inputs,1))/2};
-    Environment.Inputs.Values = flip(u,2);
-end
+outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/SwarmSim/simulations';
 
 %% variable parameters
 % One or multiple parameters can be modified at the same time.
 % Parameters must be existing variables.
 % The values specified here overwrite the default ones.
-% parameters(1).name='delta';
-% parameters(1).values=[0:0.5:1];
-% parameters(2).name='N';
-% parameters(2).values=[50, 100, 150];
+parameters(1).name='delta';
+parameters(1).values=[0:0.5:1];
+parameters(2).name='N';
+parameters(2).values=[25, 50];
 
 % parameters(1).name='Dynamics.gainDerSpeed';
 % parameters(1).values=[-10,-5,-2,-1,0,1,2,5,10]*5;
@@ -101,7 +58,7 @@ timeInstants = 0:Simulation.deltaT:Simulation.Tmax;
 window = [-Simulation.arena(1),Simulation.arena(1),-Simulation.arena(2),Simulation.arena(2)]/2;
 
 xVec=nan(length(timeInstants),N,D);
-x_f = nan(Nconfig,Ntimes,N,D);
+x_f = cell(Nconfig,Ntimes);
 e_L=nan(Nconfig,Ntimes);
 e_theta=nan(Nconfig,Ntimes);
 Tr_vec=nan(Nconfig,Ntimes);
@@ -110,8 +67,6 @@ e_d_max_vec = nan(Nconfig, Ntimes);
 V_vec = nan(Nconfig, Ntimes);
 rigid_vec = nan(Nconfig, Ntimes);
 norm_slope = nan(Nconfig, Ntimes);
-
-
 
 %% Simulation
 % for each configuration...
@@ -138,15 +93,12 @@ for i_times=1:Nconfig
         rng(seed,'twister'); % reproducible results
     end
     x0Data=nan(Ntimes,N,D);
-    %v0 = zeros(N,D);
-    speeds0 = abs(normrnd(median(identification.mean_s),median(identification.std_s),N,1));
-    theta0 = 2*pi*rand(N,1)-pi;
-    v0 = speeds0 .* [cos(theta0), sin(theta0)];
+    v0 = zeros(N,D);
     for k_times=  1:Ntimes
-        x0Data(k_times,:,:) = randCircle(N, 1000, D);                          % initial conditions drawn from a uniform disc
+        %x0Data(k_times,:,:) = randCircle(N, 1000, D);                          % initial conditions drawn from a uniform disc
         %x0Data(k_times,:,:) = normrnd(0,0.1*sqrt(N),N,D);                   % initial conditions drawn from a normal distribution
         %x0Data(k_times,:,:) = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D );        % initial conditions on a correct lattice
-        %x0Data(k_times,:,:) = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D ) + randCircle(N, delta, D); % initial conditions on a deformed lattice
+        x0Data(k_times,:,:) = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D ) + randCircle(N, delta, D); % initial conditions on a deformed lattice
     end
     
     parfor k_times=1:Ntimes
@@ -155,7 +107,7 @@ for i_times=1:Nconfig
         
         % analyse final configuration
         xFinal=squeeze(xVec(end,:,:));
-        x_f(i_times,k_times,:,:) = xFinal;
+        x_f{i_times,k_times} = xFinal;
         xFinal_inWindow = squeeze(xVec(end,(xVec(end,:,1)>window(1) & xVec(end,:,1)<window(2) & xVec(end,:,2)>window(3) & xVec(end,:,2)<window(4)),:));
         
         B = buildIncidenceMatrix(xFinal, Rmax);
@@ -164,8 +116,10 @@ for i_times=1:Nconfig
         rigid_vec(i_times,k_times) = rank(M)==D*N-D*(D+1)/2;
         e_d_max_vec(i_times,k_times) = getMaxLinkLengthError(xFinal, 1, 0, Rmax);   % max distance from the deisred link length.
         
+        if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
         [density_by_input, bins, norm_sl, c_coeff] = agentsDensityByInput(Environment.Inputs, xFinal_inWindow, window);
         norm_slope(i_times,k_times) = norm_sl;
+        end
     end
     fprintf('Elapsed time is %.2f s.\n\n',toc)
 end
@@ -261,27 +215,25 @@ elseif Nparameters==2
     % average over the initial conditions
     links_mean = mean(links,2);
     rigid_mean = mean(rigid_vec,2);
-%     e_d_max_mean = mean(e_d_max_vec,2);
-%     e_d_max_map = reshape(e_d_max_mean, [length(parameters(1).values), length(parameters(2).values)]);
+    rigid_map = reshape(rigid_mean, [length(parameters(1).values), length(parameters(2).values)]);
+    e_d_max_mean = mean(e_d_max_vec,2);
+    e_d_max_map = reshape(e_d_max_mean, [length(parameters(1).values), length(parameters(2).values)]);
     
     norm_slope_mean = mean(norm_slope,2);
     norm_slope_map = reshape(norm_slope_mean, [length(parameters(1).values), length(parameters(2).values)]);
     
     figure
-    [~,lplot]=mysurfc(parameters(1).values, parameters(2).values, norm_slope_map);
+    [~,lplot]=mysurfc(parameters(1).values, parameters(2).values, rigid_map);
     xlabel(parameters(1).name)
-    xlabel('$\beta_v$','Interpreter','latex','FontSize',18)
     ylabel(parameters(2).name)
-    ylabel('$\alpha_\omega$','Interpreter','latex','FontSize',18)
-    ylabel('$\beta_\omega$','Interpreter','latex','FontSize',18)
-    title('Photoaccumulation Index')
+    %title('Photoaccumulation Index')
     hold on
     xlim([-inf, inf])
     ylim([-inf, inf])
     set(gca, 'XTick', parameters(1).values);
     set(gca, 'YTick', parameters(2).values);
     set(gca,'FontSize',14)
-    caxis([-1,1])
+    caxis([0,1])
     if outputDir
         saveas(gcf,fullfile(path, 'norm_slope'))
         saveas(gcf,fullfile(path, 'norm_slope'),'png')
@@ -299,10 +251,9 @@ elseif Nparameters==2
             if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
             plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Simulation.arena)
             end
-            plotSwarmInit(squeeze(x_f(sub2ind([length(parameters(1).values), length(parameters(2).values)], i_x, i_y),1,:,:)), Simulation.Tmax, inf, inf, Simulation.arena);
+            plotSwarmInit(squeeze(x_f{sub2ind([length(parameters(1).values), length(parameters(2).values)], i_x, i_y),1}), Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena);
             xticks([]); yticks([])
             title([parameters(1).name,'=' num2str(parameters(1).values(i_x)),' ', parameters(2).name,'=' num2str(parameters(2).values(i_y))])
-            title(['\beta_v=' num2str(parameters(1).values(i_x)),' ','\beta_\omega=' num2str(parameters(2).values(i_y))])
         end
     end
     set(gcf,'Position',[100 500 200*swarms_to_show 300*2])
