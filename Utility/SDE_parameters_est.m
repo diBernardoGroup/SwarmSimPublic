@@ -1,4 +1,4 @@
-function [mu, theta, sigma, alpha] = SDE_parameters_est(x, u, deltaT, method, min_duration)
+function [mu, theta, sigma, alpha] = SDE_parameters_est(x, u, deltaT, method, min_duration, no_mu)
 %SDE_parameters_est Regularized estimation of the parameters of a SDE in the form
 %         dX = [ theta * (mu - X) + alpha * u] * dt + sigma * dW
 %     where dW is gaussian white noise.
@@ -11,6 +11,7 @@ arguments
     deltaT = 1
     method = 'OLS'
     min_duration = 10 %[s]
+    no_mu = false % fix mu to zero
 end
 
 number_of_series = size(x,2);
@@ -68,11 +69,19 @@ for i=1:number_of_series % for each time-series
             
         % OLS regression
         elseif strcmp(method,'OLS') || strcmp(method,'OLS+GB')
-            predictors = [x_old, u_current, ones(length(x_old),1)];
-            p = predictors\x_new;
-            a = p(1);
-            b = p(2:end-1);
-            c = p(end);
+            if no_mu % fix mu to zero
+                predictors = [x_old, u_current];
+                p = predictors\x_new;
+                a = p(1);
+                b = p(2:end);
+                c = 0;
+            else
+                predictors = [x_old, u_current, ones(length(x_old),1)];
+                p = predictors\x_new;
+                a = p(1);
+                b = p(2:end-1);
+                c = p(end);
+            end
             %compute continuous time parameters
             residuals = x_new - (a*x_old + u_current*b + c);
             s=std(residuals);
@@ -113,7 +122,12 @@ for i=1:number_of_series % for each time-series
                 %sys.Parameters(2).Value(1) = 0; sys.Parameters(2).Fixed(1) = true; % fix first component of alpha to zero
                 sys.Parameters(3).Value = mu(i);
             end
+            if no_mu % fix mu to zero
+                sys.Parameters(3).Value = 0;
+                sys.Parameters(3).Fixed = true; 
+            end
             %y = sim(sys, data);
+            opt.SearchOptions.FunctionTolerance = 10e-6;
             sys_id = nlgreyest(data, sys, opt);
             t = sys_id.Parameters(1).Value;
             a = sys_id.Parameters(2).Value;

@@ -8,6 +8,10 @@
 %   Date:       2023
 %
 
+%% Add subfolders to the Matlab path
+current_folder = fileparts(which('defaultParamMicroorg'));
+addpath(genpath(current_folder));
+
 %% Default Parameters
 
 % Directory to save the results of the simulations.
@@ -16,7 +20,7 @@ outputDir='./Output';
 %outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 outputDir='';
 
-N=250;                      % number of agents (N)
+N=500;                      % number of agents (N)
 D=2;                        % number of dimensions [2 or 3]
 
 %% Analysis options
@@ -27,7 +31,7 @@ background_sub = true;
 %% Simulation parameters
 % All these fields are mandatory
 Simulation=struct();
-Simulation.Tmax = 20;          % maximum simulation time
+Simulation.Tmax = 180;          % maximum simulation time
 Simulation.deltaT = 0.5;        % sampling time step
 Simulation.dT =     0.01;       % integration time step
 Simulation.arena = [1920,1080]; % size of the simulation window
@@ -97,8 +101,4 @@ Environment.Inputs.InterpMethod = 'previous';
 % Environment.Inputs.Values = 'None'; 
 Environment.Inputs.Times  = [0, 5, 10, Simulation.Tmax]; 
 Environment.Inputs.Values = [0, 1, 0, 0];
-
-%% Add subfolders to the Matlab path
-current_folder = fileparts(which('defaultParam'));
-addpath(genpath(current_folder));
 

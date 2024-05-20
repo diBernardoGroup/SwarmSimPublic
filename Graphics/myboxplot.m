@@ -33,13 +33,14 @@ function [] = myboxplot(data, significance, whisker, colors)
         colors=validatecolor(colors,'multiple');
     end
     for j=1:length(h)
-        patch(get(h(j),'XData'),get(h(j),'YData'),colors(j,:),'FaceAlpha',.5);
+        patch(get(h(j),'XData'),get(h(j),'YData'),colors(mod(j-1,7)+1,:),'FaceAlpha',.5);
     end
     
     %significance bar
     if significance
-        y_max=max(max(data{:}));
-        y_min=min(min(data{:}));
+        all_data=data{:};
+        y_max=max(all_data,[],'all');
+        y_min=min(all_data,[],'all');
         if length(data)==1
             p = signtest(data{1});
             %[h,p] = ttest(data{1});

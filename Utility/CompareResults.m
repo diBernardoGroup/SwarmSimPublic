@@ -221,6 +221,46 @@ if make_plots
         saveas(gcf,fullfile(outputDir, 'comparison_time_plot'))
         saveas(gcf,fullfile(outputDir, 'comparison_time_plot'),'png')
     end
+    
+    figure % TIME PLOT - SPEED and ANGULAR VELOCITY
+    subplot(2,1,1)
+    xlim([0,max(timeInstants)])
+    ylim([0,120])
+    if isvarname('u')
+        highlightInputs(timeInstants, u, 'r', 0.25)
+    end
+    l1=plotWithShade(timeInstants, median(experiments{1}.speed,1,'omitnan'), quantile(experiments{1}.speed, 0.1, 1), quantile(experiments{1}.speed, 0.9, 1), 'b', 0.3);
+    l2=plotWithShade(timeInstants, median(experiments{2}.speed,1,'omitnan'), quantile(experiments{2}.speed, 0.1, 1), quantile(experiments{2}.speed, 0.9, 1), 'k', 0.3);
+    xlabel('$t$ [s]','Interpreter','Latex','FontSize',16)
+    ylabel('$v$ [$\mu$m/s]','Interpreter','Latex','FontSize',16)
+    legend([l1,l2],'REAL','SIMULATED')
+    rng=ylim;
+    box on
+    % subplot(2,4,4)
+    % hold on
+    % h=histogram(experiments{1}.speed(:),'Orientation','horizontal');
+    % h=histogram(experiments{2}.speed(:),'Orientation','horizontal');
+    % ylim(rng);
+    % set(gca,'xtick',[])
+    subplot(2,1,2)
+    xlim([0,max(timeInstants)])
+    ylim([0,2])
+    if isvarname('u')
+        highlightInputs(timeInstants, u, 'r', 0.25)
+    end
+    l1=plotWithShade(timeInstants, median((experiments{1}.omega),1,'omitnan'), quantile((experiments{1}.omega), 0.1, 1), quantile((experiments{1}.omega), 0.9, 1), 'b', 0.3);
+    l2=plotWithShade(timeInstants, median((experiments{2}.omega),1,'omitnan'), quantile((experiments{2}.omega), 0.1, 1), quantile((experiments{2}.omega), 0.9, 1), 'k', 0.3);
+    xlabel('$t$ [s]','Interpreter','Latex','FontSize',16)
+    ylabel('$\omega$ [rad/s]','Interpreter','Latex','FontSize',16)
+    legend([l1,l2],'REAL','SIMULATED')
+    rng=ylim;
+    box on
+    % subplot(2,4,8)
+    % hold on
+    % h=histogram(abs(experiments{1}.omega(:)),'Orientation','horizontal', 'FaceColor', 'b', 'EdgeColor', 'none');
+    % h=histogram(abs(experiments{2}.omega(:)),'Orientation','horizontal', 'FaceColor', 'k', 'EdgeColor', 'none');
+    % ylim(rng);
+    % set(gca,'xtick',[])
 end
 
 end

@@ -7,11 +7,12 @@ data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_1
 data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5'; % switch10s combo
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
 
-identification_file_name = 'identification_OLS+GB_ds1_diff_median.txt';
+identification_file_name = 'identification_OLS+GB_ds1_diff_sign_nomu.txt';
 identification_method = 'OLS+GB';
 downSampling = 1;
 
-min_duration = 5; %[s]
+no_mu_w = true;
+min_duration = 10; %[s]
 
 deltaT = 0.5;
 dT = 0.01;
@@ -27,8 +28,10 @@ omega  = load(fullfile(data_folder,'ang_vel_smooth.txt'));
 
 % speed = movmean(speed,5,'omitnan');
 % omega = movmean(omega,5,'omitnan');
-speed = median(speed,2,'omitnan');
-omega = median(abs(omega),2,'omitnan');
+% speed = median(speed,2,'omitnan');
+% omega = median(abs(omega),2,'omitnan');
+% speed = movmean(speed,5,'omitnan');
+% omega = movmean(omega,5,'omitnan');
 
 inputs = load(fullfile(data_folder,'inputs.txt'));
 
@@ -54,7 +57,7 @@ end
 
 %% Identification
 [mu_s, theta_s, sigma_s, gains_s] = SDE_parameters_est(speed, u_matrix, deltaT, identification_method, min_duration);
-[mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_signw,  deltaT, identification_method, min_duration);
+[mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_signw, deltaT, identification_method, min_duration, no_mu_w);
 %[mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(abs(omega), u_matrix, deltaT,'OLS');
 mu_s=round(mu_s,4); theta_s=round(theta_s,4); sigma_s=round(sigma_s,4); gains_s=round(gains_s,4); mu_w=round(mu_w,4); theta_w=round(theta_w,4); sigma_w=round(sigma_w,4); gains_w=round(gains_w,4);
 alpha_s = gains_s(:,1); beta_s = gains_s(:,2); alpha_w = gains_w(:,1); beta_w = gains_w(:,2);
@@ -89,6 +92,15 @@ w_sim=nan(length(t_sim),1);
 u_sim=nan(length(t_sim),2);
 s_sim(1)=median(identification.mu_s);
 w_sim(1)=median(abs(omega),'all','omitnan');
+theta_s_med = median(identification.theta_s);
+mu_s_med    = median(identification.mu_s);
+alpha_s_med = median(identification.alpha_s);
+beta_s_med  = median(identification.beta_s);
+theta_w_med = median(identification.theta_w);
+% mu_w_med    = median(abs(omega),'all','omitnan');
+mu_w_med    = median(identification.mu_w);
+alpha_w_med = median(identification.alpha_w);
+beta_w_med  = median(identification.beta_w);
 for i=1:length(t_sim)-1
     u_sim(i,:)= [u(ceil(i*dT/deltaT)),u_dot(ceil(i*dT/deltaT))]; 
 %     u_sim(i,:)= [interp1(timeInstants,u,i*dT),interp1(timeInstants,u_dot,i*dT)]; 
@@ -98,8 +110,8 @@ for i=1:length(t_sim)-1
 %     else
 %         u_sim(i,2)=(u_sim(i,1)-u_sim(i-1,1))/dT;
 %     end
-    s_sim(i+1)= s_sim(i) + (median(identification.theta_s)*(median(identification.mu_s)-s_sim(i)) + median(identification.alpha_s)*u_sim(i,1) + median(identification.beta_s)*u_sim(i,2) )*dT;
-    w_sim(i+1)= w_sim(i) + (median(identification.theta_w)*(median(abs(omega),'all','omitnan')-w_sim(i)) + median(identification.alpha_w)*u_sim(i,1) + median(identification.beta_w)*u_sim(i,2) )*dT;
+    s_sim(i+1)= s_sim(i) + (theta_s_med*(mu_s_med-s_sim(i)) + alpha_s_med*u_sim(i,1) + beta_s_med*u_sim(i,2) )*dT;
+    w_sim(i+1)= w_sim(i) + (theta_w_med*(mu_w_med-w_sim(i)) + alpha_w_med*u_sim(i,1) + beta_w_med*u_sim(i,2) )*dT;
 end
 
 mse_speed = mean((mean(speed,2,'omitnan')-interp1(t_sim,s_sim,timeInstants)').^2);
@@ -115,7 +127,6 @@ mse_omega = mean((median(abs(omega),2,'omitnan')-interp1(t_sim,w_sim,timeInstant
 nmse_speed = goodnessOfFit(interp1(t_sim,s_sim,timeInstants)', median(speed,2,'omitnan'), 'NMSE');
 nmse_omega = goodnessOfFit(interp1(t_sim,w_sim,timeInstants)', median(abs(omega),2,'omitnan'), 'NMSE');
 nmse_total = mean([nmse_speed, nmse_omega]);
-%disp(['MSE from median for speed: ',num2str(mse_speed),' and omega: ',num2str(mse_omega)])
 disp(['NMSE from median for speed:',num2str(nmse_speed),' and omega: ',num2str(nmse_omega),' total: ', num2str(nmse_total)])
 disp(['Saved as ',identification_file_name])
 

@@ -12,19 +12,28 @@ id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';
                          
 identification_file_names = ["identification_OLS_ds1_sign_grad.txt","identification_OLS_ds2_sign_grad.txt","identification_OLS_ds3_sign_grad.txt";
                              "identification_GBCT_ds1_sign_grad.txt","identification_GBCT_ds2_sign_grad.txt","identification_GBCT_ds3_sign_grad.txt"];
+tags = ["OLS","GBDT","GBCT grad","GBCT diff"];
 
 identification_file_names = ["identification_OLS_ds1.txt","identification_OLS_dscombo.txt","identification_OLS_ds3.txt"];
 
 identification_file_names = ["identification_OLS+GB_ds1_old.txt"; 
                                 "identification_OLS+GB_ds1_diff.txt"; 
-                                "identification_OLS+GB_ds1_diff_selected.txt"; %"identification_OLS+GB_ds1_diff_min40.txt";
+                                "identification_OLS+GB_ds1_diff_min20.txt";
                                 "identification_OLS+GB_ds1_diff_noalpha.txt";
-                                "identification_OLS+GB_ds1_delgrad.txt";
-                                "identification_OLS+GB_ds1_diff_median.txt"];
+                                "identification_OLS+GB_ds1_diff_nosign.txt";
+                                "identification_OLS+GB_ds1_diff_median";
+                                "identification_OLS+GB_ds1_diff_smooth_median";
+                                "identification_OLS+GB_ds1_diff_median_smooth";
+                                "identification_OLS+GB_ds1_diff_smooth_median_smooth"];
+tags = ["old","min=5s","min=20s","no\_alpha","nosign","med","smooth_med","med_smooth","s_med_s"];
 
-% tags = ["OLS","GBDT","GBCT grad","GBCT diff"];
-tags = ["old","min=5s","min=20s","no\_alpha","del\_grad","median"];
-             
+identification_file_names =    ["identification_OLS+GB_ds1_diff.txt"; 
+                                "identification_OLS+GB_ds1_diff_nosign.txt";
+                                "identification_OLS+GB_ds1_diff_sign_nomu.txt";
+                                "identification_OLS+GB_ds1_diff_nosign_nomu.txt"];
+tags = ["signed","nosign","signed-nomu","nosign-nomu"];
+ref_sim = [];
+
 dT = 0.01;
 deltaT = 0.5;
 
@@ -162,9 +171,9 @@ for j=1:size(identification_file_names,1) % for each technique
     ylim([0 rng])
 end
 
-else % if considering a signle down sampling value
+else % if considering a single down sampling value
     
-    figure % PARAMETERS BOXPLOTS
+        figure('Position',[100 100 1900 600]); % PARAMETERS BOXPLOTS
     for k=1:10 % for each parameter
         ax=subplot(2,5,k);
         
