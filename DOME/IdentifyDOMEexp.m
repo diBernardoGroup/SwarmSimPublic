@@ -7,11 +7,11 @@ data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_1
 data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5'; % switch10s combo
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
 
-identification_file_name = 'identification_OLS+GB_ds1_diff_sign_nomu.txt';
-identification_method = 'OLS+GB';
+identification_file_name = 'identification_GA_ds1_diff_sign.txt';
+identification_method = 'GreyBoxCT';
 downSampling = 1;
 
-no_mu_w = true;
+no_mu_w = false;
 min_duration = 10; %[s]
 
 deltaT = 0.5;
@@ -44,8 +44,11 @@ N = size(speed,2);
 timeInstants = [0:size(speed,1)-1] * deltaT;
 agents = [0:N-1]';
 u=inputs(:,1)/255;
+
+%Computing the derivative 
 u_dot_BE = [0;diff(u)]/deltaT;
 u_dot_grad = gradient(u)/deltaT;
+%Setting the right derivative 
 u_dot = u_dot_BE;
 u_dot = max(u_dot,0);
 u_matrix = [u, u_dot];
@@ -56,17 +59,43 @@ for i=1:N
 end
 
 %% Identification
-[mu_s, theta_s, sigma_s, gains_s] = SDE_parameters_est(speed, u_matrix, deltaT, identification_method, min_duration);
-[mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_signw, deltaT, identification_method, min_duration, no_mu_w);
-%[mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(abs(omega), u_matrix, deltaT,'OLS');
-mu_s=round(mu_s,4); theta_s=round(theta_s,4); sigma_s=round(sigma_s,4); gains_s=round(gains_s,4); mu_w=round(mu_w,4); theta_w=round(theta_w,4); sigma_w=round(sigma_w,4); gains_w=round(gains_w,4);
-alpha_s = gains_s(:,1); beta_s = gains_s(:,2); alpha_w = gains_w(:,1); beta_w = gains_w(:,2);
+% [mu_s, theta_s, sigma_s, gains_s] = SDE_parameters_est(speed, u_matrix, deltaT, identification_method, min_duration);
+% [mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_signw, deltaT, identification_method, min_duration, no_mu_w);
 
+%Identification of v
+% [mu_s, theta_s, sigma_s, gains_s] = SDE_parameters_est(speed, u_matrix, deltaT, identification_method, min_duration, false, @id_fcn_v);%[0 -inf -inf 0;inf 0 0 inf]);
+%Identification of w
+% [mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_matrix, deltaT, identification_method, min_duration, no_mu_w, @id_fcn_w);%[0 0 0 -inf;inf inf inf inf]);
+
+%Identification of v
+[mu_s, theta_s, sigma_s, gains_s] = SDE_parameters_est(speed, u_matrix, deltaT, identification_method, min_duration, false, 'continouosSys');%, [0 0 -inf 0; inf 0 0 inf]);
+%Identification of w
+[mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_matrix, deltaT, identification_method, min_duration, no_mu_w, 'continouosSys_sgn');
+
+
+%Approximate to the 4th
+mu_s=round(mu_s,4);
+theta_s=round(theta_s,4);
+sigma_s=round(sigma_s,4);
+mu_w=round(mu_w,4);
+theta_w=round(theta_w,4);
+sigma_w=round(sigma_w,4);
+gains_w=round(gains_w,4); 
+gains_s=round(gains_s,4);
+
+% Gains(1)=alpha Gains(2) =beta
+alpha_s = gains_s(:,1); 
+beta_s = gains_s(:,2);
+alpha_w = gains_w(:,1);
+beta_w = gains_w(:,2);
+
+%Compute average and standard deviation of speed and angular velocity
 mean_s  = round(mean(speed,'omitnan')',4);
 std_s   = round( std(speed,'omitnan')',4);
 mean_w  = round(mean(omega,'omitnan')',4);
 std_w   = round( std(omega,'omitnan')',4);
 
+%Save the identification data 
 identification = table(agents, mu_s, theta_s, sigma_s, alpha_s, beta_s, mu_w, theta_w, sigma_w, alpha_w, beta_w, mean_s, std_s, mean_w, std_w);
 nan_ids = isnan(identification.mu_s) | isnan(identification.mu_w);
 identification(nan_ids,:) = [];

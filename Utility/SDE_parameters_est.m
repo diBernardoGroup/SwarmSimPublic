@@ -1,4 +1,4 @@
-function [mu, theta, sigma, alpha] = SDE_parameters_est(x, u, deltaT, method, min_duration, no_mu)
+function [mu, theta, sigma, alpha] = SDE_parameters_est(x, u, deltaT, method, min_duration, no_mu, model, limits)
 %SDE_parameters_est Regularized estimation of the parameters of a SDE in the form
 %         dX = [ theta * (mu - X) + alpha * u] * dt + sigma * dW
 %     where dW is gaussian white noise.
@@ -7,11 +7,13 @@ function [mu, theta, sigma, alpha] = SDE_parameters_est(x, u, deltaT, method, mi
 
 arguments
     x
-    u                   % inputs
-    deltaT = 1          % [s]
-    method = 'OLS'      % identification methods
-    min_duration = 10   % [s]
-    no_mu = false       % fix mu to zero
+    u
+    deltaT = 1
+    method = 'OLS'
+    min_duration = 10 %[s]
+    no_mu = false % fix mu to zero
+    model = ''
+    limits = zeros(2,0)
 end
 
 number_of_series = size(x,2);
@@ -27,27 +29,26 @@ sigma=nan(number_of_series,1);
 alpha=nan(number_of_series,number_of_inputs);
 
 % GreyBox estimation options
-opt = nlgreyestOptions;
-opt.EstimateCovariance = false;
-%opt.Regularization.Lambda = 1;
-%opt.SearchOptions.FunctionTolerance = 10e-9;
-%opt.Display = 'on';
+optGB = nlgreyestOptions;
+optGB.EstimateCovariance = false;
+
+% Genetic Algorithm options
+optGA = optimoptions('ga','PopulationSize',200,'MaxStallGenerations',100,'MaxGenerations',500,'display','off');
 
 figure
 series_to_plot = round(linspace(1,number_of_series,min(number_of_series,5)));
 ii=1;
+fprintf('%s identification',method)
 for i=1:number_of_series % for each time-series
+    printProgress(i,number_of_series)
+    
     nan_ids = isnan(x(:,i));
-    d = x(~nan_ids,i);
-    if isa(u,'cell')
-        u_current = u{i}(~nan_ids,:);
-        u_is_empty = all(u{i}==0,'all');
-    else
-        u_current = u(~nan_ids,:);
-        u_is_empty = all(u==0,'all');
-    end
-    x_old = d(1:end-1);
-    x_new = d(2:end);
+    d = x(~nan_ids,i); % d is the trajectory of x (when it exist)
+    u_current = u(~nan_ids,:); % u_current is the control input
+    u_is_empty = all(u==0,'all'); % do not see changes in u (all exp)
+    
+    x_old = d(1:end-1); %State at the prev time instant
+    x_new = d(2:end);   %Current state
     u_current = u_current(1:end-1,:);
     assert(length(x_old)==length(x_new))
     
@@ -94,12 +95,7 @@ for i=1:number_of_series % for each time-series
             sys = idnlgrey('discretizedSys',[1 number_of_inputs 1], {0, [0;0], 0}, x_old(1), deltaT);
             sys.Parameters(1).Name = 'a'; sys.Parameters(1).Minimum = 0; sys.Parameters(1).Maximum = 1;
             sys.Parameters(2).Name = 'b'; sys.Parameters(3).Name = 'c';
-            %y = sim(sys, data);
-            opt = nlgreyestOptions;
-            %opt.Display = 'on';
-            opt.EstimateCovariance = false;
-            %opt.SearchOptions.FunctionTolerance = 10e-9;
-            sys_id = nlgreyest(data, sys, opt);
+            sys_id = nlgreyest(data, sys, optGB);
             a = sys_id.Parameters(1).Value;
             b = sys_id.Parameters(2).Value;
             c = sys_id.Parameters(3).Value;
@@ -112,23 +108,35 @@ for i=1:number_of_series % for each time-series
         % MATLAB CT grey box estimation
         if strcmp(method,'GreyBoxCT') || strcmp(method,'OLS+GB')
             data = iddata(x_old, u_current, deltaT);
-            sys = idnlgrey('continouosSys',[1 number_of_inputs 1], {1, [0;0], mean(x_old)}, x_old(1), 0);
-            sys.Parameters(1).Name = 'theta';   sys.Parameters(1).Minimum = 0; %sys.Parameters(1).Maximum = 1;
+            sys = idnlgrey(model,[1 number_of_inputs 1], {1, [0;0], mean(x_old)}, x_old(1), 0);
+            sys.Parameters(1).Name = 'theta';   sys.Parameters(1).Minimum = 0;
             sys.Parameters(2).Name = 'alpha';
             sys.Parameters(3).Name = 'mu';      %sys.Parameters(3).Minimum = 0;
             if strcmp(method,'OLS+GB')
                 sys.Parameters(1).Value = max(sys.Parameters(1).Minimum, theta(i));
                 sys.Parameters(2).Value = alpha(i,:);
-                %sys.Parameters(2).Value(1) = 0; sys.Parameters(2).Fixed(1) = true; % fix first component of alpha to zero
                 sys.Parameters(3).Value = mu(i);
             end
-            if no_mu % fix mu to zero
-                sys.Parameters(3).Value = 0;
-                sys.Parameters(3).Fixed = true; 
+%             if no_mu % fix mu to zero
+%                 sys.Parameters(3).Value = 0;
+%                 sys.Parameters(3).Fixed = true;
+%             end
+            l=1;
+            for p=1:min(size(limits,2), length(sys.Parameters))
+                lim_l = limits(1,l:l+length(sys.Parameters(p).Minimum)-1)';
+                lim_u = limits(2,l:l+length(sys.Parameters(p).Minimum)-1)';
+                sys.Parameters(p).Value = max(sys.Parameters(p).Value, lim_l);
+                sys.Parameters(p).Value = min(sys.Parameters(p).Value, lim_u);
+                
+                sys.Parameters(p).Minimum = lim_l;
+                sys.Parameters(p).Maximum = lim_u;
+                
+                sys.Parameters(p).Fixed = sys.Parameters(p).Maximum == sys.Parameters(p).Minimum;
+                
+                l=l+length(sys.Parameters(p).Maximum);
             end
-            %y = sim(sys, data);
-            opt.SearchOptions.FunctionTolerance = 10e-6;
-            sys_id = nlgreyest(data, sys, opt);
+            optGB.SearchOptions.FunctionTolerance = 10e-6;
+            sys_id = nlgreyest(data, sys, optGB);
             t = sys_id.Parameters(1).Value;
             a = sys_id.Parameters(2).Value;
             m = sys_id.Parameters(3).Value;
@@ -136,38 +144,44 @@ for i=1:number_of_series % for each time-series
             residuals = (x_new-x_old) - (t * (m - x_old) + u_current*a) * deltaT;
             s = std(residuals)/sqrt(deltaT);
             
-            % plot
-            if i >= series_to_plot(ii)
-                subplot(1,length(series_to_plot),ii)
-                hold on
-                scatter(x_old, (x_new-x_old)/deltaT - u_current*a)
-                plot(x_old, (t * (m-x_old)) )
-                %axis([min(x,[],'all')*0.9, max(x,[],'all')*1.1, min(x,[],'all')*0.9, max(x,[],'all')*1.1])
-                ii=ii+1;
-            end
-            
             theta(i) = t;
             alpha(i,:) = a;
             mu(i)    = m;
             sigma(i) = s;
         end
         
-%         if exist('b','var')
-%             % plot
-%             if i >= series_to_plot(ii)
-%                 subplot(1,length(series_to_plot),ii)
-%                 hold on
-%                 scatter(x_old, x_new - u_current*b)
-%                 plot(x_old, a*x_old + c)
-%                 axis([min(x,[],'all')*0.9, max(x,[],'all')*1.1, min(x,[],'all')*0.9, max(x,[],'all')*1.1])
-%                 ii=ii+1;
+        if strcmp(method,'GA')
+            pars = ga(@(a) model(a, d, u_current, deltaT),4,[],[],[],[],limits(1,:),limits(2,:),[],optGA);
+%             if isempty(limits)
+%                 pars = ga(@(a) id_cost(a, d, u_current, deltaT),4,[],[],[],[],[],[],[],optGA);
+%             else
+%                 pars = ga(@(a) id_cost(a, d, u_current, deltaT),4,[],[],[],[],limits(1,:),limits(2,:),[],optGA);
 %             end
-%         end
+            theta(i) = pars(1);
+            alpha(i,1) = pars(2);
+            alpha(i,2) = pars(3);
+            mu(i) = pars(4);
+            
+            % comute residuals to estimate sigma (noise amplitude)
+            residuals = (x_new-x_old) - (pars(1) * (pars(4) - x_old) + sign(x_old).*u_current*[pars(2);pars(3)]) * deltaT;
+            s = std(residuals)/sqrt(deltaT);
+            sigma(i) = s ;
+            
+        end
+        
+        % plot
+        if i >= series_to_plot(ii)
+            subplot(1,length(series_to_plot),ii)
+            hold on
+            scatter(x_old, (x_new-x_old)/deltaT - u_current*alpha(i,:)')
+            plot(x_old, (theta(i) * (mu(i)-x_old)) )
+            ii=ii+1;
+        end
+        
+        
     end
     
-end
-
-title(method)
-
+    title(method)
+    
 end
 
