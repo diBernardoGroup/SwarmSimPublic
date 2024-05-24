@@ -5,9 +5,9 @@ close all
 data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12'; % off
 data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_OFF/combo'; % off combo
 % data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_5/combo'; % switch5s combo
-data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_255_ON/combo'; % on255 combo
+% data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_255_ON/combo'; % on255 combo
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
-data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5'; % switch10s combo
+% data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5'; % switch10s combo
 % data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
 
 deltaT = 0.5;

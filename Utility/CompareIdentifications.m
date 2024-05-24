@@ -27,7 +27,7 @@ identification_file_names = ["identification_OLS+GB_ds1_old.txt";
                                 "identification_OLS+GB_ds1_diff_smooth_median_smooth"];
 tags = ["old","min=5s","min=20s","no\_alpha","nosign","med","smooth_med","med_smooth","s_med_s"];
 
-identification_file_names =    ["identification_OLS+GB_ds1_diff.txt"; 
+identification_file_names =    ["identification_OLS+GB_ds1_diff_sign.txt"; 
                                 "identification_OLS+GB_ds1_diff_nosign.txt";
                                 "identification_OLS+GB_ds1_diff_sign_nomu.txt";
                                 "identification_OLS+GB_ds1_diff_nosign_nomu.txt"];

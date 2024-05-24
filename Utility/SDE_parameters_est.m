@@ -7,11 +7,11 @@ function [mu, theta, sigma, alpha] = SDE_parameters_est(x, u, deltaT, method, mi
 
 arguments
     x
-    u
-    deltaT = 1
-    method = 'OLS'
-    min_duration = 10 %[s]
-    no_mu = false % fix mu to zero
+    u                   % inputs
+    deltaT = 1          % [s]
+    method = 'OLS'      % identification methods
+    min_duration = 10   % [s]
+    no_mu = false       % fix mu to zero
 end
 
 number_of_series = size(x,2);

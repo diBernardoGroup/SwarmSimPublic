@@ -103,6 +103,13 @@ sim_names = ["2024_04_17_switch_10_2", "2024_05_08_switch_10_4", "2024_05_08_swi
 experiments_names = ["comparisons/Euglena_switch_10/combo5_old"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"];
 output_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';
 
+% compare identifications
+tags = [ "signed", "nosign", "signed_nomu", "nosign_nomu"];
+sim_names = ["OLS+GB_ds1_diff_sign", "OLS+GB_ds1_diff_nosign", "OLS+GB_ds1_diff_sign_nomu", "OLS+GB_ds1_diff_nosign_nomu"];
+experiments_names = ["comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"];
+simulations_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications';
+output_folder = simulations_folder;
+
 deltaT = 0.5;
 timeInstants = [0:deltaT:180];
 
