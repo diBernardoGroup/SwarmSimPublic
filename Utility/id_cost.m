@@ -1,4 +1,4 @@
-function cost = id_cost(pars, y, u, deltaT)
+function cost = id_cost(pars, y, u, deltaT, model)
 
     y_hat = nan(size(y));
     y_hat(1) = y(1);
@@ -15,7 +15,7 @@ function cost = id_cost(pars, y, u, deltaT)
     for i=1:(length(y)-1)
         for j=1:down_s
             %x = x + (theta*(mu-x) + sign(x)*(alpha(1)*u(i,1)+alpha(2)*u(i,2)))*deltaT;
-            [dx,~] = continouosSys_sgn(0, x, u(i,:), theta, alpha', mu);
+            [dx,~] = model(0, x, u(i,:), theta, alpha', mu);
             x = x + dx * dt;
         end
         y_hat(i+1)=x;

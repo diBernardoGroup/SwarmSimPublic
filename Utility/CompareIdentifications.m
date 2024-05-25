@@ -32,7 +32,10 @@ identification_file_names =    ["identification_OLS+GB_ds1_diff_sign.txt";
                                 "identification_OLS+GB_ds1_diff_sign_nomu.txt";
                                 "identification_OLS+GB_ds1_diff_nosign_nomu.txt"];
 tags = ["signed","nosign","signed-nomu","nosign-nomu"];
-ref_sim = [];
+
+identification_file_names =    ["identification_OLS+GB_ds1_diff_sign.txt"; 
+                                "identification_GB_nolim.txt"];
+tags = ["old","nolim"];
 
 dT = 0.01;
 deltaT = 0.5;

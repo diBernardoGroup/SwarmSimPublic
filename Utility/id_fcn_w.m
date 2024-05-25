@@ -14,7 +14,7 @@ function cost = id_fcn_w(pars, y, u, deltaT)
 
     for i=1:(length(y)-1)
         for j=1:down_s
-            x = x + (theta*(mu-x) + sign(x)*(alpha(1)*u(i,1)+alpha(2)*u(i,2)))*dt; % it was deltaT !!!!
+            x = x + (theta*(mu-x) + sign(x)*(alpha(1)*u(i,1)+alpha(2)*u(i,2)))*dt;
         end
         y_hat(i+1)=x;
     end

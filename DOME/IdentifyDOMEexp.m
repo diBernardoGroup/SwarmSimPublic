@@ -2,17 +2,23 @@ clear
 close all
 
 
-data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12'; % off
-%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
+% data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12'; % off
+% data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
 data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5'; % switch10s combo
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
 
-identification_file_name = 'identification_GA_ds1_diff_sign.txt';
-identification_method = 'GreyBoxCT';
+identification_file_name = 'identification_GB_nolim_nomu.txt';
+identification_method = 'OLS+GB'; %GA
 downSampling = 1;
 
-no_mu_w = false;
 min_duration = 10; %[s]
+no_mu_w = true;
+limits_v = []; 
+limits_w = [];
+% limits_v = [  0 -inf -inf   0; 
+%             inf   0   0   inf]; 
+% limits_w = [  0   0   0 -inf; 
+%             inf inf inf  inf];
 
 deltaT = 0.5;
 dT = 0.01;
@@ -59,19 +65,20 @@ for i=1:N
 end
 
 %% Identification
-% [mu_s, theta_s, sigma_s, gains_s] = SDE_parameters_est(speed, u_matrix, deltaT, identification_method, min_duration);
-% [mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_signw, deltaT, identification_method, min_duration, no_mu_w);
-
-%Identification of v
-% [mu_s, theta_s, sigma_s, gains_s] = SDE_parameters_est(speed, u_matrix, deltaT, identification_method, min_duration, false, @id_fcn_v);%[0 -inf -inf 0;inf 0 0 inf]);
-%Identification of w
-% [mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_matrix, deltaT, identification_method, min_duration, no_mu_w, @id_fcn_w);%[0 0 0 -inf;inf inf inf inf]);
-
-%Identification of v
-[mu_s, theta_s, sigma_s, gains_s] = SDE_parameters_est(speed, u_matrix, deltaT, identification_method, min_duration, false, 'continouosSys');%, [0 0 -inf 0; inf 0 0 inf]);
-%Identification of w
-[mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_matrix, deltaT, identification_method, min_duration, no_mu_w, 'continouosSys_sgn');
-
+tic
+if strcmp(identification_method,'GA')
+    %Identification of v
+    [mu_s, theta_s, sigma_s, gains_s] = SDE_parameters_est(speed, u_matrix, deltaT, identification_method, min_duration, false, @id_fcn_v, limits_v);
+    %Identification of w
+    [mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_matrix, deltaT, identification_method, min_duration, no_mu_w, @id_fcn_w, limits_w);
+else
+    %Identification of v
+    [mu_s, theta_s, sigma_s, gains_s] = SDE_parameters_est(speed, u_matrix, deltaT, identification_method, min_duration, false, 'continouosSys', limits_v);
+    %Identification of w
+    %[mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_matrix, deltaT, identification_method, min_duration, no_mu_w, 'continouosSys_sgn', limits_w);
+    [mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_signw, deltaT, identification_method, min_duration, no_mu_w, 'continouosSys', limits_w);
+end
+toc
 
 %Approximate to the 4th
 mu_s=round(mu_s,4);
