@@ -81,34 +81,45 @@ experiments_names = ["comparisons/Euglena_75_ON/combo", "2023_06_15_Euglena_2", 
 % output_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Euglena input/Scenario duration';
 % 
 % scenario intensity
-tags = [ "OFF", "75_ON", "150_ON", "255_ON", "ramp"];
-sim_names = ["2024_05_09_OFF_2", "2024_05_09_75_ON_2", "2024_05_09_150_ON_2", "2024_05_09_255_ON_3", "2024_05_09_ramp_1"];
-experiments_names = ["comparisons/Euglena_OFF/combo", "2023_06_15_Euglena_1", "2023_06_26_Euglena_13", "2023_07_10_Euglena_6";
-    "comparisons/Euglena_75_ON/combo", "2023_06_15_Euglena_2", "2023_06_26_Euglena_15", "2023_07_10_Euglena_8";
-    "comparisons/Euglena_150_ON/combo", "2023_06_15_Euglena_3", "2023_06_26_Euglena_18", "2023_07_10_Euglena_10";
-    "comparisons/Euglena_255_ON/combo", "2023_06_15_Euglena_4", "2023_06_26_Euglena_20", "2023_07_10_Euglena_12";
-    "comparisons/Euglena_ramp/combo", "2023_06_15_Euglena_6", "2023_06_26_Euglena_22", "2023_07_10_Euglena_14"];
-output_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Euglena input/Scenario intensity';
+% tags = [ "OFF", "75_ON", "150_ON", "255_ON", "ramp"];
+% sim_names = ["2024_05_09_OFF_2", "2024_05_09_75_ON_2", "2024_05_09_150_ON_2", "2024_05_09_255_ON_3", "2024_05_09_ramp_1"];
+% experiments_names = ["comparisons/Euglena_OFF/combo", "2023_06_15_Euglena_1", "2023_06_26_Euglena_13", "2023_07_10_Euglena_6";
+%     "comparisons/Euglena_75_ON/combo", "2023_06_15_Euglena_2", "2023_06_26_Euglena_15", "2023_07_10_Euglena_8";
+%     "comparisons/Euglena_150_ON/combo", "2023_06_15_Euglena_3", "2023_06_26_Euglena_18", "2023_07_10_Euglena_10";
+%     "comparisons/Euglena_255_ON/combo", "2023_06_15_Euglena_4", "2023_06_26_Euglena_20", "2023_07_10_Euglena_12";
+%     "comparisons/Euglena_ramp/combo", "2023_06_15_Euglena_6", "2023_06_26_Euglena_22", "2023_07_10_Euglena_14"];
+% output_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Euglena input/Scenario intensity';
+% 
+% 
+% % compare identifications
+% tags = [ "oldexp_oldsim_oldid", "newexp_newsim_oldid", "newid_BE_BE_ds1", "newid_BE_BE_ds2", "newid_BE_BE_ds3", "newid_BE_grad_ds1", "newid_BE_delgrad_ds1", "newid_BE_noalpha"];
+% sim_names = ["2024_04_17_switch_10_2", "2024_05_08_switch_10_4", "2024_05_08_switch_10_6", "2024_05_08_switch_10_8", "2024_05_08_switch_10_9", "2024_05_08_switch_10_5", "2024_05_13_switch_10_1", "2024_05_13_switch_10_2"];
+% experiments_names = ["comparisons/Euglena_switch_10/combo5_old";"comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"];
+% output_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';
+% 
+% % compare identifications
+% tags = [ "oldexp_oldsim_oldid", "newexp_newsim_oldid", "newid_BE_BE_ds1", "newid_BE_grad_ds1", "newid_BE_delgrad_ds1", "newid_BE_noalpha", "newid_BE_median"];
+% sim_names = ["2024_04_17_switch_10_2", "2024_05_08_switch_10_4", "2024_05_08_switch_10_6", "2024_05_08_switch_10_5", "2024_05_13_switch_10_1", "2024_05_13_switch_10_2", "2024_05_13_switch_10_3"];
+% experiments_names = ["comparisons/Euglena_switch_10/combo5_old"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"];
+% output_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';
+% 
+% % compare identifications
+% tags = [ "signed", "nosign", "signed_nomu", "nosign_nomu"];
+% sim_names = ["OLS+GB_ds1_diff_sign", "OLS+GB_ds1_diff_nosign", "OLS+GB_ds1_diff_sign_nomu", "OLS+GB_ds1_diff_nosign_nomu"];
+% experiments_names = ["comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"];
+% simulations_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications';
+% output_folder = simulations_folder;
 
-
-% compare identifications
-tags = [ "oldexp_oldsim_oldid", "newexp_newsim_oldid", "newid_BE_BE_ds1", "newid_BE_BE_ds2", "newid_BE_BE_ds3", "newid_BE_grad_ds1", "newid_BE_delgrad_ds1", "newid_BE_noalpha"];
-sim_names = ["2024_04_17_switch_10_2", "2024_05_08_switch_10_4", "2024_05_08_switch_10_6", "2024_05_08_switch_10_8", "2024_05_08_switch_10_9", "2024_05_08_switch_10_5", "2024_05_13_switch_10_1", "2024_05_13_switch_10_2"];
-experiments_names = ["comparisons/Euglena_switch_10/combo5_old";"comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"];
-output_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';
-
-% compare identifications
-tags = [ "oldexp_oldsim_oldid", "newexp_newsim_oldid", "newid_BE_BE_ds1", "newid_BE_grad_ds1", "newid_BE_delgrad_ds1", "newid_BE_noalpha", "newid_BE_median"];
-sim_names = ["2024_04_17_switch_10_2", "2024_05_08_switch_10_4", "2024_05_08_switch_10_6", "2024_05_08_switch_10_5", "2024_05_13_switch_10_1", "2024_05_13_switch_10_2", "2024_05_13_switch_10_3"];
-experiments_names = ["comparisons/Euglena_switch_10/combo5_old"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"];
-output_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';
-
-% compare identifications
-tags = [ "signed", "nosign", "signed_nomu", "nosign_nomu"];
-sim_names = ["OLS+GB_ds1_diff_sign", "OLS+GB_ds1_diff_nosign", "OLS+GB_ds1_diff_sign_nomu", "OLS+GB_ds1_diff_nosign_nomu"];
-experiments_names = ["comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"];
+sim_names =    ["identification_GB_nolim";      %"identification_GB_nolim";
+                "identification_GB_nolim_nomu"; %"identification_GB_nolim_nomu";
+                "identification_GB_lim";        %"identification_GB_lim";
+                "identification_GB_lim_nomu";   %"identification_GB_lim_nomu";
+                ];
+experiments_names = repelem(["comparisons/Euglena_switch_10/combo5"], length(sim_names))';
+tags = ["GA_nolim","GB_nolim","GA_nolim_nomu","GB_nolim_nomu","GA_lim","GB_lim","GA_lim_nomu","GB_lim_nomu"];
+tags = ["GB_nolim","GB_nolim_nomu","GB_lim","GB_lim_nomu"];
 simulations_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications';
-output_folder = simulations_folder;
+output_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications/id_comparison_GA_GB';
 
 deltaT = 0.5;
 timeInstants = [0:deltaT:180];
@@ -310,21 +321,21 @@ if size(experiments_names,1) > 1 % multi-exp comparison
     saveas(gcf,fullfile(output_folder, 'multi_exp_comparison_overview'),'png')
     
     
-    figure('Position',[100 100 1900 600]); % NMSE scatter comparison
-    hold on
-    for k=1:length(metrics_of_interest)
-        plots(k,:)=scatter([1:length(tags)]-(length(metrics_of_interest)-1)*0.1+(k-1)*0.2,metrics_of_interest{k},50,metrics_color(k));
-        scatter([1:length(tags)]-(length(metrics_of_interest)-1)*0.1+(k-1)*0.2,metrics_of_interest{k}(:,1),50,metrics_color(k),"filled");
-    end
-    xticks([1:length(tags)])
-    xticklabels(tags)
-    set(gca, 'TickLabelInterpreter', 'none');
-    xlim([0,length(tags)+1])
-    ylim([0, max([metrics_of_interest{:}],[],'all')*1.1])
-    legend(plots(:,1),metrics_tags)
-    set(gca,'FontSize',14)
-    box on
-    set(gca,'XGrid','off','YGrid','on')
-    saveas(gcf,fullfile(output_folder, 'multi_exp_comparison'))
-    saveas(gcf,fullfile(output_folder, 'multi_exp_comparison'),'png')
+%     figure('Position',[100 100 1900 600]); % NMSE scatter comparison
+%     hold on
+%     for k=1:length(metrics_of_interest)
+%         plots(k,:)=scatter([1:length(tags)]-(length(metrics_of_interest)-1)*0.1+(k-1)*0.2,metrics_of_interest{k},50,metrics_color(k));
+%         scatter([1:length(tags)]-(length(metrics_of_interest)-1)*0.1+(k-1)*0.2,metrics_of_interest{k}(:,1),50,metrics_color(k),"filled");
+%     end
+%     xticks([1:length(tags)])
+%     xticklabels(tags)
+%     set(gca, 'TickLabelInterpreter', 'none');
+%     xlim([0,length(tags)+1])
+%     ylim([0, max([metrics_of_interest{:}],[],'all')*1.1])
+%     legend(plots(:,1),metrics_tags)
+%     set(gca,'FontSize',14)
+%     box on
+%     set(gca,'XGrid','off','YGrid','on')
+%     saveas(gcf,fullfile(output_folder, 'multi_exp_comparison'))
+%     saveas(gcf,fullfile(output_folder, 'multi_exp_comparison'),'png')
 end

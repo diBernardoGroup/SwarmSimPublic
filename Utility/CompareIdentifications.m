@@ -3,39 +3,47 @@ close all
 
 % id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % folder with identification data
 id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';
+outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications/id_comparison_GA_GB';
 
 % identification_file_names = ["identification_OLS_ds1_sign.txt","identification_OLS_ds2_sign.txt","identification_OLS_ds3_sign.txt";
 %                              %"identification_OLS_ds1_abs.txt","identification_OLS_ds2_abs.txt","identification_OLS_ds3_abs.txt";
 %                              "identification_GB_ds1_sign.txt","identification_GB_ds2_sign.txt","identification_GB_ds3_sign.txt";
 %                              "identification_GBCT_ds1_sign_grad.txt","identification_GBCT_ds2_sign_grad.txt","identification_GBCT_ds3_sign_grad.txt";
 %                              "identification_GBCT_ds1_sign_diff.txt","identification_GBCT_ds2_sign_diff.txt","identification_GBCT_ds3_sign_diff.txt"];
-                         
+
 identification_file_names = ["identification_OLS_ds1_sign_grad.txt","identification_OLS_ds2_sign_grad.txt","identification_OLS_ds3_sign_grad.txt";
-                             "identification_GBCT_ds1_sign_grad.txt","identification_GBCT_ds2_sign_grad.txt","identification_GBCT_ds3_sign_grad.txt"];
+    "identification_GBCT_ds1_sign_grad.txt","identification_GBCT_ds2_sign_grad.txt","identification_GBCT_ds3_sign_grad.txt"];
 tags = ["OLS","GBDT","GBCT grad","GBCT diff"];
 
 identification_file_names = ["identification_OLS_ds1.txt","identification_OLS_dscombo.txt","identification_OLS_ds3.txt"];
 
-identification_file_names = ["identification_OLS+GB_ds1_old.txt"; 
-                                "identification_OLS+GB_ds1_diff.txt"; 
-                                "identification_OLS+GB_ds1_diff_min20.txt";
-                                "identification_OLS+GB_ds1_diff_noalpha.txt";
-                                "identification_OLS+GB_ds1_diff_nosign.txt";
-                                "identification_OLS+GB_ds1_diff_median";
-                                "identification_OLS+GB_ds1_diff_smooth_median";
-                                "identification_OLS+GB_ds1_diff_median_smooth";
-                                "identification_OLS+GB_ds1_diff_smooth_median_smooth"];
+identification_file_names = ["identification_OLS+GB_ds1_old.txt";
+    "identification_OLS+GB_ds1_diff.txt";
+    "identification_OLS+GB_ds1_diff_min20.txt";
+    "identification_OLS+GB_ds1_diff_noalpha.txt";
+    "identification_OLS+GB_ds1_diff_nosign.txt";
+    "identification_OLS+GB_ds1_diff_median";
+    "identification_OLS+GB_ds1_diff_smooth_median";
+    "identification_OLS+GB_ds1_diff_median_smooth";
+    "identification_OLS+GB_ds1_diff_smooth_median_smooth"];
 tags = ["old","min=5s","min=20s","no\_alpha","nosign","med","smooth_med","med_smooth","s_med_s"];
 
-identification_file_names =    ["identification_OLS+GB_ds1_diff_sign.txt"; 
-                                "identification_OLS+GB_ds1_diff_nosign.txt";
-                                "identification_OLS+GB_ds1_diff_sign_nomu.txt";
-                                "identification_OLS+GB_ds1_diff_nosign_nomu.txt"];
+identification_file_names =    ["identification_OLS+GB_ds1_diff_sign.txt";
+    "identification_OLS+GB_ds1_diff_nosign.txt";
+    "identification_OLS+GB_ds1_diff_sign_nomu.txt";
+    "identification_OLS+GB_ds1_diff_nosign_nomu.txt"];
 tags = ["signed","nosign","signed-nomu","nosign-nomu"];
 
-identification_file_names =    ["identification_OLS+GB_ds1_diff_sign.txt"; 
-                                "identification_GB_nolim.txt"];
+identification_file_names =    ["identification_OLS+GB_ds1_diff_sign.txt";
+    "identification_GB_nolim.txt"];
 tags = ["old","nolim"];
+
+identification_file_names =    ["identification_GA_nolim.txt";      "identification_GB_nolim";
+                                "identification_GA_nolim_nomu.txt"; "identification_GB_nolim_nomu.txt";
+                                "identification_GA_lim.txt";        "identification_GB_lim.txt";
+                                "identification_GA_lim_nomu.txt";   "identification_GB_lim_nomu.txt";
+                                ];
+tags = ["GA_nolim","GB_nolim","GA_nolim_nomu","GB_nolim_nomu","GA_lim","GB_lim","GA_lim_nomu","GB_lim_nomu"];
 
 dT = 0.01;
 deltaT = 0.5;
@@ -43,9 +51,9 @@ deltaT = 0.5;
 %% LOAD DATA
 identifications={};
 for i=1:size(identification_file_names,2)   % for each down sampling value
-for j=1:size(identification_file_names,1)   % for each technique
-    identifications{j,i}=readtable(fullfile(id_folder,identification_file_names(j,i)));
-end
+    for j=1:size(identification_file_names,1)   % for each technique
+        identifications{j,i}=readtable(fullfile(id_folder,identification_file_names(j,i)));
+    end
 end
 
 speed=load(fullfile(id_folder,'speeds_smooth.txt'));
@@ -115,68 +123,72 @@ for j=1:size(identification_file_names,1) % for each technique
 end
 
 if size(identification_file_names,2)>1 % if considering multiple down sampling values
-figure % Parameters
-colors = get(gca,'ColorOrder');
-for k=1:10 % for each parameter
-    ax=subplot(2,5,k);
-    
-    for j=1:size(identification_file_names,1) % for each technique
-        medians = [median(identifications{j,1}{:,k+1}), median(identifications{j,2}{:,k+1}), median(identifications{j,3}{:,k+1})];
-        quartiles1 = [quantile(identifications{j,1}{:,k+1},0.25), quantile(identifications{j,2}{:,k+1},0.25), quantile(identifications{j,3}{:,k+1},0.25)];
-        quartiles3 = [quantile(identifications{j,1}{:,k+1},0.75), quantile(identifications{j,2}{:,k+1},0.75), quantile(identifications{j,3}{:,k+1},0.75)];
-        line=plotWithShade([1,2,3],medians,quartiles1,quartiles3, colors(j,:), 0.3);
+    figure % Parameters
+    colors = get(gca,'ColorOrder');
+    for k=1:10 % for each parameter
+        ax=subplot(2,5,k);
+        
+        for j=1:size(identification_file_names,1) % for each technique
+            medians = [median(identifications{j,1}{:,k+1}), median(identifications{j,2}{:,k+1}), median(identifications{j,3}{:,k+1})];
+            quartiles1 = [quantile(identifications{j,1}{:,k+1},0.25), quantile(identifications{j,2}{:,k+1},0.25), quantile(identifications{j,3}{:,k+1},0.25)];
+            quartiles3 = [quantile(identifications{j,1}{:,k+1},0.75), quantile(identifications{j,2}{:,k+1},0.75), quantile(identifications{j,3}{:,k+1},0.75)];
+            line=plotWithShade([1,2,3],medians,quartiles1,quartiles3, colors(j,:), 0.3);
+        end
+        legend({'',tags(1),'',tags(2)})
+        xticks([1,2,3])
+        title(identifications{1}.Properties.VariableNames(k+1))
     end
-    legend({'',tags(1),'',tags(2)})
-    xticks([1,2,3])
-    title(identifications{1}.Properties.VariableNames(k+1))
-end
-
-figure % NMSE
-rng = max([nmse_med_speed,nmse_mean_speed,nmse_med_omega,nmse_mean_omega],[],'all');
-for j=1:size(identification_file_names,1) % for each technique
-    subplot(3,2,1); hold on
-    plot([1,2,3], nmse_mean_speed(j,:), 'color', colors(j,:), 'marker', 'o')
-    title('NMSE mean s')
-    legend(tags(1:j))
-    xticks([1,2,3])
-    ylim([0 rng])
-    subplot(3,2,2); hold on
-    plot([1,2,3], nmse_med_speed(j,:), 'color', colors(j,:), 'marker', 'o')
-    title('NMSE med s')
-    legend(tags(1:j))
-    xticks([1,2,3])
-    ylim([0 rng])
-   
-    subplot(3,2,3); hold on
-    plot([1,2,3], nmse_mean_omega(j,:), 'color', colors(j,:), 'marker', 'o')
-    title('NMSE mean w')
-    legend(tags(1:j))
-    xticks([1,2,3])
-    ylim([0 rng])
-    subplot(3,2,4); hold on
-    plot([1,2,3], nmse_med_omega(j,:), 'color', colors(j,:), 'marker', 'o')
-    title('NMSE med w')
-    legend(tags(1:j))
-    xticks([1,2,3])
-    ylim([0 rng])
+    if outputDir
+        saveas(gcf, fullfile(outputDir, 'id_comparison_parameters'))
+        saveas(gcf, fullfile(outputDir, 'id_comparison_parameters'),'png')
+    end
     
-    subplot(3,2,5); hold on
-    plot([1,2,3], nmse_mean_total(j,:), 'color', colors(j,:), 'marker', 'o')
-    title('NMSE mean tot')
-    legend(tags(1:j))
-    xticks([1,2,3])
-    ylim([0 rng])
-    subplot(3,2,6); hold on
-    plot([1,2,3], nmse_med_total(j,:), 'color', colors(j,:), 'marker', 'o')
-    title('NMSE med tot')
-    legend(tags(1:j))
-    xticks([1,2,3])
-    ylim([0 rng])
-end
-
+    figure % NMSE
+    rng = max([nmse_med_speed,nmse_mean_speed,nmse_med_omega,nmse_mean_omega],[],'all');
+    for j=1:size(identification_file_names,1) % for each technique
+        subplot(3,2,1); hold on
+        plot([1,2,3], nmse_mean_speed(j,:), 'color', colors(j,:), 'marker', 'o')
+        title('NMSE mean s')
+        legend(tags(1:j))
+        xticks([1,2,3])
+        ylim([0 rng])
+        subplot(3,2,2); hold on
+        plot([1,2,3], nmse_med_speed(j,:), 'color', colors(j,:), 'marker', 'o')
+        title('NMSE med s')
+        legend(tags(1:j))
+        xticks([1,2,3])
+        ylim([0 rng])
+        
+        subplot(3,2,3); hold on
+        plot([1,2,3], nmse_mean_omega(j,:), 'color', colors(j,:), 'marker', 'o')
+        title('NMSE mean w')
+        legend(tags(1:j))
+        xticks([1,2,3])
+        ylim([0 rng])
+        subplot(3,2,4); hold on
+        plot([1,2,3], nmse_med_omega(j,:), 'color', colors(j,:), 'marker', 'o')
+        title('NMSE med w')
+        legend(tags(1:j))
+        xticks([1,2,3])
+        ylim([0 rng])
+        
+        subplot(3,2,5); hold on
+        plot([1,2,3], nmse_mean_total(j,:), 'color', colors(j,:), 'marker', 'o')
+        title('NMSE mean tot')
+        legend(tags(1:j))
+        xticks([1,2,3])
+        ylim([0 rng])
+        subplot(3,2,6); hold on
+        plot([1,2,3], nmse_med_total(j,:), 'color', colors(j,:), 'marker', 'o')
+        title('NMSE med tot')
+        legend(tags(1:j))
+        xticks([1,2,3])
+        ylim([0 rng])
+    end
+    
 else % if considering a single down sampling value
     
-        figure('Position',[100 100 1900 600]); % PARAMETERS BOXPLOTS
+    figure('Position',[100 100 1900 600]); % PARAMETERS BOXPLOTS
     for k=1:10 % for each parameter
         ax=subplot(2,5,k);
         
@@ -189,23 +201,29 @@ else % if considering a single down sampling value
         xlabel(identifications{1}.Properties.VariableNames(k+1))
         set(gca,'FontSize',16)
     end
-    legend(tags)
-    
-    figure('Position',[100 100 1900 600]); % metrics scatter comparison
-    hold on
-    for k=1:length(metrics_of_interest)
-        plots(k,:)=scatter([1:length(tags)]-(length(metrics_of_interest)-1)*0.1+(k-1)*0.2,metrics_of_interest{k},50,metrics_color(k));
-        scatter([1:length(tags)]-(length(metrics_of_interest)-1)*0.1+(k-1)*0.2,metrics_of_interest{k}(:,1),50,metrics_color(k),"filled");
+    legend(tags,"AutoUpdate","off",'Interpreter','none','Orientation','horizontal','Position',[0.1 0.95 0.8 0.04])
+    legend('Position',[0.1 0.95 0.8 0.04])
+    if outputDir
+        saveas(gcf, fullfile(outputDir, 'id_comparison_parameters'))
+        saveas(gcf, fullfile(outputDir, 'id_comparison_parameters'),'png')
     end
-    xticks([1:length(tags)])
-    xticklabels(tags)
-    set(gca, 'TickLabelInterpreter', 'none');
-    xlim([0,length(tags)+1])
-    ylim([0, max([metrics_of_interest{:}],[],'all')*1.1])
-    legend(plots(:,1),metrics_tags)
-    set(gca,'FontSize',14)
-    box on
-    set(gca,'XGrid','off','YGrid','on')
+    
+%     figure('Position',[100 100 1900 600]); % metrics scatter comparison
+%     hold on
+%     for k=1:length(metrics_of_interest)
+%         plots(k,:)=scatter([1:length(tags)]-(length(metrics_of_interest)-1)*0.1+(k-1)*0.2,metrics_of_interest{k},50,metrics_color(k));
+%         scatter([1:length(tags)]-(length(metrics_of_interest)-1)*0.1+(k-1)*0.2,metrics_of_interest{k}(:,1),50,metrics_color(k),"filled");
+%     end
+%     xticks([1:length(tags)])
+%     xticklabels(tags)
+%     set(gca, 'TickLabelInterpreter', 'none');
+%     xlim([0,length(tags)+1])
+%     ylim([0, max([metrics_of_interest{:}],[],'all')*1.1])
+%     legend(plots(:,1),metrics_tags)
+%     set(gca,'FontSize',14)
+%     box on
+%     set(gca,'XGrid','off','YGrid','on')
+
     
 end
 
