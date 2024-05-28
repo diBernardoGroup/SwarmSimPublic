@@ -16,8 +16,8 @@ clear
 defaultParamMicroorg;               % load default parameters yo simulate microorganisms
 
 % tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_15/tracking_2023_10_12';  % switch10s
-% tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo3';  % switch10s combo
-tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % switch10s combo 5
+tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo3';  % switch10s combo
+% tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % switch10s combo 5
 % tag='switch_5'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_5/combo';  % switch5s combo
 % tag='switch_1'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_1/combo';  % switch1s combo
 % tag='75_ON'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_75_ON/combo';  % OFF-ON-OFF 75 combo
@@ -28,10 +28,12 @@ tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena
 
 id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % folder with identification data
 %id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5_old';  % folder with identification data
-identification_file_name = 'identification_GA_lim_nomu.txt';
+identification_file_name = 'identification_GB_lim_b_nomu.txt';
 
-% outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
-outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications';
+outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
+% outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications';
+% [~,simulation_name,~]=fileparts(identification_file_name);
+
 %% Loads experiment data
 
 % load identification data and instantiate simulated agents
@@ -136,14 +138,17 @@ xFinal_inWindow = squeeze(xVec(end,(xVec(end,:,1)>-Simulation.arena(1)/2 & xVec(
 % create output folder, save data and parameters
 
 if outputDir
-    counter=1;
-    if ~tag 
-        tag=Dynamics.model;
+    if ~exist('simulation_name','var') || isempty(simulation_name)
+        counter=1;
+        if ~tag
+            tag=Dynamics.model;
+        end
+        while exist(fullfile(outputDir,[datestr(now, 'yyyy_mm_dd_'),tag,'_',num2str(counter)]),'dir')
+            counter=counter+1;
+        end
+        simulation_name = [datestr(now, 'yyyy_mm_dd_'),tag,'_',num2str(counter)];
     end
-    while exist(fullfile(outputDir,[datestr(now, 'yyyy_mm_dd_'),tag,'_',num2str(counter)]),'dir')
-        counter=counter+1;
-    end
-    output_path=fullfile(outputDir, [datestr(now, 'yyyy_mm_dd_'),tag,'_',num2str(counter)]);
+    output_path=fullfile(outputDir, simulation_name);
     mkdir(output_path)
     disp('Saving data in ' + string(output_path))
     save(fullfile(output_path, 'data'))

@@ -34,16 +34,19 @@ identification_file_names =    ["identification_OLS+GB_ds1_diff_sign.txt";
     "identification_OLS+GB_ds1_diff_nosign_nomu.txt"];
 tags = ["signed","nosign","signed-nomu","nosign-nomu"];
 
-identification_file_names =    ["identification_OLS+GB_ds1_diff_sign.txt";
-    "identification_GB_nolim.txt"];
-tags = ["old","nolim"];
-
 identification_file_names =    ["identification_GA_nolim.txt";      "identification_GB_nolim";
                                 "identification_GA_nolim_nomu.txt"; "identification_GB_nolim_nomu.txt";
                                 "identification_GA_lim.txt";        "identification_GB_lim.txt";
                                 "identification_GA_lim_nomu.txt";   "identification_GB_lim_nomu.txt";
                                 ];
 tags = ["GA_nolim","GB_nolim","GA_nolim_nomu","GB_nolim_nomu","GA_lim","GB_lim","GA_lim_nomu","GB_lim_nomu"];
+
+identification_file_names =    [ "identification_GB_lim"; "identification_GB_lim_nomu"; 
+                                 "identification_GB_lim_v_nomu"; "identification_GB_lim_w_nomu";
+                                 "identification_GB_lim_b_nomu"; 
+                                 "identification_GB_lim_bv_nomu"; "identification_GB_lim_bw_nomu";
+                                 "identification_GB_lim_b"; "identification_GB_lim_b_discardmu"];
+tags = ["GB_lim","GB_lim_nomu","GB_lim_v_nomu","GB_lim_w_nomu","GB_lim_b_nomu","GB_lim_bv_nomu","GB_lim_bw_nomu","GB_lim_b","GB_lim_b_discardmu"];
 
 dT = 0.01;
 deltaT = 0.5;
