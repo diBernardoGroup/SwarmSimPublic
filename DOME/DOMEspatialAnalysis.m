@@ -4,16 +4,15 @@ close all
 experiments_folder = '/Volumes/DOMEPEN/Experiments';
 
 tag='half_half'; experiments = {'2023_06_12_Euglena_2','2023_06_14_Euglena_6','2023_06_15_Euglena_12','2023_06_26_Euglena_29','2023_06_26_Euglena_30','2023_06_23_Euglena_1','2023_06_23_Euglena_2','2023_06_26_Euglena_2','2023_06_26_Euglena_1'};
-tag='gradient_central_light'; experiments = {'2023_06_12_E_3','2023_06_12_E_4','2023_06_14_E_7','2023_06_15_E_14','2023_06_23_E_5','2023_06_23_E_6','2023_06_26_E_5','2023_06_26_E_6','2023_06_26_E_33'};
-tag='gradient_central_dark'; experiments = {'2023_06_14_E_10','2023_06_15_E_15','2023_06_23_E_7','2023_06_23_E_8','2023_06_23_E_9','2023_06_26_E_7','2023_06_26_E_8','2023_06_26_E_34','2023_06_26_E_35','2023_07_10_E_23','2023_07_10_E_24'};
-tag='gradient_lateral'; experiments = {'2023_06_12_E_5','2023_06_13_E_16','2023_06_14_E_8','2023_06_15_E_13','2023_06_23_E_3','2023_06_23_E_4','2023_06_26_E_3','2023_06_26_E_4','2023_06_26_E_31','2023_06_26_E_32'};
+tag='grad_centr_light'; experiments = {'2023_06_12_E_3','2023_06_12_E_4','2023_06_14_E_7','2023_06_15_E_14','2023_06_23_E_5','2023_06_23_E_6','2023_06_26_E_5','2023_06_26_E_6','2023_06_26_E_33'};
+tag='grad_centr_dark'; experiments = {'2023_06_14_E_10','2023_06_15_E_15','2023_06_23_E_7','2023_06_23_E_8','2023_06_23_E_9','2023_06_26_E_7','2023_06_26_E_8','2023_06_26_E_34','2023_06_26_E_35','2023_07_10_E_23','2023_07_10_E_24'};
+tag='grad_lateral'; experiments = {'2023_06_12_E_5','2023_06_13_E_16','2023_06_14_E_8','2023_06_15_E_13','2023_06_23_E_3','2023_06_23_E_4','2023_06_26_E_3','2023_06_26_E_4','2023_06_26_E_31','2023_06_26_E_32'};
 tag='circle_light'; experiments = {'2023_06_12_E_1','2023_06_14_E_1','2023_06_15_E_16','2023_06_23_E_10','2023_06_23_E_11','2023_06_26_E_9','2023_06_26_E_10','2023_06_26_E_36','2023_06_26_E_37','2023_07_10_E_26'};
 tag='circle_dark'; experiments = {'2023_06_13_E_6','2023_06_13_E_15','2023_06_15_E_17','2023_06_15_E_18','2023_06_23_E_12','2023_06_23_E_13','2023_06_26_E_11','2023_06_26_E_12','2023_06_26_E_38','2023_06_26_E_39','2023_07_10_E_25','2023_07_10_E_22'};
 tag='BCL'; experiments = {'2023_07_10_E_30','2023_07_10_E_34','2023_07_10_E_35','2023_07_10_E_36','2023_07_10_E_37','2023_07_10_E_38'};
 % tag='spatial_mix'; experiments = {'2023_07_10_E_34','2023_06_26_E_11','2023_07_10_E_26','2023_06_23_E_9','2023_06_14_E_7','2023_06_14_Euglena_6'};
 
-brightness_thresh=0.3;
-background_sub = true;
+defaultParamMicroorg;
 
 deltaT = 0.5;
 dT = 0.01;
@@ -31,7 +30,8 @@ for i = 1:length(experiments)
     data_folder = fullfile(experiments_folder,experiments{i});
     
     % get final agents positions and inputs
-    [mask, u]= analyseDOMEspatial(data_folder, background_sub, brightness_thresh);
+    mask = detectObjects(data_folder, background_sub, brightness_thresh);
+    u = loadInputPattern(data_folder, pattern_blurring);
     Inputs.Points = {linspace(window(1),window(2),size(u,1)), linspace(window(3),window(4),size(u,2))};
     Inputs.Values = flip(u,2);
     

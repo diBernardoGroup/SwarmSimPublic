@@ -13,10 +13,11 @@ clear
 
 %% Parameters
 
-defaultParamMicroorg;               % load default parameters yo simulate microorganisms
+defaultParamMicroorg;               % load default parameters to simulate microorganisms
+Simulation.drawON = true;
 
 % tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_15/tracking_2023_10_12';  % switch10s
-tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo3';  % switch10s combo
+% tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo3';  % switch10s combo
 % tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % switch10s combo 5
 % tag='switch_5'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_5/combo';  % switch5s combo
 % tag='switch_1'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_1/combo';  % switch1s combo
@@ -26,6 +27,14 @@ tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena
 % tag='OFF'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_OFF/combo';  % OFF combo
 % tag='ramp'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_ramp/combo';  % ramp combo
 
+tag='half_half'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_14_E_6';
+tag='grad_centr_light'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_12_E_3';
+tag='grad_centr_dark'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_14_E_10';
+% tag='grad_lateral'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_12_E_5';
+% tag='circle_light'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_12_E_1';
+% tag='circle_dark'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_13_E_15';
+% tag='BCL'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_E_30';
+    
 id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % folder with identification data
 %id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5_old';  % folder with identification data
 identification_file_name = 'identification_GB_lim_b_nomu.txt';
@@ -40,10 +49,6 @@ outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFede
 identification=readtable(fullfile(id_folder,identification_file_name));
 ids=randsample(length(identification.agents),N, true, ones(length(identification.agents),1));
 agents = identification(ids,:); 
-% Dynamics=struct('model','PTWwithInput', ...
-%     'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s, 'gainSpeed', agents.alpha_s, 'gainDerSpeed', agents.beta_s,...
-%     'avgOmega',agents.mu_w, 'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', agents.alpha_w, 'gainDerOmega', agents.beta_w,...
-%     'omega', normrnd(0,agents.std_w,N,1), 'oldInput', zeros(N,1));
 
 Dynamics=struct('model','PTWwithSignedInput', ...
     'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s, 'gainSpeed', agents.alpha_s, 'gainDerSpeed', agents.beta_s,...
@@ -52,26 +57,25 @@ Dynamics=struct('model','PTWwithSignedInput', ...
 
 % % parameters for strong photodispersion
 % Dynamics=struct('model','PTWwithSignedInput', ...
-%     'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s, 'gainSpeed', 0, 'gainDerSpeed', -50,...
-%     'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', 0, 'gainDerOmega', 5,...
+%     'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s, 'gainSpeed',    5, 'gainDerSpeed', -25,...
+%     'avgOmega',agents.mu_w, 'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', -0.5, 'gainDerOmega', 2,...
 %     'omega', normrnd(0,agents.std_w,N,1), 'oldInput', zeros(N,1));
 
 % load inputs data
+data_folder = strrep(data_folder,'_E_','_Euglena_');
 if isfile(fullfile(data_folder,'inputs.txt'))   % time varying inputs
     inputs=load(fullfile(data_folder,'inputs.txt'));
     u=inputs(:,1)/255;              %select blue channel and scale in [0,1]
     Environment.Inputs.Times  = Simulation.timeInstants;
     Environment.Inputs.Values = u;
 else                                            % spatial inputs
-    [mask, u]= analyseDOMEspatial(fileparts(data_folder), background_sub, brightness_thresh);
+    u = loadInputPattern(data_folder, pattern_blurring);
     Environment.Inputs.Points = {linspace(-Simulation.arena(1),Simulation.arena(1),size(u,1))/2, linspace(-Simulation.arena(2),Simulation.arena(2),size(u,2))/2};
     Environment.Inputs.Values = flip(u,2);
 end
 
 %% Create Initial Conditions
 %rng(1,'twister'); % set the randomn seed to have reproducible results
-
-x0=randCircle(N, 1000, D);                 % initial conditions drawn from a uniform disc
 
 speeds0 = abs(normrnd(median(identification.mean_s),median(identification.std_s),N,1));
 theta0 = 2*pi*rand(N,1)-pi;
@@ -250,6 +254,7 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     end
     
     % get distribution wrt light intensity
+    mask = detectObjects(data_folder, background_sub, brightness_thresh);
     [density_by_input_exp, bins, norm_slope_exp, c_coeff_exp, coefficents, ~,~, u_values_exp] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, mask, window);
 
     figure

@@ -27,10 +27,10 @@ function [p,p_lines] = plotSwarm(x,xL,time,RMin,RMax,thenDelete, spin, gradColor
 
 arguments
     x           double
-    xL          double
-    time        double
-    RMin        double {mustBeNonnegative}
-    RMax        double {mustBeNonnegative}
+    xL          double                      = []
+    time        double                      = 0
+    RMin        double {mustBeNonnegative}  = 0
+    RMax        double {mustBeNonnegative}  = 0
     thenDelete  logical                     = false
     spin        double                      = ones(size(x,1), 1)
     gradColor   logical                     = true
