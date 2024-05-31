@@ -297,7 +297,7 @@ if size(experiments_names,1) > 1 % multi-exp comparison
     for k=1:length(metrics_of_interest)
         x_pos = [[1:length(tags)]-(length(metrics_of_interest)-1)*0.1+(k-1)*0.2]'-linspace(-1,1,size(experiments_names,2)-1)*0.025;
         plots(k,:)=bar(mean(x_pos,2),metrics_of_interest{k}(:,1),0.15,metrics_color(k),'FaceAlpha',0.5);
-        scatter(x_pos,metrics_of_interest{k}(:,2:end),100,metrics_color(k),'MarkerFaceColor','w','LineWidth',1);
+        scatter(x_pos,metrics_of_interest{k}(:,2:end),100,metrics_color(k),'MarkerFaceColor','w','LineWidth',1.25);
         %plots(k,:)=scatter([1:length(tags)]-(length(metrics_of_interest)-1)*0.1+(k-1)*0.2,metrics_of_interest{k}(:,1),100,metrics_color(k),"filled");
     end
     xticks([1:length(tags)])

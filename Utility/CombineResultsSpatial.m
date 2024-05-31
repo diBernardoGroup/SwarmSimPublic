@@ -13,11 +13,15 @@ sim_names = ["2024_05_30_half_half_1"];
 experiments_names = ["2023_06_12_Euglena_2","2023_06_14_Euglena_6","2023_06_15_Euglena_12"];%,"2023_06_26_Euglena_29","2023_06_26_Euglena_30","2023_06_23_Euglena_1","2023_06_23_Euglena_2","2023_06_26_Euglena_2","2023_06_26_Euglena_1"];
 
 % spatial
-tags = ["half_half","grad_centr_light","grad_centr_dark"];
-sim_names = ["2024_05_30_half_half_1";"2024_05_30_grad_centr_light_2";"2024_05_30_grad_centr_dark_1"];
-experiments_names = ["2023_06_12_E_2","2023_06_14_E_6","2023_06_15_E_12";
-    "2023_06_12_E_3","2023_06_12_E_4","2023_06_14_E_7";
-    "2023_06_14_E_10","2023_06_15_E_15","2023_06_23_E_7"];
+tags = ["half_half","grad_centr_light","grad_centr_dark","grad_lateral","circle_light","circle_dark"];
+sim_names = ["2024_05_30_half_half_1";"2024_05_30_grad_centr_light_2";"2024_05_30_grad_centr_dark_1";"2024_05_31_grad_lateral_1";"2024_05_31_circle_light_1";"2024_05_31_circle_dark_1"]; 
+sim_names = ["2024_05_31_half_half_1";"2024_05_31_grad_centr_light_1";"2024_05_31_grad_centr_dark_1";"2024_05_31_grad_lateral_2";"2024_05_31_circle_light_2";"2024_05_31_circle_dark_2"]; % disabled alpha_v
+experiments_names = ["2023_06_12_E_2", "2023_06_14_E_6", "2023_06_15_E_12","2023_06_26_E_29","2023_06_26_E_30","2023_06_23_E_1", "2023_06_23_E_2", "2023_06_26_E_2", "2023_06_26_E_1";
+                     "2023_06_12_E_3", "2023_06_12_E_4", "2023_06_14_E_7", "2023_06_15_E_14","2023_06_23_E_5", "2023_06_23_E_6", "2023_06_26_E_5", "2023_06_26_E_6", "2023_06_26_E_33";
+                     "2023_06_14_E_10","2023_06_15_E_15","2023_06_23_E_7", "2023_06_23_E_8", "2023_06_23_E_9",  "2023_06_26_E_7","2023_06_26_E_8", "2023_06_26_E_34","2023_06_26_E_35";%"2023_07_10_E_23","2023_07_10_E_24";
+                     "2023_06_12_E_5", "2023_06_13_E_16","2023_06_14_E_8", "2023_06_15_E_13","2023_06_23_E_3", "2023_06_23_E_4", "2023_06_26_E_3", "2023_06_26_E_4", "2023_06_26_E_31";%"2023_06_26_E_32";
+                     "2023_06_12_E_1", "2023_06_14_E_1", "2023_06_15_E_16","2023_06_23_E_10","2023_06_23_E_11","2023_06_26_E_9", "2023_06_26_E_10","2023_06_26_E_36","2023_06_26_E_37";%"2023_07_10_E_26";
+                     "2023_06_13_E_6", "2023_06_13_E_15","2023_06_15_E_17","2023_06_15_E_18","2023_06_23_E_12","2023_06_23_E_13","2023_06_26_E_11","2023_06_26_E_12","2023_06_26_E_38"];%"2023_06_26_E_39","2023_07_10_E_25","2023_07_10_E_22"];
 output_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Euglena spatial';
 
 deltaT = 0.5;
@@ -44,7 +48,9 @@ for i = 1:size(experiments_names,1)  % for each experiment
         data_folder =  fullfile(experiments_folder,experiments_names(i,j));
         mask{i,j} = detectObjects(data_folder, background_sub, brightness_thresh);
         u{i,j} = loadInputPattern(data_folder, pattern_blurring);
-        %assert( all(u==inputs{i}.Values,'all') )
+        assert( mean(abs(u{i,1} - imresize(u{i,j},size(u{i,1}))),'all')<0.1, 'Replicates have different inputs' )
+        %fprintf('exp %d rep %d size(u)=[%d, %d] mean(u-u1)=%.2f\n',i,j,size(u{i,j}), mean(abs(u{i,1} - imresize(u{i,j},size(u{i,1}))),'all'))
+        
         
         % get distribution wrt light intensity
         [density_by_input_exp(i,j,:), bins, norm_slope(i,j), c_coeff(i,j), coefficents(i,j,:), agents_by_input(i,j,:), pixels_by_input(i,j,:)] = agentsDensityByInput(inputs{i}.Points, inputs{i}.Values, mask{i,j}, window);
@@ -63,6 +69,7 @@ for i = 1:size(experiments_names,1)  % for each experiment
     % weighted average light distribution over the replicates
     mean_dist(i,:) = sum(squeeze(agents_by_input(i,:,:))./squeeze(pixels_by_input(i,:,:)),1);
     mean_dist(i,:) = mean_dist(i,:)/sum(mean_dist(i,:));
+    mean_tvd(i) = 0.5 * norm(density_by_input_sim(i,:)-mean_dist(i,:),1); % Total Variation Distance
 end
 
 %% PRINT RESULTS
@@ -72,7 +79,7 @@ x_vec = linspace(window(1),window(2),size(mask,2));
 y_vec = linspace(window(3),window(4),size(mask,1));
 
 
-% multi-exp comparison
+% % multi-exp comparison
 % main_fig = figure('Position',[100 100 1900 1000]);
 % for i = 1:size(experiments_names,1)  % for each experiment
 %     subplot(size(experiments_names,2)+3,size(experiments_names,1),i)
@@ -139,7 +146,7 @@ y_vec = linspace(window(3),window(4),size(mask,1));
 %     xlabel('Input intensity','FontSize',14)
 %     ylabel('Density of agents','FontSize',14)
 %     yticks([0:0.25:1]);
-%     text(0.1,max(density_by_input_exp(i,:))*1.10,['TVD=',num2str(tvd(i,j),'%.2f')],'HorizontalAlignment','center','FontSize',14)
+%     text(0.1,max(density_by_input_exp(i,:))*1.10,['TVD=',num2str(mean_tvd(i),'%.2f')],'HorizontalAlignment','center','FontSize',14)
 %     ylim([0,max(density_by_input_exp(i,:))*1.15])
 %     xlim([-0.1,1.1])
 %     xticks(round(bins,2))
@@ -152,6 +159,7 @@ y_vec = linspace(window(3),window(4),size(mask,1));
 % multi-exp comparison
 main_fig = figure('Position',[100 100 1900 1000]);
 for i = 1:size(experiments_names,1)  % for each experiment
+    % simulation final positions
     subplot(4,size(experiments_names,1),i)
     box on
     hold on
@@ -162,11 +170,12 @@ for i = 1:size(experiments_names,1)  % for each experiment
     axis(window)
     xticks([])
     yticks([])
-    title(sim_names{i},'Interpreter','none','FontSize',14)
+    title(sim_names{i},'Interpreter','none','FontSize',12)
     if i==1
-        ylabel('Simulation')
+        ylabel('Simulation','FontSize',12)
     end
     
+    % combo experiment mask
     x_vec = linspace(window(1),window(2),size(combo_mask{i},2));
     y_vec = linspace(window(3),window(4),size(combo_mask{i},1));
     subplot(4,size(experiments_names,1),size(experiments_names,1)+i)
@@ -180,11 +189,11 @@ for i = 1:size(experiments_names,1)  % for each experiment
     axis(window)
     xticks([])
     yticks([])
-    title(experiments_names{i},'Interpreter','none')
     if i==1
-        ylabel('Combo Experiment')
+        ylabel('Combo Experiment','FontSize',12)
     end
     
+    % distributions wrt light
     subplot(4,size(experiments_names,1),2*size(experiments_names,1)+i)
     hold on
     b_exp_mean = bar((bins(1:end-1)+bins(2:end))/2,mean_dist(i,:), 1, FaceColor = 'b', FaceAlpha = 0.5);
@@ -192,31 +201,35 @@ for i = 1:size(experiments_names,1)  % for each experiment
     %[f,xi] = ksdensity(u_values_exp, support=[-0.001,1.001], BoundaryCorrection='reflection');
     %f=f/sum(f);
     %plot(xi,f)
-    legend({'REAL','SIMULATED'},'FontSize',14)
-    xlabel('Input intensity','FontSize',14)
-    ylabel('Density of agents','FontSize',14)
+    if i==size(experiments_names,1)
+    legend({'REAL','SIMULATED'},'FontSize',12,'Location','best')
+    end
+    xlabel('Input intensity','FontSize',12)
+    ylabel('Density of agents','FontSize',12)
     yticks([0:0.25:1]);
-    text(0.1,max(density_by_input_exp(i,:))*1.10,['TVD=',num2str(tvd(i,j),'%.2f')],'HorizontalAlignment','center','FontSize',14)
+    text(0,max(density_by_input_exp(i,:))*1.10,['TVD=',num2str(mean_tvd(i),'%.2f')],'FontSize',12)%,'HorizontalAlignment','center'
     ylim([0,max(density_by_input_exp(i,:))*1.15])
     xlim([-0.1,1.1])
     xticks(round(bins,2))
     box
     
 end
+% metrics
 subplot(4,size(experiments_names,1),[1+3*size(experiments_names,1),i+3*size(experiments_names,1)])
 hold on
 for k=1:length(metrics_of_interest)
-    x_pos = [[1:length(tags)]-(length(metrics_of_interest)-1)*0.1+(k-1)*0.2]'-linspace(-1,1,size(experiments_names,2)-1)*0.025;
-    plots(k,:)=bar(mean(x_pos,2),metrics_of_interest{k}(:,1),0.15,metrics_color(k),'FaceAlpha',0.5);
-    scatter(x_pos,metrics_of_interest{k}(:,2:end),100,metrics_color(k),'MarkerFaceColor','w','LineWidth',1);
+    x_pos = [[1:length(tags)]-(length(metrics_of_interest)-1)*0.1+(k-1)*0.2]'+linspace(-1,1,size(experiments_names,2))*0.04;
+    plots(k,:)=bar(mean(x_pos,2),mean_tvd,0.15,metrics_color(k),'FaceAlpha',0.5);
+    scatter(x_pos,metrics_of_interest{k},100,metrics_color(k),'MarkerFaceColor','w','LineWidth',1.25);
     %plots(k,:)=scatter([1:length(tags)]-(length(metrics_of_interest)-1)*0.1+(k-1)*0.2,metrics_of_interest{k}(:,1),100,metrics_color(k),"filled");
 end
 xticks([1:length(tags)])
 xticklabels(tags)
 set(gca, 'TickLabelInterpreter', 'none');
+set(gca,'FontSize',12)
 xlim([0.7,length(tags)+0.3])
 ylim([0, max([metrics_of_interest{:}],[],'all')*1.1])
-legend(plots(:,1),metrics_tags,'FontSize',14,'Orientation','horizontal')
+legend(plots(:,1),metrics_tags,'FontSize',12,'Orientation','horizontal')
 box on
 set(gca,'XGrid','off','YGrid','on')
 saveas(gcf,fullfile(output_folder, 'multi_exp_comparison'))
