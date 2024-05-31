@@ -167,6 +167,9 @@ while t<Simulation.Tmax
     % Integrate Agents' Dynamics
     [x, v, Dynamics] = integrateAgents(x, v, forces, Dynamics, Simulation.dT, envInput);
     
+    % Compute boundaries interaction
+    [x, v, out_agents] = boundaryInteraction(x, v, Environment.boundary);
+    
     % Update time
     t=t+Simulation.dT;
     t=Simulation.dT*round(t/Simulation.dT);

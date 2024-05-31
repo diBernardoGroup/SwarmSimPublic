@@ -14,7 +14,7 @@ clear
 %% Parameters
 
 defaultParamMicroorg;               % load default parameters to simulate microorganisms
-% Simulation.drawON = true;
+Simulation.drawON = true;
 
 % tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_15/tracking_2023_10_12';  % switch10s
 % tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo3';  % switch10s combo
@@ -30,10 +30,12 @@ defaultParamMicroorg;               % load default parameters to simulate microo
 tag='half_half'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_14_E_6';
 tag='grad_centr_light'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_12_E_3';
 tag='grad_centr_dark'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_14_E_10';
-tag='grad_lateral'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_12_E_5';
-tag='circle_light'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_12_E_1';
-tag='circle_dark'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_13_E_15';
+% tag='grad_lateral'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_12_E_5';
+% tag='circle_light'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_12_E_1';
+% tag='circle_dark'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_13_E_15';
 % tag='BCL'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_E_30';
+
+tag = 'test_boundary';
     
 id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % folder with identification data
 %id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5_old';  % folder with identification data
@@ -55,7 +57,7 @@ Dynamics=struct('model','PTWwithSignedInput', ...
     'avgOmega',agents.mu_w, 'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', agents.alpha_w, 'gainDerOmega', agents.beta_w,...
     'omega', normrnd(0,agents.std_w,N,1), 'oldInput', zeros(N,1));
 
-% % parameters for strong photodispersion
+% parameters for strong photodispersion
 % Dynamics=struct('model','PTWwithSignedInput', ...
 %     'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s, 'gainSpeed',    5, 'gainDerSpeed', -25,...
 %     'avgOmega',agents.mu_w, 'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', -0.5, 'gainDerOmega', 2,...

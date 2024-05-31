@@ -20,7 +20,7 @@ outputDir='./Output';
 %outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 outputDir='';
 
-N=1000;                      % number of agents (N)
+N=500;                      % number of agents (N)
 D=2;                        % number of dimensions [2 or 3]
 
 %% Analysis options
@@ -102,4 +102,7 @@ Environment.Inputs.InterpMethod = 'previous';
 % Environment.Inputs.Values = 'None'; 
 Environment.Inputs.Times  = [0, 5, 10, Simulation.Tmax]; 
 Environment.Inputs.Values = [0, 1, 0, 0];
+
+Environment.boundary = Simulation.arena * 0.7;
+
 
