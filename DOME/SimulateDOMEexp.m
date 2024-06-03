@@ -15,6 +15,7 @@ clear
 
 defaultParamMicroorg;               % load default parameters to simulate microorganisms
 Simulation.drawON = true;
+Simulation.recordVideo = false;
 
 % tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_15/tracking_2023_10_12';  % switch10s
 % tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo3';  % switch10s combo
@@ -186,12 +187,13 @@ figure
 if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Simulation.arena)
 end
+if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
 if isfield(LocalIntFunction, 'DistanceRange')
     plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena);
 else
     plotSwarmInit(x0, 0, inf, inf, Simulation.arena);
 end
-if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
+if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
 if outputDir
     saveas(gcf, fullfile(output_path, 'x_0'))
     saveas(gcf, fullfile(output_path, 'x_0'),'png')
@@ -202,12 +204,13 @@ figure
 if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Simulation.arena)
 end
+if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
 if isfield(LocalIntFunction, 'DistanceRange')
     plotSwarmInit(xFinal_inWindow, Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena);
 else
     plotSwarmInit(xFinal_inWindow, Simulation.Tmax, inf, inf, Simulation.arena);
 end
-if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
+if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
 if outputDir
     saveas(gcf, fullfile(output_path, 'x_final'))
     saveas(gcf, fullfile(output_path, 'x_final'),'png')
