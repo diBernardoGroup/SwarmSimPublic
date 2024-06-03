@@ -62,6 +62,7 @@ experiments_folder = "/Volumes/DOMEPEN/Experiments";
 tags = ["switch_10","switch_5","switch_1","75_ON", "150_ON", "255_ON", "OFF", "ramp"];
 %sim_names = ["2024_04_17_switch_10_2", "2024_04_17_switch_5_1", "2024_04_17_switch_1_2", "2024_04_17_75_ON_1", "2024_04_17_150_ON_3", "2024_04_17_255_ON_3", "2024_04_17_OFF_2", "2024_04_17_ramp_2"]';
 sim_names = ["2024_05_09_switch_10_3", "2024_05_09_switch_5_1", "2024_05_09_switch_1_1", "2024_05_09_75_ON_2", "2024_05_09_150_ON_2", "2024_05_09_255_ON_3", "2024_05_09_OFF_2", "2024_05_09_ramp_1"]';
+sim_names = ["2024_06_03_switch_10_1", "2024_06_03_switch_5_1", "2024_06_03_switch_1_1", "2024_06_03_75_ON_1", "2024_06_03_150_ON_1", "2024_06_03_255_ON_1", "2024_06_03_OFF_1", "2024_06_03_ramp_1"]'; % manual tuning
 experiments_names = ["comparisons/Euglena_switch_10/combo3","2023_06_15_Euglena_7", "2023_06_26_Euglena_24", "2023_07_10_Euglena_15";
     "comparisons/Euglena_switch_5/combo", "2023_06_15_Euglena_8", "2023_06_26_Euglena_25", "2023_07_10_Euglena_18";
     "comparisons/Euglena_switch_1/combo", "2023_06_15_Euglena_11", "2023_06_26_Euglena_28", "2023_07_10_Euglena_19";
@@ -70,7 +71,7 @@ experiments_names = ["comparisons/Euglena_switch_10/combo3","2023_06_15_Euglena_
     "comparisons/Euglena_255_ON/combo", "2023_06_15_Euglena_4", "2023_06_26_Euglena_20", "2023_07_10_Euglena_12";
     "comparisons/Euglena_OFF/combo", "2023_06_15_Euglena_1", "2023_06_26_Euglena_13", "2023_07_10_Euglena_6";
     "comparisons/Euglena_ramp/combo", "2023_06_15_Euglena_6", "2023_06_26_Euglena_22", "2023_07_10_Euglena_14"];
-output_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Euglena input';
+output_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Euglena input/manual tuning';
 
 % scenario duration
 % tags = ["switch_10","switch_5","switch_1","ramp"];

@@ -3,21 +3,23 @@ close all
 
 
 % data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12'; % off
-% data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
-data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5'; % switch10s combo
+data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
+% data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5'; % switch10s combo
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
 
-identification_file_name = 'identification_GB_lim_b.txt';
+identification_file_name = 'identification_GB_median.txt';
 identification_method = 'OLS+GB'; %OLS+GB
 downSampling = 1;
 
 min_duration = 10; %[s]
-no_mu_w = false;
-limits_v = []; 
-limits_w = [];
-limits_v = [  0 -inf -inf   0; 
-            inf  inf   0   inf]; 
-limits_w = [  0 -inf   0 -inf; 
+no_mu_w = true;
+init_v = [0.15, 0, -45, 75];
+init_w = [0.15, 0, 0.6,  0];
+% limits_v = [init_v;init_v]; 
+% limits_w = [init_w;init_w];
+limits_v = [  0  0 -inf   0; 
+            inf  0   0   inf]; 
+limits_w = [  0 -inf   0    0; 
             inf  inf inf  inf];
 
 deltaT = 0.5;
@@ -34,8 +36,8 @@ omega  = load(fullfile(data_folder,'ang_vel_smooth.txt'));
 
 % speed = movmean(speed,5,'omitnan');
 % omega = movmean(omega,5,'omitnan');
-% speed = median(speed,2,'omitnan');
-% omega = median(abs(omega),2,'omitnan');
+speed = median(speed,2,'omitnan');
+omega = median(abs(omega),2,'omitnan');
 % speed = movmean(speed,5,'omitnan');
 % omega = movmean(omega,5,'omitnan');
 
@@ -73,10 +75,11 @@ if strcmp(identification_method,'GA')
     [mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_matrix, deltaT, identification_method, min_duration, no_mu_w, @id_fcn_w, limits_w);
 else
     %Identification of v
-    [mu_s, theta_s, sigma_s, gains_s] = SDE_parameters_est(speed, u_matrix, deltaT, identification_method, min_duration, false, 'continouosSys', limits_v);
+    [mu_s, theta_s, sigma_s, gains_s] = SDE_parameters_est(speed, u_matrix, deltaT, identification_method, min_duration, false, 'continouosSys', limits_v, init_v);
     %Identification of w
     %[mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_matrix, deltaT, identification_method, min_duration, no_mu_w, 'continouosSys_sgn', limits_w);
-    [mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_signw, deltaT, identification_method, min_duration, no_mu_w, 'continouosSys', limits_w);
+%     [mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_signw, deltaT, identification_method, min_duration, no_mu_w, 'continouosSys', limits_w, init_w);
+    [mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(abs(omega), u_matrix, deltaT, identification_method, min_duration, false, 'continouosSys', limits_w, init_w); % abs omega
 end
 toc
 

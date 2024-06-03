@@ -20,14 +20,14 @@ outputDir='./Output';
 %outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 outputDir='';
 
-N=500;                      % number of agents (N)
+N=1000;                      % number of agents (N)
 D=2;                        % number of dimensions [2 or 3]
 
 %% Analysis options
 smoothing = false;          % smooth temporal data with moving average
 brightness_thresh = 0.3;    % brightness threshold for object detection (spatial experiments)
 background_sub = true;      % use background subtraction for object detection (spatial experiments)
-pattern_blurring = 51;      % blurring of the spatial input pattern (spatial experiments)
+pattern_blurring = 15;      % blurring of the spatial input pattern (spatial experiments)
 
 %% Simulation parameters
 % All these fields are mandatory
@@ -103,6 +103,6 @@ Environment.Inputs.InterpMethod = 'previous';
 Environment.Inputs.Times  = [0, 5, 10, Simulation.Tmax]; 
 Environment.Inputs.Values = [0, 1, 0, 0];
 
-Environment.boundary = Simulation.arena * 0.7;
+% Environment.boundary = Simulation.arena * 2;
 
 

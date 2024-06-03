@@ -16,13 +16,14 @@ experiments_names = ["2023_06_12_Euglena_2","2023_06_14_Euglena_6","2023_06_15_E
 tags = ["half_half","grad_centr_light","grad_centr_dark","grad_lateral","circle_light","circle_dark"];
 sim_names = ["2024_05_30_half_half_1";"2024_05_30_grad_centr_light_2";"2024_05_30_grad_centr_dark_1";"2024_05_31_grad_lateral_1";"2024_05_31_circle_light_1";"2024_05_31_circle_dark_1"]; 
 sim_names = ["2024_05_31_half_half_1";"2024_05_31_grad_centr_light_1";"2024_05_31_grad_centr_dark_1";"2024_05_31_grad_lateral_2";"2024_05_31_circle_light_2";"2024_05_31_circle_dark_2"]; % disabled alpha_v
+sim_names = ["2024_06_03_half_half_1";"2024_06_03_grad_centr_light_1";"2024_06_03_grad_centr_dark_1";"2024_06_03_grad_lateral_1";"2024_06_03_circle_light_1";"2024_06_03_circle_dark_1"]; % manual tuning
 experiments_names = ["2023_06_12_E_2", "2023_06_14_E_6", "2023_06_15_E_12","2023_06_26_E_29","2023_06_26_E_30","2023_06_23_E_1", "2023_06_23_E_2", "2023_06_26_E_2", "2023_06_26_E_1";
                      "2023_06_12_E_3", "2023_06_12_E_4", "2023_06_14_E_7", "2023_06_15_E_14","2023_06_23_E_5", "2023_06_23_E_6", "2023_06_26_E_5", "2023_06_26_E_6", "2023_06_26_E_33";
                      "2023_06_14_E_10","2023_06_15_E_15","2023_06_23_E_7", "2023_06_23_E_8", "2023_06_23_E_9",  "2023_06_26_E_7","2023_06_26_E_8", "2023_06_26_E_34","2023_06_26_E_35";%"2023_07_10_E_23","2023_07_10_E_24";
                      "2023_06_12_E_5", "2023_06_13_E_16","2023_06_14_E_8", "2023_06_15_E_13","2023_06_23_E_3", "2023_06_23_E_4", "2023_06_26_E_3", "2023_06_26_E_4", "2023_06_26_E_31";%"2023_06_26_E_32";
                      "2023_06_12_E_1", "2023_06_14_E_1", "2023_06_15_E_16","2023_06_23_E_10","2023_06_23_E_11","2023_06_26_E_9", "2023_06_26_E_10","2023_06_26_E_36","2023_06_26_E_37";%"2023_07_10_E_26";
                      "2023_06_13_E_6", "2023_06_13_E_15","2023_06_15_E_17","2023_06_15_E_18","2023_06_23_E_12","2023_06_23_E_13","2023_06_26_E_11","2023_06_26_E_12","2023_06_26_E_38"];%"2023_06_26_E_39","2023_07_10_E_25","2023_07_10_E_22"];
-output_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Euglena spatial';
+output_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Euglena spatial/manual tuning';
 
 deltaT = 0.5;
 timeInstants = [0:deltaT:180];

@@ -1,4 +1,4 @@
-function [mu, theta, sigma, alpha] = SDE_parameters_est(x, u, deltaT, method, min_duration, no_mu, model, limits, make_plots)
+function [mu, theta, sigma, alpha] = SDE_parameters_est(x, u, deltaT, method, min_duration, no_mu, model, limits, init_values, make_plots)
 %SDE_parameters_est Regularized estimation of the parameters of a SDE in the form
 %         dX = [ theta * (mu - X) + alpha * u] * dt + sigma * dW
 %     where dW is gaussian white noise.
@@ -14,6 +14,7 @@ arguments
     no_mu = false                       % fix mu to zero
     model = ''
     limits= [[0;inf], inf(2,3).*[-1;1]]
+    init_values = []
     make_plots = false
 end
 
@@ -143,12 +144,19 @@ for i=1:number_of_series % for each time-series
             sys.Parameters(1).Name = 'theta';   sys.Parameters(1).Minimum = 0;
             sys.Parameters(2).Name = 'alpha';
             sys.Parameters(3).Name = 'mu';
-            if strcmp(method,'OLS+GB')
+            if strcmp(method,'OLS+GB') % Use OLS estimation as initial values
                 sys.Parameters(1).Value = max(sys.Parameters(1).Minimum, theta(i));
                 sys.Parameters(2).Value = alpha(i,:);
                 sys.Parameters(3).Value = mu(i);
             end
-            l=1;
+            l=1; % Set initial values
+            for p=1:min(length(init_values), length(sys.Parameters))
+                if all(~isnan(init_values(l:l+length(sys.Parameters(p).Value)-1)))
+                sys.Parameters(p).Value = init_values(l:l+length(sys.Parameters(p).Value)-1);
+                end
+                l=l+length(sys.Parameters(p).Maximum);
+            end
+            l=1; % Set constraints
             for p=1:min(size(limits,2), length(sys.Parameters))
                 lim_l = limits(1,l:l+length(sys.Parameters(p).Minimum)-1)';
                 lim_u = limits(2,l:l+length(sys.Parameters(p).Minimum)-1)';
