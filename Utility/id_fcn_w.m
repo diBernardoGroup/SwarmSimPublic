@@ -20,6 +20,8 @@ function cost = id_fcn_w(pars, y, u, deltaT)
     end
 
     cost = sum((y_hat-y).^2,1) + sum((abs(y_hat)-abs(y)).^2,1);
+    cost = cost + 20 * sum((abs(y_hat(u(:,2)>0))-abs(y(u(:,2)>0))).^2);
+
     % cost = sum((abs(y_hat)-abs(y)).^2,1);
     % cost = sum((y_hat-y).^2,1);
 

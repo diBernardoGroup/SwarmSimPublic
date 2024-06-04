@@ -1,14 +1,15 @@
 clear
 close all
 
+%% 
 
+data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\Euglena_switch_10\combo3'; % switch10s combo
 % data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12'; % off
 % data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
-data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5'; % switch10s combo
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
 
-identification_file_name = 'identification_GB_lim_b.txt';
-identification_method = 'OLS+GB'; %OLS+GB
+identification_file_name = 'identification_GA_bga4.txt';
+identification_method = 'GA'; %OLS+GB
 downSampling = 1;
 
 min_duration = 10; %[s]
@@ -17,8 +18,8 @@ limits_v = [];
 limits_w = [];
 limits_v = [  0 -inf -inf   0; 
             inf  inf   0   inf]; 
-limits_w = [  0 -inf   0 -inf; 
-            inf  inf inf  inf];
+limits_w = [0 0   0.4 0; 
+            1 1   2  0];
 
 deltaT = 0.5;
 dT = 0.01;
@@ -31,6 +32,7 @@ addpath(genpath(current_folder));
 %identification=readtable(fullfile(current_folder,'identification.txt'));
 speed  = load(fullfile(data_folder,'speeds_smooth.txt'));
 omega  = load(fullfile(data_folder,'ang_vel_smooth.txt'));
+
 
 % speed = movmean(speed,5,'omitnan');
 % omega = movmean(omega,5,'omitnan');
@@ -50,6 +52,7 @@ N = size(speed,2);
 timeInstants = [0:size(speed,1)-1] * deltaT;
 agents = [0:N-1]';
 u=inputs(:,1)/255;
+
 
 %Computing the derivative 
 u_dot_BE = [0;diff(u)]/deltaT;

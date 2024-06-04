@@ -21,5 +21,7 @@ function cost = id_fcn_v(pars, y, u, deltaT)
 
     cost = sum((y_hat-y).^2,1);
 
+    
+    cost = cost + 10* sum((y_hat(u(:,2)>0)-y(u(:,2)>0)).^2);
 
 end

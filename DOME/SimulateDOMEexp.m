@@ -16,7 +16,7 @@ clear
 defaultParamMicroorg;               % load default parameters yo simulate microorganisms
 
 % tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_Euglena_15/tracking_2023_10_12';  % switch10s
-tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo3';  % switch10s combo
+tag='switch_10'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\Euglena_switch_10\combo5'; % switch10s combo
 % tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % switch10s combo 5
 % tag='switch_5'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_5/combo';  % switch5s combo
 % tag='switch_1'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_1/combo';  % switch1s combo
@@ -26,11 +26,11 @@ tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena
 % tag='OFF'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_OFF/combo';  % OFF combo
 % tag='ramp'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_ramp/combo';  % ramp combo
 
-id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % folder with identification data
+id_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\Euglena_switch_10\combo3';  % folder with identification data
 %id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5_old';  % folder with identification data
-identification_file_name = 'identification_GB_lim_b_nomu.txt';
+identification_file_name = 'identification_GA_bga4.txt';
 
-outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
+outputDir = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\Euglena_switch_10\sim';
 % outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications';
 % [~,simulation_name,~]=fileparts(identification_file_name);
 
@@ -49,6 +49,7 @@ Dynamics=struct('model','PTWwithSignedInput', ...
     'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s, 'gainSpeed', agents.alpha_s, 'gainDerSpeed', agents.beta_s,...
     'avgOmega',agents.mu_w, 'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', agents.alpha_w, 'gainDerOmega', agents.beta_w,...
     'omega', normrnd(0,agents.std_w,N,1), 'oldInput', zeros(N,1));
+
 
 % % parameters for strong photodispersion
 % Dynamics=struct('model','PTWwithSignedInput', ...

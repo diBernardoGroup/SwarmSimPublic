@@ -46,7 +46,8 @@ function [] = myboxplot(data, significance, whisker, colors)
             %[h,p] = ttest(data{1});
             
         else
-            p = ranksum(data{1},data{2});
+            % p = ranksum(data{1},data{2});
+            [~,p]=kstest2(data{1},data{2});
 %             y_max=max(max(data{1}),max(data{2}));
 %             y_min=min(min(data{1}),min(data{2}));
             plot([1 1 2 2], [1 1.05 1.05 1]*y_max*1.1, '-k', LineWidth=1)
