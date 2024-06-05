@@ -244,7 +244,7 @@ if make_plots
     % set(gca,'xtick',[])
     subplot(2,1,2)
     xlim([0,max(timeInstants)])
-    ylim([0,2])
+    ylim([-1,1])
     if isvarname('u')
         highlightInputs(timeInstants, u, 'r', 0.25)
     end

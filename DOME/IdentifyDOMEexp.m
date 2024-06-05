@@ -3,8 +3,8 @@ close all
 
 
 % data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12'; % off
-data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
-% data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5'; % switch10s combo
+% data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
+data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5'; % switch10s combo
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
 
 identification_file_name = 'identification_GB_median.txt';
@@ -13,15 +13,19 @@ downSampling = 1;
 
 min_duration = 10; %[s]
 no_mu_w = true;
-init_v = [0.15, 0, -45, 75];
-init_w = [0.15, 0, 0.6,  0];
+%parameters [theta, alpha, beta, mu]
+init_v    = [0.15, 0, -45, 75];
+init_w    = [0.15, 0, 0.6,  0];
+init_wabs = [0.15, 0, 0.6,  0.2];
 % limits_v = [init_v;init_v]; 
 % limits_w = [init_w;init_w];
-limits_v = [  0  0 -inf   0; 
-            inf  0   0   inf]; 
-limits_w = [  0 -inf   0    0; 
-            inf  inf inf  inf];
-
+limits_v =    [  0  0 -inf   0; 
+               inf  0   0   inf]; 
+limits_w =    [  0  0   0    0; 
+               inf  0 inf    0];
+limits_wabs = [  0  0   0    0; 
+               inf  0 inf  inf];
+        
 deltaT = 0.5;
 dT = 0.01;
 thresholdfactor = 3; % parameters outliers detection
@@ -79,7 +83,9 @@ else
     %Identification of w
     %[mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_matrix, deltaT, identification_method, min_duration, no_mu_w, 'continouosSys_sgn', limits_w);
 %     [mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_signw, deltaT, identification_method, min_duration, no_mu_w, 'continouosSys', limits_w, init_w);
-    [mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(abs(omega), u_matrix, deltaT, identification_method, min_duration, false, 'continouosSys', limits_w, init_w); % abs omega
+    [mu_wabs, theta_w, sigma_w, gains_w] = SDE_parameters_est(abs(omega), u_matrix, deltaT, identification_method, min_duration, false, 'continouosSys', limits_wabs, init_wabs); % abs omega
+    sigma_w = mu_wabs .* sqrt(theta_w*pi); % from std of abs(w) to std of w
+    mu_w = mu_wabs * 0;                    % from mean of abs(w) to mean of w
 end
 toc
 
@@ -136,8 +142,7 @@ mu_s_med    = median(identification.mu_s);
 alpha_s_med = median(identification.alpha_s);
 beta_s_med  = median(identification.beta_s);
 theta_w_med = median(identification.theta_w);
-% mu_w_med    = median(abs(omega),'all','omitnan');
-mu_w_med    = median(identification.mu_w);
+mu_w_med    = median(identification.sigma_w ./ sqrt(identification.theta_w*pi));
 alpha_w_med = median(identification.alpha_w);
 beta_w_med  = median(identification.beta_w);
 for i=1:length(t_sim)-1

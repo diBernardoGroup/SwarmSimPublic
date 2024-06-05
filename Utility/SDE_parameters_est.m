@@ -10,9 +10,9 @@ arguments
     u
     deltaT = 1
     method (1,:) char {mustBeMember(method,{'LASSO','OLS','OLS+GB','GreyBoxDT','GBDT','GreyBoxCT','GBCT','GB','GA'})} ='OLS'
-    min_duration = 10                   %[s]
-    no_mu = false                       % fix mu to zero
-    model = ''
+    min_duration    double  = 10              %[s]
+    no_mu           logical = false          % fix mu to zero
+    model = ''      
     limits= [[0;inf], inf(2,3).*[-1;1]]
     init_values = []
     make_plots = false

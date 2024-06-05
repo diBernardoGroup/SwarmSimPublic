@@ -3,15 +3,15 @@ close all
 
 %% PARAMETERS
 theta   = 0.5;
-mu      = 0.1;
+mu      = 0;
 sigma   = 0.25;
-alpha   = -1;
-beta    = -1;
+alpha   = 10;
+beta    = 0;
 
 Tmax    = 100;
 dT      = 0.01; % integration step
 deltaT  = 1; % sampling time
-Ntimes  = 10;
+Ntimes  = 100;
 times = [0:dT:Tmax];
 % u = zeros(size(times));            % no input
 u = times>Tmax/3 & times<Tmax*2/3;  % step
@@ -20,7 +20,7 @@ u = times>Tmax/3 & times<Tmax*2/3;  % step
 % u = mod(times,10)/10;               % sawtooth wave
 
 %% SIMULATION
-u_dot = [diff(u),0]/dT;
+u_dot = [0,diff(u)]/dT;
 %u_dot = gradient(u)/dT;
 X=nan(length(times),Ntimes);
 X(1,:)=rand(1,Ntimes)*2*mu;
@@ -28,16 +28,19 @@ for i=1:length(times)-1
     X(i+1,:)= X(i,:) + (theta*(mu-X(i,:)) + alpha*u(i) + beta*u_dot(i) )*dT + sigma* sqrt(dT) * randn(1,Ntimes);
 end
 
+% X=abs(X);
+
 X_data=X(1:deltaT/dT:end,:);
 u_data=u(1:deltaT/dT:end)';
 u_dot_data=[diff(u_data);0]/deltaT;
 %u_dot_data=gradient(u_data)/deltaT;
 t_data=times(1:deltaT/dT:end);
 
-[m_LASSO, t_LASSO, s_LASSO, a_LASSO]    = SDE_parameters_est(X_data, [u_data, u_dot_data], deltaT, 'LASSO');
+%% identification
 [m_OLS, t_OLS, s_OLS, a_OLS]            = SDE_parameters_est(X_data, [u_data, u_dot_data], deltaT, 'OLS');
-[m_Grey, t_Grey, s_Grey, a_Grey]        = SDE_parameters_est(X_data, [u_data, u_dot_data], deltaT, 'GreyBox');
-[m_GreyCT, t_GreyCT, s_GreyCT, a_GreyCT]= SDE_parameters_est(X_data, [u_data, u_dot_data], deltaT, 'GreyBoxCT');
+[m_LASSO, t_LASSO, s_LASSO, a_LASSO]    = SDE_parameters_est(X_data, [u_data, u_dot_data], deltaT, 'LASSO');
+[m_Grey, t_Grey, s_Grey, a_Grey]        = SDE_parameters_est(X_data, [u_data, u_dot_data], deltaT, 'GreyBoxDT', 0, false, 'continouosSys');
+[m_GreyCT, t_GreyCT, s_GreyCT, a_GreyCT]= SDE_parameters_est(X_data, [u_data, u_dot_data], deltaT, 'GreyBoxCT', 0, false, 'continouosSys');
 [m_MLE, t_MLE, s_MLE]                   = MLE_SDE_parameters(X_data, deltaT);
 
 %% simulate average identified system
@@ -65,7 +68,7 @@ fprintf('\ttheta\tmu\tsigma\talpha\tbeta\tNMSE\n')
 fprintf('TRUE\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n',theta,mu,sigma,alpha,beta)
 fprintf(join(['LASSO\t%.2f\t%.2f\t%.2f\t%.2f',repmat("%.2f",1,length(mean(a_LASSO))),'\n'],'\t'),   mean(t_LASSO),   mean(m_LASSO),   mean(s_LASSO), mean(a_LASSO), nmse_LASSO)
 fprintf(join(['OLS\t%.2f\t%.2f\t%.2f\t%.2f',repmat("%.2f",1,length(mean(a_OLS))),'\n'],'\t'),       mean(t_OLS),     mean(m_OLS),     mean(s_OLS),   mean(a_OLS), nmse_OLS)
-fprintf(join(['GreyBox\t%.2f\t%.2f\t%.2f\t%.2f',repmat("%.2f",1,length(mean(a_Grey))),'\n'],'\t'),  mean(t_Grey),    mean(m_Grey),    mean(s_Grey),  mean(a_Grey), nmse_Grey)
+fprintf(join(['GB DT\t%.2f\t%.2f\t%.2f\t%.2f',repmat("%.2f",1,length(mean(a_Grey))),'\n'],'\t'),  mean(t_Grey),    mean(m_Grey),    mean(s_Grey),  mean(a_Grey), nmse_Grey)
 fprintf(join(['GB CT\t%.2f\t%.2f\t%.2f\t%.2f',repmat("%.2f",1,length(mean(a_GreyCT))),'\n'],'\t'),  mean(t_GreyCT),  mean(m_GreyCT),  mean(s_GreyCT),mean(a_GreyCT), nmse_GBCT)
 %fprintf('MLE\t%.2f\t%.2f\t%.2f\n',  mean(t_MLE),    mean(m_MLE),    mean(s_MLE))
 
