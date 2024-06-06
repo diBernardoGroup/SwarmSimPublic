@@ -7,7 +7,7 @@ close all
 data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5'; % switch10s combo
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
 
-identification_file_name = 'identification_GB_median.txt';
+identification_file_name = 'identification_GB_absw_alpha.txt';
 identification_method = 'OLS+GB'; %OLS+GB
 downSampling = 1;
 
@@ -19,12 +19,12 @@ init_w    = [0.15, 0, 0.6,  0];
 init_wabs = [0.15, 0, 0.6,  0.2];
 % limits_v = [init_v;init_v]; 
 % limits_w = [init_w;init_w];
-limits_v =    [  0  0 -inf   0; 
-               inf  0   0   inf]; 
-limits_w =    [  0  0   0    0; 
-               inf  0 inf    0];
-limits_wabs = [  0  0   0    0; 
-               inf  0 inf  inf];
+limits_v =    [  0  -inf -inf   0; 
+               inf    0   0   inf]; 
+limits_w =    [  0    0   0    0; 
+               inf    0  inf   0];
+limits_wabs = [  0    0   0    0; 
+               inf   inf inf  inf];
         
 deltaT = 0.5;
 dT = 0.01;
@@ -34,14 +34,23 @@ current_folder = fileparts(which('AnalyseDOMEexp'));
 addpath(genpath(current_folder));
 
 %% Load data
+if ischar(init_v)
+    identification=readtable(fullfile(id_folder,init_v));
+    init_v = median([identification.theta_v, identification.alpha_v, identification.beta_v, identification.mu_v]);
+end
+if ischar(init_w)
+    identification=readtable(fullfile(id_folder,init_w));
+    init_w = median([identification.theta_w, identification.alpha_w, identification.beta_w, identification.mu_w]);
+end
+
 %identification=readtable(fullfile(current_folder,'identification.txt'));
 speed  = load(fullfile(data_folder,'speeds_smooth.txt'));
 omega  = load(fullfile(data_folder,'ang_vel_smooth.txt'));
 
 % speed = movmean(speed,5,'omitnan');
 % omega = movmean(omega,5,'omitnan');
-speed = median(speed,2,'omitnan');
-omega = median(abs(omega),2,'omitnan');
+% speed = median(speed,2,'omitnan');
+% omega = median(abs(omega),2,'omitnan');
 % speed = movmean(speed,5,'omitnan');
 % omega = movmean(omega,5,'omitnan');
 
@@ -89,6 +98,7 @@ else
 end
 toc
 
+%% Save data
 %Approximate to the 4th
 mu_s=round(mu_s,4);
 theta_s=round(theta_s,4);

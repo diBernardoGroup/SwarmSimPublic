@@ -20,7 +20,7 @@ outputDir='./Output';
 %outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 outputDir='';
 
-N=1000;                      % number of agents (N)
+N=2000;                      % number of agents (N)
 D=2;                        % number of dimensions [2 or 3]
 
 %% Analysis options
@@ -44,7 +44,8 @@ Simulation.timeInstants = [0:Simulation.deltaT:Simulation.Tmax];
 %% Initial conditions
 % Initial positions
 delta=1;               % maximum displacement of the initial positions. delta<=(Rmax-1)/2 preserves all the links
-x0=randCircle(N, 1000, D);             % initial conditions drawn from a uniform disc
+%x0=randCircle(N, 1000, D);             % initial conditions drawn from a uniform disc
+x0=randRect(N, Simulation.arena*2, D);             % initial conditions drawn from a rectangle
 %x0 = normrnd(0,0.1*sqrt(N),N,D);    % initial conditions drawn from a normal distribution
 %x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D); % initial conditions on a correct lattice
 %x0 = perfectLactice(N, LinkNumber, D) + randCircle(N, delta, D); % initial conditions on a deformed lattice

@@ -1,4 +1,4 @@
-function [p,p_lines] = plotSwarm(x,xL,time,RMin,RMax,thenDelete, spin, gradColor)
+function [p,p_lines] = plotSwarm(x,xL,time,RMin,RMax,thenDelete, spin, gradColor, radius)
 %
 %plotSwarm draws the agents and the links of the swarm.
 %   The figure should be already open and set with the correct axis using plotSwarmInit.
@@ -34,6 +34,11 @@ arguments
     thenDelete  logical                     = false
     spin        double                      = ones(size(x,1), 1)
     gradColor   logical                     = true
+    radius      double {mustBePositive}     = 20
+end
+
+if isempty(spin)
+        spin = ones(size(x,1), 1);
 end
 
 title(['t=',num2str(time,'%.2f'),' s'])
@@ -47,17 +52,17 @@ if size(x,2) > 3
 end
 
 if size(x,2) == 2
-    p1 = plot(x(spin1,1), x(spin1,2),'b.','MarkerSize', 20);
-    p2 = plot(x(spin0,1), x(spin0,2),'r.','MarkerSize', 20);
+    p1 = plot(x(spin1,1), x(spin1,2),'b.','MarkerSize', radius);
+    p2 = plot(x(spin0,1), x(spin0,2),'r.','MarkerSize', radius);
 else
     if gradColor
-        p1 = scatter3(x(spin1,1), x(spin1,2), x(spin1,3), 60, x(spin1,3), 'filled');
-        p2 = scatter3(x(spin0,1), x(spin0,2), x(spin0,3), 60,'r', 'filled');
+        p1 = scatter3(x(spin1,1), x(spin1,2), x(spin1,3), radius*3, x(spin1,3), 'filled');
+        p2 = scatter3(x(spin0,1), x(spin0,2), x(spin0,3), radius*3,'r', 'filled');
         cmap=[0 0 1].*[0.6:0.01:1]';
         colormap(gca,cmap)
     else
-        p1 = scatter3(x(spin1,1), x(spin1,2), x(spin1,3),60,'b', 'filled');
-        p2 = scatter3(x(spin0,1), x(spin0,2), x(spin0,3),60,'r', 'filled');
+        p1 = scatter3(x(spin1,1), x(spin1,2), x(spin1,3),radius*3,'b', 'filled');
+        p2 = scatter3(x(spin0,1), x(spin0,2), x(spin0,3),radius*3,'r', 'filled');
     end  
 end
 

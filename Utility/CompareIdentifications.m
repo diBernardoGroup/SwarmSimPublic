@@ -3,7 +3,7 @@ close all
 
 % id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % folder with identification data
 id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';
-outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications/id_comparison_GA_GB';
+outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications/id_comparison_absw';
 
 % identification_file_names = ["identification_OLS_ds1_sign.txt","identification_OLS_ds2_sign.txt","identification_OLS_ds3_sign.txt";
 %                              %"identification_OLS_ds1_abs.txt","identification_OLS_ds2_abs.txt","identification_OLS_ds3_abs.txt";
@@ -14,8 +14,6 @@ outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFede
 identification_file_names = ["identification_OLS_ds1_sign_grad.txt","identification_OLS_ds2_sign_grad.txt","identification_OLS_ds3_sign_grad.txt";
     "identification_GBCT_ds1_sign_grad.txt","identification_GBCT_ds2_sign_grad.txt","identification_GBCT_ds3_sign_grad.txt"];
 tags = ["OLS","GBDT","GBCT grad","GBCT diff"];
-
-identification_file_names = ["identification_OLS_ds1.txt","identification_OLS_dscombo.txt","identification_OLS_ds3.txt"];
 
 identification_file_names = ["identification_OLS+GB_ds1_old.txt";
     "identification_OLS+GB_ds1_diff.txt";
@@ -47,6 +45,11 @@ identification_file_names =    [ "identification_GB_lim"; "identification_GB_lim
                                  "identification_GB_lim_bv_nomu"; "identification_GB_lim_bw_nomu";
                                  "identification_GB_lim_b"; "identification_GB_lim_b_discardmu"];
 tags = ["GB_lim","GB_lim_nomu","GB_lim_v_nomu","GB_lim_w_nomu","GB_lim_b_nomu","GB_lim_bv_nomu","GB_lim_bw_nomu","GB_lim_b","GB_lim_b_discardmu"];
+
+identification_file_names =    [ "identification_manual"; "identification_GB_median"; 
+                                 "identification_GB_absw_noalpha"; "identification_GB_absw_alphaw+"; 
+                                 "identification_GB_absw_alphaw";  "identification_GB_absw_alpha"];
+tags = ["manual","median","absw_noalpha","absw_alphaw+","absw_alphaw","absw_alpha"];
 
 dT = 0.01;
 deltaT = 0.5;
