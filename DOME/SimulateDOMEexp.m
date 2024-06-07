@@ -8,7 +8,7 @@
 %
 
 %% Clear environment
-close all
+% close all
 clear
 
 %% Parameters
@@ -18,10 +18,10 @@ defaultParamMicroorg;               % load default parameters to simulate microo
 % Simulation.recordVideo = false;
 
 % tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16';  % switch10s
-tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo3';  % switch10s combo
+% tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo3';  % switch10s combo
 % tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % switch10s combo 5
-tag='switch_5'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_5/combo';  % switch5s combo
-tag='switch_1'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_1/combo';  % switch1s combo
+% tag='switch_5'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_5/combo';  % switch5s combo
+% tag='switch_1'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_1/combo';  % switch1s combo
 % tag='75_ON'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_75_ON/combo';  % OFF-ON-OFF 75 combo
 % tag='150_ON'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_150_ON/combo';  % OFF-ON-OFF 150 combo
 % tag='255_ON'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_255_ON/combo';  % OFF-ON-OFF 255 combo
@@ -33,13 +33,13 @@ tag='switch_1'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_
 % tag='grad_centr_dark';    data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_14_E_10';   Environment.boundary = Simulation.arena * 2;
 % tag='grad_lateral';       data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_13_E_16';   Environment.boundary = Simulation.arena * 2;
 % tag='circle_light';       data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_12_E_1';    Environment.boundary = Simulation.arena * 2;
-% tag='circle_dark';        data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_13_E_15';   Environment.boundary = Simulation.arena * 2;
+tag='circle_dark';        data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_13_E_15';   Environment.boundary = Simulation.arena * 2;
 % tag='BCL';                data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_E_30';   Environment.boundary = Simulation.arena * 2;
 
-% tag = 'test_boundary';
+% tag = 'no_light_response';
     
 id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % folder with identification data
-identification_file_name = 'identification_GB_absw_alpha.txt';
+identification_file_name = 'identification_GB_absw_alpha_medianinit.txt';
 % id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
 % identification_file_name = 'identification_GB_absw_alpha.txt';
 
@@ -412,4 +412,4 @@ if Simulation.recordVideo
 end
 
 % pause
-close all
+% close all

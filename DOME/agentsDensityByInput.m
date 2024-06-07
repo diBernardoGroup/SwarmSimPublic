@@ -8,8 +8,8 @@ function [density_by_input, bins, norm_slope, c_coeff, coefficents, agents_by_in
         [x_mesh, y_mesh] = meshgrid(x_vec, y_vec);
         u_values = F(x_mesh(mask),y_mesh(mask));
     else
-        x_vec = linspace(window(1),window(2),100);
-        y_vec = linspace(window(3),window(4),100);
+        x_vec = linspace(window(1),window(2),1000);
+        y_vec = linspace(window(3),window(4),1000);
         [x_mesh, y_mesh] = meshgrid(x_vec, y_vec);
         u_values = F(x(:,1),x(:,2));    % input intensity measured by the agents
     end

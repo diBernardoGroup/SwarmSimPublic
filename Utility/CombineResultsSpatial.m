@@ -4,7 +4,7 @@ close all
 defaultParamMicroorg
 
 simulations_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
-simulations_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/2024_06_06_GB_absw_noalpha';
+simulations_folder = fullfile(simulations_folder,'2024_06_06_GB_absw_alphaw+');
 experiments_folder = "/Volumes/DOMEPEN/Experiments";
 
 
@@ -16,6 +16,7 @@ experiments_names = ["2023_06_12_Euglena_2","2023_06_14_Euglena_6","2023_06_15_E
 % spatial
 tags = ["half_half","grad_centr_light","grad_centr_dark","grad_lateral","circle_light","circle_dark"];
 sim_names = ["2024_06_06_half_half_1";"2024_06_06_grad_centr_light_1";"2024_06_06_grad_centr_dark_1";"2024_06_06_grad_lateral_1";"2024_06_06_circle_light_1";"2024_06_06_circle_dark_1"]; % manual tuning
+% sim_names = ["2024_06_07_half_half_1";"2024_06_07_grad_centr_light_1";"2024_06_07_grad_centr_dark_1";"2024_06_07_grad_lateral_1";"2024_06_07_circle_light_1";"2024_06_07_circle_dark_1"]; % manual tuning
 experiments_names = ["2023_06_12_E_2", "2023_06_14_E_6", "2023_06_15_E_12","2023_06_26_E_29","2023_06_26_E_30","2023_06_23_E_1", "2023_06_23_E_2", "2023_06_26_E_2", "2023_06_26_E_1";
                      "2023_06_12_E_3", "2023_06_12_E_4", "2023_06_14_E_7", "2023_06_15_E_14","2023_06_23_E_5", "2023_06_23_E_6", "2023_06_26_E_5", "2023_06_26_E_6", "2023_06_26_E_33";
                      "2023_06_14_E_10","2023_06_15_E_15","2023_06_23_E_7", "2023_06_23_E_8", "2023_06_23_E_9",  "2023_06_26_E_7","2023_06_26_E_8", "2023_06_26_E_34","2023_06_26_E_35";%"2023_07_10_E_23","2023_07_10_E_24";
@@ -199,13 +200,13 @@ for i = 1:size(experiments_names,1)  % for each experiment
     %f=f/sum(f);
     %plot(xi,f)
     if i==size(experiments_names,1)
-    legend({'REAL','SIMULATED'},'FontSize',12,'Location','best')
+    legend({'REAL','SIMULATED'},'FontSize',12)%,'Location','best')
     end
     xlabel('Input intensity','FontSize',12)
     ylabel('Density of agents','FontSize',12)
     yticks([0:0.25:1]);
-    text(0,max(density_by_input_exp(i,:))*1.10,['TVD=',num2str(mean_tvd(i),'%.2f')],'FontSize',12)%,'HorizontalAlignment','center'
-    ylim([0,max(density_by_input_exp(i,:))*1.15])
+    text(0,max(mean_dist(:))*1.10,['TVD=',num2str(mean_tvd(i),'%.2f')],'FontSize',12)%,'HorizontalAlignment','center'
+    ylim([0,max(mean_dist(:))*1.15])
     xlim([-0.1,1.1])
     xticks(round(bins,2))
     box
@@ -219,6 +220,7 @@ for k=1:length(metrics_of_interest)
     plots(k,:)=bar(mean(x_pos,2),mean_tvd,0.15,metrics_color(k),'FaceAlpha',0.5);
     scatter(x_pos,metrics_of_interest{k},100,metrics_color(k),'MarkerFaceColor','w','LineWidth',1.25);
     %plots(k,:)=scatter([1:length(tags)]-(length(metrics_of_interest)-1)*0.1+(k-1)*0.2,metrics_of_interest{k}(:,1),100,metrics_color(k),"filled");
+    text(length(tags)+0.4, max([metrics_of_interest{:}],[],'all')*(0.7-k*0.1), ['med ',char(metrics_tags(k)),'=',num2str(median(mean_tvd),'%.2f')],'FontSize',12)
 end
 xticks([1:length(tags)])
 xticklabels(tags)

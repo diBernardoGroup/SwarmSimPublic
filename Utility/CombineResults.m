@@ -2,7 +2,7 @@ clear
 close all
 
 simulations_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
-simulations_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/2024_06_06_GB_absw_alpha';
+% simulations_folder = fullfile(simulations_folder,'2024_06_06_GB_absw_alpha');
 experiments_folder = "/Volumes/DOMEPEN/Experiments";
 
 % % switch 10s all
@@ -61,7 +61,8 @@ experiments_folder = "/Volumes/DOMEPEN/Experiments";
 
 % all
 tags = ["switch_10","switch_5","switch_1","ramp", "OFF","75_ON", "150_ON", "255_ON"];
-sim_names = ["2024_06_06_switch_10_1", "2024_06_06_switch_5_1", "2024_06_06_switch_1_1", "2024_06_06_ramp_1", "2024_06_06_OFF_1", "2024_06_06_75_ON_1", "2024_06_06_150_ON_1", "2024_06_06_255_ON_1"]'; % manual tuning
+sim_names = ["2024_06_06_switch_10_1", "2024_06_06_switch_5_1", "2024_06_06_switch_1_1", "2024_06_06_ramp_1", "2024_06_06_OFF_1", "2024_06_06_75_ON_1", "2024_06_06_150_ON_1", "2024_06_06_255_ON_1"]'; 
+% sim_names = ["2024_06_07_switch_10_1", "2024_06_07_switch_5_1", "2024_06_07_switch_1_1", "2024_06_07_ramp_1", "2024_06_07_OFF_1", "2024_06_07_75_ON_1", "2024_06_07_150_ON_1", "2024_06_07_255_ON_1"]';
 experiments_names = ["comparisons/Euglena_switch_10/combo3","2023_06_15_Euglena_7", "2023_06_26_Euglena_24", "2023_07_10_Euglena_15";
     "comparisons/Euglena_switch_5/combo", "2023_06_15_Euglena_8", "2023_06_26_Euglena_25", "2023_07_10_Euglena_18";
     "comparisons/Euglena_switch_1/combo", "2023_06_15_Euglena_11", "2023_06_26_Euglena_28", "2023_07_10_Euglena_19";
@@ -73,41 +74,24 @@ experiments_names = ["comparisons/Euglena_switch_10/combo3","2023_06_15_Euglena_
 % output_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Euglena input/manual tuning';
 output_folder = simulations_folder;
 
-% % scenario duration
+% scenario duration
 % tags = tags(1:4);
 % sim_names = sim_names(1:4);
 % experiments_names = experiments_names(1:4,:);
 
 % % scenario intensity
-tags = tags(5:8);
-sim_names = sim_names(5:8);
-experiments_names = experiments_names(5:8,:);
+% tags = tags(5:8);
+% sim_names = sim_names(5:8);
+% experiments_names = experiments_names(5:8,:);
 
-% % compare identifications
-% tags = [ "signed", "nosign", "signed_nomu", "nosign_nomu"];
-% sim_names = ["OLS+GB_ds1_diff_sign", "OLS+GB_ds1_diff_nosign", "OLS+GB_ds1_diff_sign_nomu", "OLS+GB_ds1_diff_nosign_nomu"]';
-% experiments_names = ["comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"; "comparisons/Euglena_switch_10/combo5"];
-% simulations_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications';
-% output_folder = simulations_folder;
-
-% sim_names =    [ "identification_GB_lim"; "identification_GB_lim_nomu";
-%                 "identification_GB_lim_v_nomu"; "identification_GB_lim_w_nomu";
-%                 "identification_GB_lim_b_nomu";
-%                 "identification_GB_lim_bv_nomu"; "identification_GB_lim_bw_nomu";
-%                 "identification_GB_lim_b"; "identification_GB_lim_b_discardmu"
-%                 ];
-% tags = ["GB_lim","GB_lim_nomu","GB_lim_v_nomu","GB_lim_w_nomu","GB_lim_b_nomu","GB_lim_bv_nomu","GB_lim_bw_nomu","GB_lim_b","GB_lim_b_discardmu"];
-% experiments_names = repelem(["comparisons/Euglena_switch_10/combo5"], length(sim_names))';
-% simulations_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications';
-% output_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications/id_comparison_GA_GB';
-
-% sim_names =    [ "identification_manual"; "identification_GB_median"; 
-%                  "identification_GB_absw_noalpha"; "identification_GB_absw_alphaw+"; 
-%                  "identification_GB_absw_alphaw";  "identification_GB_absw_alpha"];
-% tags = ["manual","median","absw_noalpha","absw_alphaw+","absw_alphaw","absw_alpha"];
-% experiments_names = repelem(["comparisons/Euglena_switch_10/combo5"], length(sim_names))';
-% simulations_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications';
-% output_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications/id_comparison_absw';
+sim_names =    [ "identification_manual"; "identification_GB_median"; 
+                 "identification_GB_absw_noalpha"; "identification_GB_absw_alphaw+"; 
+                 "identification_GB_absw_alphaw";  "identification_GB_absw_alpha";
+                 "identification_GB_absw_alphav_medianinit"; "identification_GB_absw_alphav+_medianinit"];
+tags = ["manual","median","absw_noalpha","absw_alphaw+","absw_alphaw","absw_alpha","alphav_medinit","alphav+_medinit"];
+experiments_names = repelem(["comparisons/Euglena_switch_10/combo5"], length(sim_names))';
+simulations_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications';
+output_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications/id_comparison_absw';
 
 deltaT = 0.5;
 timeInstants = [0:deltaT:180];
@@ -240,6 +224,7 @@ if size(experiments_names,1) > 1 % multi-exp comparison
         l1=plot(timeInstants, median(speeds{i,1},2,'omitnan'),'b',LineWidth=2);
         l2=plot(timeInstants, median(speed_sim{i},2,'omitnan'),'k',LineWidth=2);
         xlim([0,max(timeInstants)])
+        xticks(linspace(0,max(timeInstants),4))
         if i==size(experiments_names,1); legend([l1,l2],'REAL','SIMULATED'); end
         box on
         subplot(3,size(experiments_names,1),i+size(experiments_names,1))
@@ -254,6 +239,7 @@ if size(experiments_names,1) > 1 % multi-exp comparison
         l1=plot(timeInstants(1:overlap), median(abs(omegas{i,1}(1:overlap,:)),2,'omitnan'),'b',LineWidth=2);
         l2=plot(timeInstants, median(abs(omega_sim{i}),2,'omitnan'),'k',LineWidth=2);
         xlim([0,max(timeInstants)])
+        xticks(linspace(0,max(timeInstants),4))
         xlabel('$t$ [s]','Interpreter','Latex','FontSize',16)
         %ylabel('$|\omega|$ [rad/s]','Interpreter','Latex','FontSize',16)
         if i==size(experiments_names,1); legend([l1,l2],'REAL','SIMULATED'); end
@@ -284,6 +270,7 @@ if size(experiments_names,1) > 1 % multi-exp comparison
         plots(k,:)=bar(mean(x_pos,2),metrics_of_interest{k}(:,1),0.15,metrics_color(k),'FaceAlpha',0.5);
         scatter(x_pos(:,2:end),metrics_of_interest{k}(:,2:end),100,metrics_color(k),'MarkerFaceColor','w','LineWidth',1.25);
         %plots(k,:)=scatter([1:length(tags)]-(length(metrics_of_interest)-1)*0.1+(k-1)*0.2,metrics_of_interest{k}(:,1),100,metrics_color(k),"filled");
+        text(length(tags)+0.4, 1.2*(0.7-k*0.1), ['med ',char(metrics_tags(k)),'=',num2str(median(metrics_of_interest{k}(:,1)),'%.2f')],'FontSize',12)
     end
     xticks([1:length(tags)])
     xticklabels(tags)

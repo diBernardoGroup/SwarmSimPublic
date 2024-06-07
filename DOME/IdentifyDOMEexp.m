@@ -7,20 +7,20 @@ close all
 data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5'; % switch10s combo
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
 
-identification_file_name = 'identification_GB_absw_alpha.txt';
+identification_file_name = 'identification_GB_absw_alphav+_medianinit.txt';
 identification_method = 'OLS+GB'; %OLS+GB
 downSampling = 1;
 
 min_duration = 10; %[s]
 no_mu_w = true;
 %parameters [theta, alpha, beta, mu]
-init_v    = [0.15, 0, -45, 75];
-init_w    = [0.15, 0, 0.6,  0];
-init_wabs = [0.15, 0, 0.6,  0.2];
+init_v    = 'identification_GB_median.txt';%[0.15, 0, -45, 75];
+init_w    = 'identification_GB_median.txt';%[0.15, 0, 0.6,  0];
+init_wabs = 'identification_GB_median.txt';%[0.15, 0, 0.6,  0.2];
 % limits_v = [init_v;init_v]; 
 % limits_w = [init_w;init_w];
-limits_v =    [  0  -inf -inf   0; 
-               inf    0   0   inf]; 
+limits_v =    [  0    0 -inf   0; 
+               inf   inf   0   inf]; 
 limits_w =    [  0    0   0    0; 
                inf    0  inf   0];
 limits_wabs = [  0    0   0    0; 
@@ -35,12 +35,16 @@ addpath(genpath(current_folder));
 
 %% Load data
 if ischar(init_v)
-    identification=readtable(fullfile(id_folder,init_v));
-    init_v = median([identification.theta_v, identification.alpha_v, identification.beta_v, identification.mu_v]);
+    identification=readtable(fullfile(data_folder,init_v));
+    init_v = median([identification.theta_s, identification.alpha_s, identification.beta_s, identification.mu_s],1);
 end
 if ischar(init_w)
-    identification=readtable(fullfile(id_folder,init_w));
-    init_w = median([identification.theta_w, identification.alpha_w, identification.beta_w, identification.mu_w]);
+    identification=readtable(fullfile(data_folder,init_w));
+    init_w = median([identification.theta_w, identification.alpha_w, identification.beta_w, identification.mu_w],1);
+end
+if ischar(init_wabs)
+    identification=readtable(fullfile(data_folder,init_wabs));
+    init_wabs = median([identification.theta_w, identification.alpha_w, identification.beta_w, identification.sigma_w ./ sqrt(identification.theta_w*pi)],1);
 end
 
 %identification=readtable(fullfile(current_folder,'identification.txt'));

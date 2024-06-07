@@ -48,8 +48,10 @@ tags = ["GB_lim","GB_lim_nomu","GB_lim_v_nomu","GB_lim_w_nomu","GB_lim_b_nomu","
 
 identification_file_names =    [ "identification_manual"; "identification_GB_median"; 
                                  "identification_GB_absw_noalpha"; "identification_GB_absw_alphaw+"; 
-                                 "identification_GB_absw_alphaw";  "identification_GB_absw_alpha"];
-tags = ["manual","median","absw_noalpha","absw_alphaw+","absw_alphaw","absw_alpha"];
+                                 "identification_GB_absw_alphaw";  "identification_GB_absw_alpha";
+                                 "identification_GB_absw_alpha_noinit"; "identification_GB_absw_alpha_medianinit";
+                                 "identification_GB_absw_alphav_medianinit"; "identification_GB_absw_alphav+_medianinit"];
+tags = ["manual","median","absw_noalpha","absw_alphaw+","absw_alphaw","absw_alpha","alpha_noinit","alpha_medinit","alphav_medinit","alphav+_medinit"];
 
 dT = 0.01;
 deltaT = 0.5;
