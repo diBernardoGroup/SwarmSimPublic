@@ -65,6 +65,9 @@ end
     case 'PTWwithSignedInput'
         speeds = vecnorm(v,2,2);
         theta = atan2(v(:,2), v(:,1));
+        b=1/10;
+%         envInputDotP = max((power(envInput,b) - power(Dynamics.oldInput,b))/deltaT, 0);
+%         envInput = power(envInput,b);
         envInputDotP = max((envInput - Dynamics.oldInput)/deltaT, 0);
         speedsnew = speeds + (Dynamics.rateSpeed .* (Dynamics.avgSpeed - speeds) + Dynamics.gainSpeed .* envInput + Dynamics.gainDerSpeed .* envInputDotP)* deltaT + Dynamics.sigmaSpeed * sqrt(deltaT) .* randn(size(x,1),1);
         speedsnew = max(speedsnew, 10e-6);

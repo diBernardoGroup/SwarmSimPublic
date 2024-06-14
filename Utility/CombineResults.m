@@ -2,7 +2,7 @@ clear
 close all
 
 simulations_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
-% simulations_folder = fullfile(simulations_folder,'2024_06_06_GB_absw_alpha');
+simulations_folder = fullfile(simulations_folder,'2024_06_07_GB_absw_alphav');
 experiments_folder = "/Volumes/DOMEPEN/Experiments";
 
 % % switch 10s all
@@ -62,7 +62,7 @@ experiments_folder = "/Volumes/DOMEPEN/Experiments";
 % all
 tags = ["switch_10","switch_5","switch_1","ramp", "OFF","75_ON", "150_ON", "255_ON"];
 sim_names = ["2024_06_06_switch_10_1", "2024_06_06_switch_5_1", "2024_06_06_switch_1_1", "2024_06_06_ramp_1", "2024_06_06_OFF_1", "2024_06_06_75_ON_1", "2024_06_06_150_ON_1", "2024_06_06_255_ON_1"]'; 
-% sim_names = ["2024_06_07_switch_10_1", "2024_06_07_switch_5_1", "2024_06_07_switch_1_1", "2024_06_07_ramp_1", "2024_06_07_OFF_1", "2024_06_07_75_ON_1", "2024_06_07_150_ON_1", "2024_06_07_255_ON_1"]';
+sim_names = ["2024_06_07_switch_10_1", "2024_06_07_switch_5_1", "2024_06_07_switch_1_1", "2024_06_07_ramp_1", "2024_06_07_OFF_1", "2024_06_07_75_ON_1", "2024_06_07_150_ON_1", "2024_06_07_255_ON_1"]';
 experiments_names = ["comparisons/Euglena_switch_10/combo3","2023_06_15_Euglena_7", "2023_06_26_Euglena_24", "2023_07_10_Euglena_15";
     "comparisons/Euglena_switch_5/combo", "2023_06_15_Euglena_8", "2023_06_26_Euglena_25", "2023_07_10_Euglena_18";
     "comparisons/Euglena_switch_1/combo", "2023_06_15_Euglena_11", "2023_06_26_Euglena_28", "2023_07_10_Euglena_19";
@@ -71,7 +71,6 @@ experiments_names = ["comparisons/Euglena_switch_10/combo3","2023_06_15_Euglena_
     "comparisons/Euglena_75_ON/combo", "2023_06_15_Euglena_2", "2023_06_26_Euglena_15", "2023_07_10_Euglena_8";
     "comparisons/Euglena_150_ON/combo", "2023_06_15_Euglena_3", "2023_06_26_Euglena_18", "2023_07_10_Euglena_10";
     "comparisons/Euglena_255_ON/combo", "2023_06_15_Euglena_4", "2023_06_26_Euglena_20", "2023_07_10_Euglena_12"];
-% output_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Euglena input/manual tuning';
 output_folder = simulations_folder;
 
 % scenario duration
@@ -79,19 +78,19 @@ output_folder = simulations_folder;
 % sim_names = sim_names(1:4);
 % experiments_names = experiments_names(1:4,:);
 
-% % scenario intensity
-% tags = tags(5:8);
-% sim_names = sim_names(5:8);
-% experiments_names = experiments_names(5:8,:);
+% scenario intensity
+tags = tags(5:8);
+sim_names = sim_names(5:8);
+experiments_names = experiments_names(5:8,:);
 
-sim_names =    [ "identification_manual"; "identification_GB_median"; 
-                 "identification_GB_absw_noalpha"; "identification_GB_absw_alphaw+"; 
-                 "identification_GB_absw_alphaw";  "identification_GB_absw_alpha";
-                 "identification_GB_absw_alphav_medianinit"; "identification_GB_absw_alphav+_medianinit"];
-tags = ["manual","median","absw_noalpha","absw_alphaw+","absw_alphaw","absw_alpha","alphav_medinit","alphav+_medinit"];
-experiments_names = repelem(["comparisons/Euglena_switch_10/combo5"], length(sim_names))';
-simulations_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications';
-output_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications/id_comparison_absw';
+% sim_names =    [ "identification_manual"; "identification_GB_median"; 
+%                  "identification_GB_absw_noalpha"; "identification_GB_absw_alphaw+"; 
+%                  "identification_GB_absw_alphaw";  "identification_GB_absw_alpha";
+%                  "identification_GB_absw_alphav_medianinit"; "identification_GB_absw_alphav+_medianinit"];
+% tags = ["manual","median","absw_noalpha","absw_alphaw+","absw_alphaw","absw_alpha","alphav_medinit","alphav+_medinit"];
+% experiments_names = repelem(["comparisons/Euglena_switch_10/combo5"], length(sim_names))';
+% simulations_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications';
+% output_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications/id_comparison_absw';
 
 deltaT = 0.5;
 timeInstants = [0:deltaT:180];
@@ -108,6 +107,8 @@ for i = 1:size(experiments_names,1)  % for each experiment
     omega_sim{i} = sim_data.omega;
     u{i} = sim_data.u;
     
+%     speed_sim{i} = speed_sim{i}/median(median(speed_sim{i}(1:20,:),2,'omitnan'),'omitnan');
+    
     % load experiment data
     for j=1:size(experiments_names,2)   % for each replicate
         if j==1
@@ -118,6 +119,8 @@ for i = 1:size(experiments_names,1)  % for each experiment
         end
         speeds{i,j}  = load(fullfile(data_folder,'speeds_smooth.txt'));
         omegas{i,j}  = load(fullfile(data_folder,'ang_vel_smooth.txt'));
+        
+%         speeds{i,j} = speeds{i,j}/median(median(speeds{i,j}(1:20,:),2,'omitnan'),'omitnan');
         
         inputs = load(fullfile(data_folder,'inputs.txt'));
         assert( all(inputs(:,1)/255==u{i},'all') )
