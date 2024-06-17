@@ -4,7 +4,7 @@ close all
 defaultParamMicroorg
 
 simulations_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
-simulations_folder = fullfile(simulations_folder,'2024_06_06_GB_absw_alphaw+');
+simulations_folder = fullfile(simulations_folder,'2024_06_17_GB_absw_noalpha_narrow');
 experiments_folder = "/Volumes/DOMEPEN/Experiments";
 
 
@@ -15,15 +15,14 @@ experiments_names = ["2023_06_12_Euglena_2","2023_06_14_Euglena_6","2023_06_15_E
 
 % spatial
 tags = ["half_half","grad_centr_light","grad_centr_dark","grad_lateral","circle_light","circle_dark"];
-sim_names = ["2024_06_06_half_half_1";"2024_06_06_grad_centr_light_1";"2024_06_06_grad_centr_dark_1";"2024_06_06_grad_lateral_1";"2024_06_06_circle_light_1";"2024_06_06_circle_dark_1"]; % manual tuning
-% sim_names = ["2024_06_07_half_half_1";"2024_06_07_grad_centr_light_1";"2024_06_07_grad_centr_dark_1";"2024_06_07_grad_lateral_1";"2024_06_07_circle_light_1";"2024_06_07_circle_dark_1"]; % manual tuning
+sim_names = ["2024_06_06_half_half_1";"2024_06_06_grad_centr_light_1";"2024_06_06_grad_centr_dark_1";"2024_06_06_grad_lateral_1";"2024_06_06_circle_light_1";"2024_06_06_circle_dark_1"];
+sim_names = ["2024_06_17_half_half_1";"2024_06_17_grad_centr_light_1";"2024_06_17_grad_centr_dark_1";"2024_06_17_grad_lateral_1";"2024_06_17_circle_light_1";"2024_06_17_circle_dark_1"];
 experiments_names = ["2023_06_12_E_2", "2023_06_14_E_6", "2023_06_15_E_12","2023_06_26_E_29","2023_06_26_E_30","2023_06_23_E_1", "2023_06_23_E_2", "2023_06_26_E_2", "2023_06_26_E_1";
                      "2023_06_12_E_3", "2023_06_12_E_4", "2023_06_14_E_7", "2023_06_15_E_14","2023_06_23_E_5", "2023_06_23_E_6", "2023_06_26_E_5", "2023_06_26_E_6", "2023_06_26_E_33";
                      "2023_06_14_E_10","2023_06_15_E_15","2023_06_23_E_7", "2023_06_23_E_8", "2023_06_23_E_9",  "2023_06_26_E_7","2023_06_26_E_8", "2023_06_26_E_34","2023_06_26_E_35";%"2023_07_10_E_23","2023_07_10_E_24";
                      "2023_06_12_E_5", "2023_06_13_E_16","2023_06_14_E_8", "2023_06_15_E_13","2023_06_23_E_3", "2023_06_23_E_4", "2023_06_26_E_3", "2023_06_26_E_4", "2023_06_26_E_31";%"2023_06_26_E_32";
                      "2023_06_12_E_1", "2023_06_14_E_1", "2023_06_15_E_16","2023_06_23_E_10","2023_06_23_E_11","2023_06_26_E_9", "2023_06_26_E_10","2023_06_26_E_36","2023_06_26_E_37";%"2023_07_10_E_26";
                      "2023_06_13_E_6", "2023_06_13_E_15","2023_06_15_E_17","2023_06_15_E_18","2023_06_23_E_12","2023_06_23_E_13","2023_06_26_E_11","2023_06_26_E_12","2023_06_26_E_38"];%"2023_06_26_E_39","2023_07_10_E_25","2023_07_10_E_22"];
-output_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Euglena spatial/manual tuning';
 output_folder = simulations_folder;
 
 

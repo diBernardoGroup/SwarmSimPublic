@@ -2,7 +2,7 @@ clear
 close all
 
 simulations_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
-simulations_folder = fullfile(simulations_folder,'2024_06_07_GB_absw_alphav');
+simulations_folder = fullfile(simulations_folder,'2024_06_17_GB_absw_noalpha_narrow');
 experiments_folder = "/Volumes/DOMEPEN/Experiments";
 
 % % switch 10s all
@@ -62,7 +62,7 @@ experiments_folder = "/Volumes/DOMEPEN/Experiments";
 % all
 tags = ["switch_10","switch_5","switch_1","ramp", "OFF","75_ON", "150_ON", "255_ON"];
 sim_names = ["2024_06_06_switch_10_1", "2024_06_06_switch_5_1", "2024_06_06_switch_1_1", "2024_06_06_ramp_1", "2024_06_06_OFF_1", "2024_06_06_75_ON_1", "2024_06_06_150_ON_1", "2024_06_06_255_ON_1"]'; 
-sim_names = ["2024_06_07_switch_10_1", "2024_06_07_switch_5_1", "2024_06_07_switch_1_1", "2024_06_07_ramp_1", "2024_06_07_OFF_1", "2024_06_07_75_ON_1", "2024_06_07_150_ON_1", "2024_06_07_255_ON_1"]';
+sim_names = ["2024_06_17_switch_10_1", "2024_06_17_switch_5_1", "2024_06_17_switch_1_1", "2024_06_17_ramp_1", "2024_06_17_OFF_1", "2024_06_17_75_ON_1", "2024_06_17_150_ON_1", "2024_06_17_255_ON_1"]';
 experiments_names = ["comparisons/Euglena_switch_10/combo3","2023_06_15_Euglena_7", "2023_06_26_Euglena_24", "2023_07_10_Euglena_15";
     "comparisons/Euglena_switch_5/combo", "2023_06_15_Euglena_8", "2023_06_26_Euglena_25", "2023_07_10_Euglena_18";
     "comparisons/Euglena_switch_1/combo", "2023_06_15_Euglena_11", "2023_06_26_Euglena_28", "2023_07_10_Euglena_19";
@@ -79,9 +79,9 @@ output_folder = simulations_folder;
 % experiments_names = experiments_names(1:4,:);
 
 % scenario intensity
-tags = tags(5:8);
-sim_names = sim_names(5:8);
-experiments_names = experiments_names(5:8,:);
+% tags = tags(5:8);
+% sim_names = sim_names(5:8);
+% experiments_names = experiments_names(5:8,:);
 
 % sim_names =    [ "identification_manual"; "identification_GB_median"; 
 %                  "identification_GB_absw_noalpha"; "identification_GB_absw_alphaw+"; 

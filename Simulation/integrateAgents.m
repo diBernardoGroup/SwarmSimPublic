@@ -65,13 +65,14 @@ end
     case 'PTWwithSignedInput'
         speeds = vecnorm(v,2,2);
         theta = atan2(v(:,2), v(:,1));
-        b=1/10;
-%         envInputDotP = max((power(envInput,b) - power(Dynamics.oldInput,b))/deltaT, 0);
-%         envInput = power(envInput,b);
-        envInputDotP = max((envInput - Dynamics.oldInput)/deltaT, 0);
-        speedsnew = speeds + (Dynamics.rateSpeed .* (Dynamics.avgSpeed - speeds) + Dynamics.gainSpeed .* envInput + Dynamics.gainDerSpeed .* envInputDotP)* deltaT + Dynamics.sigmaSpeed * sqrt(deltaT) .* randn(size(x,1),1);
+        b_v=1;
+        b_w=1;
+        envInputDotP_v = max((power(envInput,b_v) - power(Dynamics.oldInput,b_v))/deltaT, 0);
+        envInputDotP_w = max((power(envInput,b_w) - power(Dynamics.oldInput,b_w))/deltaT, 0);
+        %envInputDotP = max((envInput - Dynamics.oldInput)/deltaT, 0);
+        speedsnew = speeds + (Dynamics.rateSpeed .* (Dynamics.avgSpeed - speeds) + Dynamics.gainSpeed .* envInput + Dynamics.gainDerSpeed .* envInputDotP_v)* deltaT + Dynamics.sigmaSpeed * sqrt(deltaT) .* randn(size(x,1),1);
         speedsnew = max(speedsnew, 10e-6);
-        Dynamics.omega = Dynamics.omega + (Dynamics.rateOmega .* (Dynamics.avgOmega-Dynamics.omega) + sign(Dynamics.omega).*(Dynamics.gainOmega .*envInput + Dynamics.gainDerOmega .* envInputDotP))* deltaT + Dynamics.sigmaOmega  * sqrt(deltaT) .* randn(size(x,1),1);
+        Dynamics.omega = Dynamics.omega + (Dynamics.rateOmega .* (Dynamics.avgOmega-Dynamics.omega) + sign(Dynamics.omega).*(Dynamics.gainOmega .*envInput + Dynamics.gainDerOmega .* envInputDotP_w))* deltaT + Dynamics.sigmaOmega  * sqrt(deltaT) .* randn(size(x,1),1);
         thetanew = mod(theta + pi + Dynamics.omega * deltaT, 2*pi) - pi ;
         vnew = speedsnew .* [cos(thetanew), sin(thetanew)];
         noise = zeros(size(x));

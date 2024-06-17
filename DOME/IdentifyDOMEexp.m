@@ -7,28 +7,28 @@ close all
 data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5'; % switch10s combo
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
 
-identification_file_name = 'identification_GB_absw_alphav+_medianinit.txt';
+identification_file_name = 'identification_GB_absw_noalpha.txt';
 identification_method = 'OLS+GB'; %OLS+GB
-downSampling = 1;
+downSampling = 3;
 
 min_duration = 10; %[s]
 no_mu_w = true;
 %parameters [theta, alpha, beta, mu]
-init_v    = 'identification_GB_median.txt';%[0.15, 0, -45, 75];
+init_v    = 'identification_manual.txt';%[0.15, 0, -45, 75];
 init_w    = 'identification_GB_median.txt';%[0.15, 0, 0.6,  0];
-init_wabs = 'identification_GB_median.txt';%[0.15, 0, 0.6,  0.2];
+init_wabs = 'identification_manual.txt';%[0.15, 0, 0.6,  0.2];
 % limits_v = [init_v;init_v]; 
 % limits_w = [init_w;init_w];
 limits_v =    [  0    0 -inf   0; 
-               inf   inf   0   inf]; 
+               inf    0   0   inf]; 
 limits_w =    [  0    0   0    0; 
                inf    0  inf   0];
 limits_wabs = [  0    0   0    0; 
-               inf   inf inf  inf];
+               inf    0  inf  inf];
         
 deltaT = 0.5;
 dT = 0.01;
-thresholdfactor = 3; % parameters outliers detection
+thresholdfactor = 1; % parameters outliers detection
 
 current_folder = fileparts(which('AnalyseDOMEexp'));
 addpath(genpath(current_folder));
@@ -53,8 +53,8 @@ omega  = load(fullfile(data_folder,'ang_vel_smooth.txt'));
 
 % speed = movmean(speed,5,'omitnan');
 % omega = movmean(omega,5,'omitnan');
-% speed = median(speed,2,'omitnan');
-% omega = median(abs(omega),2,'omitnan');
+speed = median(speed,2,'omitnan');
+omega = median(abs(omega),2,'omitnan');
 % speed = movmean(speed,5,'omitnan');
 % omega = movmean(omega,5,'omitnan');
 

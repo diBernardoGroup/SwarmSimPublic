@@ -8,7 +8,7 @@
 %
 
 %% Clear environment
-% close all
+close all
 clear
 
 %% Parameters
@@ -19,14 +19,14 @@ defaultParamMicroorg;               % load default parameters to simulate microo
 
 % tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16';  % switch10s
 % tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo3';  % switch10s combo
-tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % switch10s combo 5
+% tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % switch10s combo 5
 % tag='switch_5'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_5/combo';  % switch5s combo
 % tag='switch_1'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_1/combo';  % switch1s combo
-% tag='75_ON'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_75_ON/combo';  % OFF-ON-OFF 75 combo
-% tag='150_ON'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_150_ON/combo';  % OFF-ON-OFF 150 combo
+tag='75_ON'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_75_ON/combo';  % OFF-ON-OFF 75 combo
+tag='150_ON'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_150_ON/combo';  % OFF-ON-OFF 150 combo
 % tag='255_ON'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_255_ON/combo';  % OFF-ON-OFF 255 combo
-% tag='OFF'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_OFF/combo';  % OFF combo
-% tag='ramp'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_ramp/combo';  % ramp combo
+tag='OFF'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_OFF/combo';  % OFF combo
+tag='ramp'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_ramp/combo';  % ramp combo
 
 % tag='half_half';          data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_14_E_6';    Environment.boundary = Simulation.arena * 2;
 % tag='grad_centr_light';   data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_12_E_3';    Environment.boundary = Simulation.arena * 2;
@@ -39,12 +39,13 @@ tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena
 % tag = 'no_light_response';
     
 id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % folder with identification data
-identification_file_name = 'identification_GB_absw_alphav_medianinit.txt';
+identification_file_name = 'identification_GB_absw_noalpha_narrow.txt';
 % identification_file_name = 'identification_manual.txt';
+% identification_file_name = 'identification_GB_median.txt';
 % id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
 % identification_file_name = 'identification_GB_absw_alpha.txt';
 
-outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
+outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/2024_06_17_GB_absw_noalpha_narrow';
 % outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications';
 % [~,simulation_name,~]=fileparts(identification_file_name);
 
@@ -60,10 +61,10 @@ Dynamics=struct('model','PTWwithSignedInput', ...
     'avgOmega',agents.mu_w, 'rateOmega', agents.theta_w, 'sigmaOmega', agents.sigma_w, 'gainOmega', agents.alpha_w, 'gainDerOmega', agents.beta_w,...
     'omega', normrnd(0,agents.std_w,N,1), 'oldInput', zeros(N,1));
 
-% % manual fit
+% % median of the parameters
 % Dynamics=struct('model','PTWwithSignedInput', ...
-%     'avgSpeed',75, 'rateSpeed', 0.15, 'sigmaSpeed', 10, 'gainSpeed',    0, 'gainDerSpeed', -45,...
-%     'avgOmega', 0, 'rateOmega', 0.15, 'sigmaOmega', 0.1, 'gainOmega', 0, 'gainDerOmega', 0.6,...
+%     'avgSpeed',median(agents.mu_s), 'rateSpeed', median(agents.theta_s), 'sigmaSpeed', median(agents.sigma_s), 'gainSpeed', median(agents.alpha_s), 'gainDerSpeed', median(agents.beta_s),...
+%     'avgOmega',median(agents.mu_w), 'rateOmega', median(agents.theta_w), 'sigmaOmega', median(agents.sigma_w), 'gainOmega', median(agents.alpha_w), 'gainDerOmega', median(agents.beta_w),...
 %     'omega', normrnd(0,agents.std_w,N,1), 'oldInput', zeros(N,1));
 
 % parameters for strong photodispersion

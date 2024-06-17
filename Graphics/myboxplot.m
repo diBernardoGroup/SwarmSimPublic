@@ -38,13 +38,15 @@ function [] = myboxplot(data, significance, whisker, colors)
     
     %significance bar
     if significance
-        all_data=data{:};
+        all_data = [];
+        for d=1:length(data)
+            all_data = [all_data, data{d}'];
+        end
         y_max=max(all_data,[],'all');
         y_min=min(all_data,[],'all');
         if length(data)==1
             p = signtest(data{1});
             %[h,p] = ttest(data{1});
-            
         else
             p = ranksum(data{1},data{2});
 %             y_max=max(max(data{1}),max(data{2}));
