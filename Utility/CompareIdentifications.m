@@ -53,8 +53,8 @@ identification_file_names =    [ "identification_manual"; "identification_GB_med
                                  "identification_GB_absw_alphav_medianinit"; "identification_GB_absw_alphav+_medianinit"];
 tags = ["manual","median","absw_noalpha","absw_alphaw+","absw_alphaw","absw_alpha","alpha_noinit","alpha_medinit","alphav_medinit","alphav+_medinit"];
 
-identification_file_names =    ["identification_GB_median";"identification_GB_absw_noalpha"; "identification_GB_absw_noalpha_narrow"];
-tags = ["median","no_alpha","noalpha_narrow"];
+identification_file_names =    ["identification_GB_median";"identification_GB_absw_noalpha"; "identification_GB_absw_noalpha_narrow"; "identification_GB_absw_noalpha_narrow05"];
+tags = ["median","no_alpha","noalpha_narrow1","noalpha_narrow05"];
 
 dT = 0.01;
 deltaT = 0.5;

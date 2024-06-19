@@ -9,7 +9,7 @@ data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5
 
 identification_file_name = 'identification_GB_absw_noalpha.txt';
 identification_method = 'OLS+GB'; %OLS+GB
-downSampling = 3;
+downSampling = 1;
 
 min_duration = 10; %[s]
 no_mu_w = true;

@@ -28,17 +28,18 @@ smoothing = false;          % smooth temporal data with moving average
 brightness_thresh = 0.3;    % brightness threshold for object detection (spatial experiments)
 background_sub = true;      % use background subtraction for object detection (spatial experiments)
 pattern_blurring = 15;      % blurring of the spatial input pattern (spatial experiments)
+px_size = 1.25;             % size of a pixel [um]
 
 %% Simulation parameters
 % All these fields are mandatory
 Simulation=struct();
-Simulation.Tmax = 180;          % maximum simulation time
-Simulation.deltaT = 0.5;        % sampling time step
-Simulation.dT =     0.01;       % integration time step
-Simulation.arena = [1920,1080]*3; % size of the simulation window
-Simulation.drawON=false;        % draw swarm during simulation (if N is large slows down the simulation)
-Simulation.drawTraj=0;          % draw trajectories of the agents (if N is large slows down the simulation)
-Simulation.recordVideo=false;   % record video of the simulation (if true drawON must be true)
+Simulation.Tmax = 180;                  % maximum simulation time
+Simulation.deltaT = 0.5;                % sampling time step
+Simulation.dT =     0.01;               % integration time step
+Simulation.arena = [1920,1080]*px_size; % size of the simulation window
+Simulation.drawON=false;                % draw swarm during simulation (if N is large slows down the simulation)
+Simulation.drawTraj=0;                  % draw trajectories of the agents (if N is large slows down the simulation)
+Simulation.recordVideo=false;           % record video of the simulation (if true drawON must be true)
 Simulation.timeInstants = [0:Simulation.deltaT:Simulation.Tmax];
 
 %% Initial conditions
