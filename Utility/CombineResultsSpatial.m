@@ -17,19 +17,19 @@ experiments_names = ["2023_06_12_Euglena_2","2023_06_14_Euglena_6","2023_06_15_E
 tags = ["half_half","grad_centr_light","grad_centr_dark","grad_lateral","circle_light","circle_dark"];
 sim_names = ["2024_06_06_half_half_1";"2024_06_06_grad_centr_light_1";"2024_06_06_grad_centr_dark_1";"2024_06_06_grad_lateral_1";"2024_06_06_circle_light_1";"2024_06_06_circle_dark_1"];
 sim_names = ["2024_06_17_half_half_1";"2024_06_17_grad_centr_light_1";"2024_06_17_grad_centr_dark_1";"2024_06_17_grad_lateral_1";"2024_06_17_circle_light_1";"2024_06_17_circle_dark_1"];
-experiments_names = ["2023_06_12_E_2", "2023_06_14_E_6", "2023_06_15_E_12","2023_06_26_E_29","2023_06_26_E_30","2023_06_23_E_1", "2023_06_23_E_2", "2023_06_26_E_2", "2023_06_26_E_1";
-                     "2023_06_12_E_3", "2023_06_12_E_4", "2023_06_14_E_7", "2023_06_15_E_14","2023_06_23_E_5", "2023_06_23_E_6", "2023_06_26_E_5", "2023_06_26_E_6", "2023_06_26_E_33";
-                     "2023_06_14_E_10","2023_06_15_E_15","2023_06_23_E_7", "2023_06_23_E_8", "2023_06_23_E_9",  "2023_06_26_E_7","2023_06_26_E_8", "2023_06_26_E_34","2023_06_26_E_35";%"2023_07_10_E_23","2023_07_10_E_24";
-                     "2023_06_12_E_5", "2023_06_13_E_16","2023_06_14_E_8", "2023_06_15_E_13","2023_06_23_E_3", "2023_06_23_E_4", "2023_06_26_E_3", "2023_06_26_E_4", "2023_06_26_E_31";%"2023_06_26_E_32";
-                     "2023_06_12_E_1", "2023_06_14_E_1", "2023_06_15_E_16","2023_06_23_E_10","2023_06_23_E_11","2023_06_26_E_9", "2023_06_26_E_10","2023_06_26_E_36","2023_06_26_E_37";%"2023_07_10_E_26";
-                     "2023_06_13_E_6", "2023_06_13_E_15","2023_06_15_E_17","2023_06_15_E_18","2023_06_23_E_12","2023_06_23_E_13","2023_06_26_E_11","2023_06_26_E_12","2023_06_26_E_38"];%"2023_06_26_E_39","2023_07_10_E_25","2023_07_10_E_22"];
+experiments_names = {["2023_06_12_E_2", "2023_06_14_E_6", "2023_06_15_E_12","2023_06_26_E_29","2023_06_26_E_30","2023_06_23_E_1", "2023_06_23_E_2", "2023_06_26_E_2", "2023_06_26_E_1"];
+                     ["2023_06_12_E_3", "2023_06_12_E_4", "2023_06_14_E_7", "2023_06_15_E_14","2023_06_23_E_5", "2023_06_23_E_6", "2023_06_26_E_5", "2023_06_26_E_6", "2023_06_26_E_33"];
+                     ["2023_06_14_E_10","2023_06_15_E_15","2023_06_23_E_7", "2023_06_23_E_8", "2023_06_23_E_9",  "2023_06_26_E_7","2023_06_26_E_8", "2023_06_26_E_34","2023_06_26_E_35","2023_07_10_E_23","2023_07_10_E_24"];
+                     ["2023_06_12_E_5", "2023_06_13_E_16","2023_06_14_E_8", "2023_06_15_E_13","2023_06_23_E_3", "2023_06_23_E_4", "2023_06_26_E_3", "2023_06_26_E_4", "2023_06_26_E_31","2023_06_26_E_32"];
+                     ["2023_06_12_E_1", "2023_06_14_E_1", "2023_06_15_E_16","2023_06_23_E_10","2023_06_23_E_11","2023_06_26_E_9", "2023_06_26_E_10","2023_06_26_E_36","2023_06_26_E_37","2023_07_10_E_26"];
+                     ["2023_06_13_E_6", "2023_06_13_E_15","2023_06_15_E_17","2023_06_15_E_18","2023_06_23_E_12","2023_06_23_E_13","2023_06_26_E_11","2023_06_26_E_12","2023_06_26_E_38","2023_06_26_E_39","2023_07_10_E_25","2023_07_10_E_22"]};
 output_folder = simulations_folder;
 
 
 %% LOAD DATA
 combo_mask = cell(1,size(experiments_names,1));
 assert((length(tags)==length(sim_names)) && (length(sim_names)==size(experiments_names,1)))
-for i = 1:size(experiments_names,1)  % for each experiment
+for i = 1:length(experiments_names)  % for each experiment
     
     % load simulation data
     sim_folder = fullfile(simulations_folder,sim_names(i));
@@ -38,23 +38,23 @@ for i = 1:size(experiments_names,1)  % for each experiment
     arena = sim_data.Simulation.arena;
     window = [-arena(1),arena(1),-arena(2),arena(2)]/2;
     inputs{i} = sim_data.Environment.Inputs;
-    [density_by_input_sim(i,:), bins, norm_slope_sim(i), c_coeff_sim(i)] = agentsDensityByInput(inputs{i}.Points, inputs{i}.Values, xFinal_inWindow{i}, window);
+    [density_by_input_sim{i}, bins, norm_slope_sim(i), c_coeff_sim(i)] = agentsDensityByInput(inputs{i}.Points, inputs{i}.Values, xFinal_inWindow{i}, window);
     
     % load experiment data
-    for j=1:size(experiments_names,2)   % for each replicate
-        experiments_names(i,j) = strrep(experiments_names(i,j),'_E_','_Euglena_');
-        data_folder =  fullfile(experiments_folder,experiments_names(i,j));
-        mask{i,j} = detectObjects(data_folder, background_sub, brightness_thresh);
-        u{i,j} = loadInputPattern(data_folder, pattern_blurring);
-        assert( mean(abs(u{i,1} - imresize(u{i,j},size(u{i,1}))),'all')<0.1, 'Replicates have different inputs' )
+    for j=1:length(experiments_names{i})   % for each replicate
+        experiments_names{i}(j) = strrep(experiments_names{i}(j),'_E_','_Euglena_');
+        data_folder =  fullfile(experiments_folder,experiments_names{i}(j));
+        mask{i}{j} = detectObjects(data_folder, background_sub, brightness_thresh);
+        u{i}{j} = loadInputPattern(data_folder, pattern_blurring);
+        assert( mean(abs(u{i}{1} - imresize(u{i}{j},size(u{i}{1}))),'all')<0.1, 'Replicates have different inputs' )
         %fprintf('exp %d rep %d size(u)=[%d, %d] mean(u-u1)=%.2f\n',i,j,size(u{i,j}), mean(abs(u{i,1} - imresize(u{i,j},size(u{i,1}))),'all'))
         
         
         % get distribution wrt light intensity
-        [density_by_input_exp(i,j,:), bins, norm_slope(i,j), c_coeff(i,j), coefficents(i,j,:), agents_by_input(i,j,:), pixels_by_input(i,j,:)] = agentsDensityByInput(inputs{i}.Points, inputs{i}.Values, mask{i,j}, window);
+        [density_by_input_exp{i}(j,:), bins, norm_slope{i}(j), c_coeff{i}(j), coefficents{i}(j,:), agents_by_input{i}(j,:), pixels_by_input{i}(j,:)] = agentsDensityByInput(inputs{i}.Points, inputs{i}.Values, mask{i}{j}, window);
         
         % evaluate quality of fit
-        tvd(i,j) = 0.5 * norm(density_by_input_sim(i,:)-squeeze(density_by_input_exp(i,j,:)),1); % Total Variation Distance
+        tvd{i}(j) = 0.5 * norm(density_by_input_sim{i}-squeeze(density_by_input_exp{i}(j,:)),1); % Total Variation Distance
         
         % combination of masks over the replicates
         if j==1
@@ -65,9 +65,9 @@ for i = 1:size(experiments_names,1)  % for each experiment
     end
     
     % weighted average light distribution over the replicates
-    mean_dist(i,:) = sum(squeeze(agents_by_input(i,:,:))./squeeze(pixels_by_input(i,:,:)),1);
-    mean_dist(i,:) = mean_dist(i,:)/sum(mean_dist(i,:));
-    mean_tvd(i) = 0.5 * norm(density_by_input_sim(i,:)-mean_dist(i,:),1); % Total Variation Distance
+    mean_dist{i} = sum(squeeze(agents_by_input(i,:,:))./squeeze(pixels_by_input(i,:,:)),1);
+    mean_dist{i} = mean_dist{i}/sum(mean_dist{i});
+    mean_tvd(i) = 0.5 * norm(density_by_input_sim{i}-mean_dist{i},1); % Total Variation Distance
 end
 
 %% PRINT RESULTS
@@ -135,8 +135,8 @@ y_vec = linspace(window(3),window(4),size(mask,1));
 %     
 %     subplot(size(experiments_names,2)+3,size(experiments_names,1),(j+2)*size(experiments_names,1)+i)
 %     hold on
-%     b_exp_mean = bar((bins(1:end-1)+bins(2:end))/2,mean_dist(i,:), 1, FaceColor = 'b', FaceAlpha = 0.5);
-%     b_sim = bar((bins(1:end-1)+bins(2:end))/2,density_by_input_sim(i,:), 1, FaceColor = 'k', FaceAlpha = 0.4);
+%     b_exp_mean = bar((bins(1:end-1)+bins(2:end))/2,mean_dist{i}, 1, FaceColor = 'b', FaceAlpha = 0.5);
+%     b_sim = bar((bins(1:end-1)+bins(2:end))/2,density_by_input_sim{i}, 1, FaceColor = 'k', FaceAlpha = 0.4);
 %     %[f,xi] = ksdensity(u_values_exp, support=[-0.001,1.001], BoundaryCorrection='reflection');
 %     %f=f/sum(f);
 %     %plot(xi,f)
@@ -144,8 +144,8 @@ y_vec = linspace(window(3),window(4),size(mask,1));
 %     xlabel('Input intensity','FontSize',14)
 %     ylabel('Density of agents','FontSize',14)
 %     yticks([0:0.25:1]);
-%     text(0.1,max(density_by_input_exp(i,:))*1.10,['TVD=',num2str(mean_tvd(i),'%.2f')],'HorizontalAlignment','center','FontSize',14)
-%     ylim([0,max(density_by_input_exp(i,:))*1.15])
+%     text(0.1,max(density_by_input_exp{i})*1.10,['TVD=',num2str(mean_tvd(i),'%.2f')],'HorizontalAlignment','center','FontSize',14)
+%     ylim([0,max(density_by_input_exp{i})*1.15])
 %     xlim([-0.1,1.1])
 %     xticks(round(bins,2))
 %     box
@@ -193,8 +193,8 @@ for i = 1:size(experiments_names,1)  % for each experiment
     % distributions wrt light
     subplot(4,size(experiments_names,1),2*size(experiments_names,1)+i)
     hold on
-    b_exp_mean = bar((bins(1:end-1)+bins(2:end))/2,mean_dist(i,:), 1, FaceColor = 'b', FaceAlpha = 0.5);
-    b_sim = bar((bins(1:end-1)+bins(2:end))/2,density_by_input_sim(i,:), 1, FaceColor = 'k', FaceAlpha = 0.4);
+    b_exp_mean = bar((bins(1:end-1)+bins(2:end))/2,mean_dist{i}, 1, FaceColor = 'b', FaceAlpha = 0.5);
+    b_sim = bar((bins(1:end-1)+bins(2:end))/2,density_by_input_sim{i}, 1, FaceColor = 'k', FaceAlpha = 0.4);
     %[f,xi] = ksdensity(u_values_exp, support=[-0.001,1.001], BoundaryCorrection='reflection');
     %f=f/sum(f);
     %plot(xi,f)
