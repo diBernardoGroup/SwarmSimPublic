@@ -1,4 +1,4 @@
-function [p,p_lines] = plotSwarm(x,xL,time,RMin,RMax,thenDelete, spin, gradColor, radius)
+function [p,p_lines] = plotSwarm(x,time,RMin,RMax,thenDelete, spin, gradColor, shape, radius, xPrevious)
 %
 %plotSwarm draws the agents and the links of the swarm.
 %   The figure should be already open and set with the correct axis using plotSwarmInit.
@@ -27,15 +27,18 @@ function [p,p_lines] = plotSwarm(x,xL,time,RMin,RMax,thenDelete, spin, gradColor
 
 arguments
     x           double
-    xL          double                      = []
     time        double                      = 0
     RMin        double {mustBeNonnegative}  = 0
     RMax        double {mustBeNonnegative}  = 0
     thenDelete  logical                     = false
     spin        double                      = ones(size(x,1), 1)
     gradColor   logical                     = true
+    shape       string                      = "."
     radius      double {mustBePositive}     = 20
+    xPrevious   double                      = x
 end
+
+assert(all(size(x)==size(xPrevious)),'x and xPrevious must have the same size!')
 
 if isempty(spin)
         spin = ones(size(x,1), 1);
@@ -51,10 +54,21 @@ if size(x,2) > 3
     x=x';
 end
 
-if size(x,2) == 2
-    p1 = plot(x(spin1,1), x(spin1,2),'b.','MarkerSize', radius);
-    p2 = plot(x(spin0,1), x(spin0,2),'r.','MarkerSize', radius);
-else
+if size(x,2) == 2           % 2D plot
+    if strcmp(shape,"rod")  % plot rods
+        if length(radius)==1; radius=radius*[1,0.5]; end
+        ang = atan2(x(:,2)-xPrevious(:,2),x(:,1)-xPrevious(:,1));
+        for i=1:size(x,1)
+            plot_singleRod(x(i,:),ang(i),radius(1),radius(2));
+        end
+        ax = gca();
+        p1 = ax.Children;
+        p2 = [];
+    else                    % plot circles
+        p1 = plot(x(spin1,1), x(spin1,2),'b.','Marker', shape,'MarkerSize', radius);
+        p2 = plot(x(spin0,1), x(spin0,2),'r.','Marker', shape,'MarkerSize', radius);
+    end
+else                        % 3D plot
     if gradColor
         p1 = scatter3(x(spin1,1), x(spin1,2), x(spin1,3), radius*3, x(spin1,3), 'filled');
         p2 = scatter3(x(spin0,1), x(spin0,2), x(spin0,3), radius*3,'r', 'filled');

@@ -33,6 +33,8 @@ arguments
 end
     %figure
     
+    warning("plotRodsInit is deprecated, use plotSwarmInit instead")
+    
     if length(windowSize)==1
         windowSize = [windowSize, windowSize];
     end
@@ -57,7 +59,7 @@ end
        x=x'; 
     end
 
-    [p] = plotRod(x,xp,time,thenDelete);
+    [p] = plotRods(x,xp,time,thenDelete);
 
 
 end

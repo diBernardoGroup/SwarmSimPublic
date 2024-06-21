@@ -14,8 +14,12 @@ clear
 %% Parameters
 
 defaultParamMicroorg;               % load default parameters to simulate microorganisms
+
 % Simulation.drawON = true;
 % Simulation.recordVideo = false;
+% Simulation.Tmax = 5;                  % maximum simulation time
+% Simulation.timeInstants = [0:Simulation.deltaT:Simulation.Tmax];
+% Simulation.agentShape = "."; 
 
 % tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16';  % switch10s
 % tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo3';  % switch10s combo
@@ -34,7 +38,7 @@ tag='grad_centr_dark';    data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_14
 tag='grad_lateral';       data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_13_E_16';   Environment.boundary = Simulation.arena * 2;
 tag='circle_light';       data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_E_26';    Environment.boundary = Simulation.arena * 2;
 % tag='circle_dark';        data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_13_E_15';   Environment.boundary = Simulation.arena * 2;
-% tag='BCL';                data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_E_30';   Environment.boundary = Simulation.arena * 2;
+% tag='BCL';                data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_E_34'; Simulation.arena=Simulation.arena*3; Environment.boundary = Simulation.arena * 2;
 
 % tag = 'no_light_response';
     
@@ -95,7 +99,9 @@ v0 = speeds0 .* [cos(theta0), sin(theta0)];
 %v0 = zeros(size(x0));
 
 %% Run Simulation
+tic
 [xVec, uVec, ~] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction, Environment);
+toc
 
 %% Analysis
 if smoothing
@@ -144,13 +150,14 @@ omega_ce(length(Simulation.timeInstants),:) = angleBetweenVectors(squeeze(xVec(e
 omega_ce=omega_ce/Simulation.deltaT;
 
 omega = omega_be;
-
-xFinal_inWindow = squeeze(xVec(end,(xVec(end,:,1)>-Simulation.arena(1)/2 & xVec(end,:,1)<Simulation.arena(1)/2 ...
-                        & xVec(end,:,2)>-Simulation.arena(2)/2 & xVec(end,:,2)<Simulation.arena(2)/2),:));
-
                     
 %% PLOTS
 
+xSemiFinal_inWindow = squeeze(xVec(end-1,(xVec(end,:,1)>-Simulation.arena(1)/2 & xVec(end,:,1)<Simulation.arena(1)/2 ...
+                        & xVec(end,:,2)>-Simulation.arena(2)/2 & xVec(end,:,2)<Simulation.arena(2)/2),:));
+xFinal_inWindow = squeeze(xVec(end,(xVec(end,:,1)>-Simulation.arena(1)/2 & xVec(end,:,1)<Simulation.arena(1)/2 ...
+                        & xVec(end,:,2)>-Simulation.arena(2)/2 & xVec(end,:,2)<Simulation.arena(2)/2),:));
+                    
 % create output folder, save data and parameters
 
 if outputDir
@@ -200,9 +207,9 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
 end
 if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
 if isfield(LocalIntFunction, 'DistanceRange')
-    plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena);
+    plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, squeeze(xVec(2,:,:)));
 else
-    plotSwarmInit(x0, 0, inf, inf, Simulation.arena);
+    plotSwarmInit(x0, 0, inf, inf, Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, squeeze(xVec(2,:,:)));
 end
 if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
 if outputDir
@@ -217,9 +224,9 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
 end
 if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
 if isfield(LocalIntFunction, 'DistanceRange')
-    plotSwarmInit(xFinal_inWindow, Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena);
+    plotSwarmInit(xFinal_inWindow, Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, xSemiFinal_inWindow);
 else
-    plotSwarmInit(xFinal_inWindow, Simulation.Tmax, inf, inf, Simulation.arena);
+    plotSwarmInit(xFinal_inWindow, Simulation.Tmax, inf, inf, Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, xSemiFinal_inWindow);
 end
 if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
 if outputDir

@@ -58,8 +58,8 @@ end
 
 cmap = linspace2([1,1,1], [1,0.5,0.5], 100)';
 if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
-    x_vec = linspace(-Simulation.arena(1)/2,Simulation.arena(1)/2,100);
-    y_vec = linspace(-Simulation.arena(2)/2,Simulation.arena(2)/2,100);
+    x_vec = linspace(-Simulation.arena(1)/2,Simulation.arena(1)/2,1000);
+    y_vec = linspace(-Simulation.arena(2)/2,Simulation.arena(2)/2,1000);
     [x_mesh, y_mesh] = meshgrid(x_vec, y_vec);
     %F=scatteredInterpolant(Environment.Inputs.Points, Environment.Inputs.Values, 'linear', 'nearest');
     F = griddedInterpolant(Environment.Inputs.Points,Environment.Inputs.Values, 'linear', 'nearest');
@@ -73,10 +73,15 @@ if Simulation.drawON
         imagesc(x_vec,y_vec,F(x_mesh',y_mesh')')
         colormap(cmap)
     end
+    %     if isfield(LocalIntFunction, 'DistanceRange')
+    %         plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, thenDelete=true);
+    %     else
+    %         plotSwarmInit(x0, 0, inf, inf, Simulation.arena, thenDelete=true);
+    %     end
     if isfield(LocalIntFunction, 'DistanceRange')
-        plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, thenDelete=true);
+        plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, Simulation.arena, false, false, true, Simulation.agentShape, Simulation.agentSize, x0-v0);
     else
-        plotSwarmInit(x0, 0, inf, inf, Simulation.arena, thenDelete=true);
+        plotSwarmInit(x0, 0, inf, inf, Simulation.arena, Simulation.arena, false, false, true, Simulation.agentShape, Simulation.agentSize, x0-v0);
     end
 end
 
@@ -153,9 +158,9 @@ while t<Simulation.Tmax
             if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
             if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
             if isfield(LocalIntFunction, 'DistanceRange')
-                plotSwarm(x, [], t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), ~Simulation.recordVideo);
+                plotSwarm(x, t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), ~Simulation.recordVideo, ones(size(x,1), 1), false, Simulation.agentShape, Simulation.agentSize, x-v);
             else
-                plotSwarm(x, [], t, inf, inf, ~Simulation.recordVideo);
+                plotSwarm(x, t, inf, inf, ~Simulation.recordVideo, ones(size(x,1), 1), false, Simulation.agentShape, Simulation.agentSize, x-v);
             end
             
             if Simulation.recordVideo
@@ -198,9 +203,9 @@ if Simulation.drawON
     end
     if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
     if isfield(LocalIntFunction, 'DistanceRange')
-        plotSwarm(squeeze(xVec(end,:,:)), [], t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), false);
+        plotSwarm(squeeze(xVec(end,:,:)), t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), flase, ones(size(x,1), 1), false, Simulation.agentShape, Simulation.agentSize, x-v);
     else
-        plotSwarm(squeeze(xVec(end,:,:)), [], t, inf, inf, false);
+        plotSwarm(squeeze(xVec(end,:,:)), t, inf, inf, false, ones(size(x,1), 1), false, Simulation.agentShape, Simulation.agentSize, x-v);
     end
     if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
 end

@@ -1,4 +1,4 @@
-function [p,p_lines] = plotSwarmInit(x,time,RMin,RMax,windowSize,tickStep,showGrid,gradColor,thenDelete)
+function [p,p_lines] = plotSwarmInit(x,time,RMin,RMax,windowSize,tickStep,showGrid,gradColor,thenDelete, shape, radius, xPrevious)
 %
 %plotSwarm set the correct axis and draws the agents and the links of the swarm.
 %
@@ -35,6 +35,9 @@ arguments
     showGrid    logical                     = false
     gradColor   logical                     = false
     thenDelete  logical                     = false
+    shape       string                      = "."
+    radius      double {mustBePositive}     = 20
+    xPrevious   double                      = x
 end
     %figure
     
@@ -62,7 +65,7 @@ end
        x=x'; 
     end
 
-    [p,p_lines] = plotSwarm(x,[],time, RMin,RMax,thenDelete, ones(size(x,1), 1), gradColor);
+    [p,p_lines] = plotSwarm(x,time, RMin,RMax,thenDelete, ones(size(x,1), 1), gradColor, shape, radius, xPrevious);
 
 end
 

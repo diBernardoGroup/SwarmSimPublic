@@ -1,4 +1,4 @@
-function [p] = plotRod(x,xp,time,thenDelete)
+function [p] = plotRods(x,xp,time,thenDelete)
 %
 %plotSwarm draws the agents and the links of the swarm.
 %   The figure should be already open and set with the correct axis using plotSwarmInit.
@@ -29,6 +29,8 @@ arguments
     time        double
     thenDelete  logical                     = false
 end
+
+warning("plotRods is deprecated, use plotSwarm instead")
 
 title(['t=',num2str(time,'%.2f'),' s'])
 
