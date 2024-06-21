@@ -36,7 +36,7 @@ tag='half_half';          data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_14
 tag='grad_centr_light';   data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_12_E_3';    Environment.boundary = Simulation.arena * 2;
 tag='grad_centr_dark';    data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_14_E_10';   Environment.boundary = Simulation.arena * 2;
 tag='grad_lateral';       data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_13_E_16';   Environment.boundary = Simulation.arena * 2;
-tag='circle_light';       data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_E_26';    Environment.boundary = Simulation.arena * 2;
+tag='circle_light';       data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_E_26';   Environment.boundary = Simulation.arena * 2;
 % tag='circle_dark';        data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_13_E_15';   Environment.boundary = Simulation.arena * 2;
 % tag='BCL';                data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_E_34'; Simulation.arena=Simulation.arena*3; Environment.boundary = Simulation.arena * 2;
 
@@ -49,7 +49,7 @@ identification_file_name = 'identification_GB_absw_noalpha_narrow.txt';
 % id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
 % identification_file_name = 'identification_GB_absw_alpha.txt';
 
-outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/2024_06_17_GB_absw_noalpha_narrow';
+outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 % outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications';
 % [~,simulation_name,~]=fileparts(identification_file_name);
 
@@ -99,9 +99,7 @@ v0 = speeds0 .* [cos(theta0), sin(theta0)];
 %v0 = zeros(size(x0));
 
 %% Run Simulation
-tic
 [xVec, uVec, ~] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction, Environment);
-toc
 
 %% Analysis
 if smoothing
@@ -153,10 +151,9 @@ omega = omega_be;
                     
 %% PLOTS
 
-xSemiFinal_inWindow = squeeze(xVec(end-1,(xVec(end,:,1)>-Simulation.arena(1)/2 & xVec(end,:,1)<Simulation.arena(1)/2 ...
-                        & xVec(end,:,2)>-Simulation.arena(2)/2 & xVec(end,:,2)<Simulation.arena(2)/2),:));
-xFinal_inWindow = squeeze(xVec(end,(xVec(end,:,1)>-Simulation.arena(1)/2 & xVec(end,:,1)<Simulation.arena(1)/2 ...
-                        & xVec(end,:,2)>-Simulation.arena(2)/2 & xVec(end,:,2)<Simulation.arena(2)/2),:));
+[~,indices_inWindow] = getInWindow(squeeze(xVec(end,:,:)), Simulation.arena);
+xFinal_inWindow = squeeze(xVec(end,indices_inWindow,:));
+xSemiFinal_inWindow = squeeze(xVec(end-1,indices_inWindow,:));
                     
 % create output folder, save data and parameters
 

@@ -4,7 +4,7 @@ close all
 defaultParamMicroorg
 
 simulations_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
-simulations_folder = fullfile(simulations_folder,'2024_06_17_GB_absw_noalpha_narrow');
+simulations_folder = fullfile(simulations_folder,'2024_06_17_GB_median');
 experiments_folder = "/Volumes/DOMEPEN/Experiments";
 
 
@@ -15,7 +15,7 @@ experiments_names = ["2023_06_12_Euglena_2","2023_06_14_Euglena_6","2023_06_15_E
 
 % spatial
 tags = ["half_half","grad_centr_light","grad_centr_dark","grad_lateral","circle_light","circle_dark"];
-sim_names = ["2024_06_06_half_half_1";"2024_06_06_grad_centr_light_1";"2024_06_06_grad_centr_dark_1";"2024_06_06_grad_lateral_1";"2024_06_06_circle_light_1";"2024_06_06_circle_dark_1"];
+% sim_names = ["2024_06_06_half_half_1";"2024_06_06_grad_centr_light_1";"2024_06_06_grad_centr_dark_1";"2024_06_06_grad_lateral_1";"2024_06_06_circle_light_1";"2024_06_06_circle_dark_1"];
 sim_names = ["2024_06_19_half_half_1";"2024_06_19_grad_centr_light_1";"2024_06_19_grad_centr_dark_1";"2024_06_19_grad_lateral_1";"2024_06_19_circle_light_1";"2024_06_19_circle_dark_1"];
 experiments_names = {["2023_06_12_E_2", "2023_06_14_E_6", "2023_06_15_E_12","2023_06_26_E_29","2023_06_26_E_30","2023_06_23_E_1", "2023_06_23_E_2", "2023_06_26_E_2", "2023_06_26_E_1"];
                      ["2023_06_12_E_3", "2023_06_12_E_4", "2023_06_14_E_7", "2023_06_15_E_14","2023_06_23_E_5", "2023_06_23_E_6", "2023_06_26_E_5", "2023_06_26_E_6", "2023_06_26_E_33"];
@@ -25,6 +25,16 @@ experiments_names = {["2023_06_12_E_2", "2023_06_14_E_6", "2023_06_15_E_12","202
                      ["2023_06_13_E_6", "2023_06_13_E_15","2023_06_15_E_17","2023_06_15_E_18","2023_06_23_E_12","2023_06_23_E_13","2023_06_26_E_11","2023_06_26_E_12","2023_06_26_E_38","2023_06_26_E_39","2023_07_10_E_25","2023_07_10_E_22"]};
 output_folder = simulations_folder;
 
+% %test
+% sim_names = getSubfolders(simulations_folder)';
+% tags = ["half_half","grad_centr_light","grad_centr_dark","grad_lateral","grad_centr_dark","grad_lateral"];
+% experiments_names = {["2023_06_12_E_2", "2023_06_14_E_6", "2023_06_15_E_12","2023_06_26_E_29","2023_06_26_E_30","2023_06_23_E_1", "2023_06_23_E_2", "2023_06_26_E_2", "2023_06_26_E_1"];
+%                      ["2023_06_12_E_3", "2023_06_12_E_4", "2023_06_14_E_7", "2023_06_15_E_14","2023_06_23_E_5", "2023_06_23_E_6", "2023_06_26_E_5", "2023_06_26_E_6", "2023_06_26_E_33"];
+%                      ["2023_06_14_E_10","2023_06_15_E_15","2023_06_23_E_7", "2023_06_23_E_8", "2023_06_23_E_9",  "2023_06_26_E_7","2023_06_26_E_8", "2023_06_26_E_34","2023_06_26_E_35","2023_07_10_E_23","2023_07_10_E_24"];
+%                      ["2023_06_12_E_5", "2023_06_13_E_16","2023_06_14_E_8", "2023_06_15_E_13","2023_06_23_E_3", "2023_06_23_E_4", "2023_06_26_E_3", "2023_06_26_E_4", "2023_06_26_E_31","2023_06_26_E_32"];
+%                      ["2023_06_12_E_1", "2023_06_14_E_1", "2023_06_15_E_16","2023_06_23_E_10","2023_06_23_E_11","2023_06_26_E_9", "2023_06_26_E_10","2023_06_26_E_36","2023_06_26_E_37","2023_07_10_E_26"];
+%                      ["2023_06_12_E_5", "2023_06_13_E_16","2023_06_14_E_8", "2023_06_15_E_13","2023_06_23_E_3", "2023_06_23_E_4", "2023_06_26_E_3", "2023_06_26_E_4", "2023_06_26_E_31","2023_06_26_E_32"]};
+% output_folder = simulations_folder;
 
 %% LOAD DATA
 combo_mask = cell(1,length(experiments_names));
@@ -34,7 +44,9 @@ for i = 1:length(experiments_names)  % for each experiment
     % load simulation data
     sim_folder = fullfile(simulations_folder,sim_names(i));
     sim_data = load(fullfile(sim_folder,'data.mat'));
-    xFinal_inWindow{i} = sim_data.xFinal_inWindow;
+    [~,indices] = getInWindow(squeeze(sim_data.xVec(end,:,:)), sim_data.Simulation.arena);
+    xFinal_inWindow{i} = squeeze(sim_data.xVec(end,indices,:));
+    xSemiFinal_inWindow{i} = squeeze(sim_data.xVec(end-1,indices,:));
     arena = sim_data.Simulation.arena;
     window = [-arena(1),arena(1),-arena(2),arena(2)]/2;
     inputs{i} = sim_data.Environment.Inputs;
@@ -162,7 +174,7 @@ for i = 1:length(experiments_names)  % for each experiment
     box on
     hold on
     plotEnvField(inputs{i}.Points, inputs{i}.Values, arena)
-    plotSwarm(xFinal_inWindow{i},[],0,inf,inf,false, [], false, 5);
+    plotSwarm(xFinal_inWindow{i},0, inf, inf, false, [], false, Simulation.agentShape, Simulation.agentSize, xSemiFinal_inWindow{i});
     axis('equal')
     axis(window)
     xticks([])
@@ -233,7 +245,7 @@ ylim([0, 0.5])
 legend(plots(:,1),metrics_tags,'FontSize',12,'Orientation','horizontal')
 box on
 set(gca,'XGrid','off','YGrid','on')
-saveas(gcf,fullfile(output_folder, 'multi_exp_comparison_spatial'))
-saveas(gcf,fullfile(output_folder, 'multi_exp_comparison_spatial'),'png')
+% saveas(gcf,fullfile(output_folder, 'multi_exp_comparison_spatial'))
+% saveas(gcf,fullfile(output_folder, 'multi_exp_comparison_spatial'),'png')
 
 

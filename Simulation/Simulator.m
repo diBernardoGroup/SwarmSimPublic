@@ -112,7 +112,13 @@ end
 
 log_txt = ['- Simulating ',num2str(N),' ',Dynamics.model, ' agents in ', num2str(size(x0,2)),'D space'];
 if ~strcmp(GlobalIntFunction.function, 'None'); log_txt = [log_txt,' with ',GlobalIntFunction.function,' interaction']; end
-if isfield(Environment,'Inputs'); log_txt = [log_txt,' with environmental inputs']; end
+if isfield(Environment,'Inputs')
+    if isfield(Environment.Inputs,'Points')
+        log_txt = [log_txt,' with spatial inputs'];
+    else
+        log_txt = [log_txt,' with temporal inputs'];
+    end
+end
 disp(log_txt);
 
 %% Run Simulation
