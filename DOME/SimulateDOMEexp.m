@@ -38,9 +38,7 @@ tag='grad_centr_dark';    data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_14
 tag='grad_lateral';       data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_13_E_16';   Environment.boundary = Simulation.arena * 2;
 tag='circle_light';       data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_E_26';   Environment.boundary = Simulation.arena * 2;
 % tag='circle_dark';        data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_13_E_15';   Environment.boundary = Simulation.arena * 2;
-% tag='BCL';                data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_E_34'; Simulation.arena=Simulation.arena*3; Environment.boundary = Simulation.arena * 2;
-
-% tag = 'no_light_response';
+tag='BCLx36';             data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_E_34'; N=N*0.1; Simulation.arena=Simulation.arena*2.5; Environment.boundary = Simulation.arena * 2; x0=randRect(N, Simulation.arena*2, D);
     
 id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % folder with identification data
 identification_file_name = 'identification_GB_absw_noalpha_narrow.txt';
@@ -284,7 +282,7 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     hold on
     cmap = linspace2([1,1,1], [1,0.5,0.5], 100)';
     colormap(cmap)
-    imagesc(x_vec,y_vec,u')
+    imagesc(x_vec,y_vec,flip(u'))
     I=imagesc(x_vec,y_vec,cat(3,zeros(size(mask)),zeros(size(mask)),mask));
     set(I, 'AlphaData', mask);
     axis('equal')

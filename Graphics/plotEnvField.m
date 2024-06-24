@@ -11,7 +11,12 @@ function [] = plotEnvField(points, values, window, cmap)
 
     F = griddedInterpolant(points,values, 'linear', 'nearest');
     
+%     ax=gca();
+%     hold on
+    %axis(ax, 'xy')
     imagesc(x_vec,y_vec,F(x_mesh',y_mesh')')
     colormap(cmap)
+    axis xy
+%     axis(ax,'equal',[-window(1)/2 window(1)/2 -window(2)/2 window(2)/2])
 end
 

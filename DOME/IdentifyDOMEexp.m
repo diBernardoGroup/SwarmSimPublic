@@ -53,8 +53,8 @@ omega  = load(fullfile(data_folder,'ang_vel_smooth.txt'));
 
 % speed = movmean(speed,5,'omitnan');
 % omega = movmean(omega,5,'omitnan');
-speed = median(speed,2,'omitnan');
-omega = median(abs(omega),2,'omitnan');
+% speed = median(speed,2,'omitnan');
+% omega = median(abs(omega),2,'omitnan');
 % speed = movmean(speed,5,'omitnan');
 % omega = movmean(omega,5,'omitnan');
 
