@@ -27,11 +27,11 @@ Ntimes=1;              % How many simulations are launched for each configuratio
 
 defaultParamMicroorg;  % load default parameters
 
-seed=0;               % seed for random generator, if negative it is not set
+seed=0;                % seed for random generator, if negative it is not set
 
 makeSimFolders = true; % save data of individual simulations
 
-N = 8000;
+N = 12000;
 Environment.boundary = Simulation.arena * 2;
 
 %% Loads DOME experiment data
@@ -218,6 +218,25 @@ for i_times=1:Nconfig
             saveas(gcf, fullfile(sim_ouput_path, 'x_final'))
             saveas(gcf, fullfile(sim_ouput_path, 'x_final'),'png')
             
+            % difference between light distribution
+            figure(2) 
+            cla
+            hold on
+            b_exp = bar((bins(1:end-1)+bins(2:end))/2,density_by_input_exp, 1, FaceColor = 'b', FaceAlpha = 0.5);
+            b_sim = bar((bins(1:end-1)+bins(2:end))/2,density_by_input_sim, 1, FaceColor = 'k', FaceAlpha = 0.4);
+            legend({'REAL','SIMULATED'},'FontSize',14)
+            xlabel('Input intensity','FontSize',14)
+            ylabel('Density of agents','FontSize',14)
+            yticks([0:0.25:1]);
+            text(mean(bins),max(density_by_input_exp)*1.10,['TVD=',num2str(tvd(i_times,k_times),'%.2f')],'HorizontalAlignment','center','FontSize',14)
+            ylim([0,max(density_by_input_exp)*1.15])
+            xlim([-0.1,1.1])
+            xticks(round(bins,2))
+            box
+                saveas(gcf, fullfile(sim_ouput_path, 'difference_light_distribution'))
+                saveas(gcf, fullfile(sim_ouput_path, 'difference_light_distribution'),'png')
+            
+            
         end
         
     end
@@ -272,6 +291,7 @@ if outputDir
     fprintf(fileID,'SequentialLauncher\n\n');
     fprintf(fileID,'Date: %s\n',datestr(now, 'dd/mm/yy'));
     fprintf(fileID,'Time: %s\n\n',datestr(now, 'HH:MM'));
+    fprintf(fileID,'Identification: %s\n\n',fullfile(id_folder,identification_file_name));
     fprintf(fileID,'Ntimes= %d\n\n',Ntimes);
     fprintf(fileID,'Parameters:\n\n');
     fprintf(fileID,'N= %d\n',N);
@@ -396,8 +416,8 @@ elseif Nparameters==2
     end
     set(gcf,'Position',[100 500 200*swarms_to_show 300*2])
     if outputDir
-        saveas(gcf,fullfile(output_path, 'x'))
-        saveas(gcf,fullfile(output_path, 'x'),'png')
+        saveas(gcf,fullfile(output_path, 'x_final'))
+        saveas(gcf,fullfile(output_path, 'x_final'),'png')
     end
 end
 
