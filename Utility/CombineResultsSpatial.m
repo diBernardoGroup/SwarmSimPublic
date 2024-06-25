@@ -10,7 +10,7 @@ experiments_folder = "/Volumes/DOMEPEN/Experiments";
 
 % half_half
 tags = ["BCL"];
-sim_names = ["2024_06_24_BCLx36_1"];
+sim_names = ["2024_06_25_BCLx36_1"];
 experiments_names = {["2023_07_10_E_30","2023_07_10_E_34","2023_07_10_E_35"]};
 output_folder = simulations_folder;
 
@@ -90,7 +90,7 @@ x_vec = linspace(window(1),window(2),size(mask,2));
 y_vec = linspace(window(3),window(4),size(mask,1));
 
 
-% % multi-exp comparison
+% % multi-exp comparison with separate replicates
 % main_fig = figure('Position',[100 100 1900 1000]);
 % for i = 1:length(experiments_names)  % for each experiment
 %     subplot(length(experiments_names{i})+3,length(experiments_names),i)
@@ -167,16 +167,15 @@ y_vec = linspace(window(3),window(4),size(mask,1));
 % saveas(gcf,fullfile(output_folder, 'multi_exp_comparison_overview'))
 % saveas(gcf,fullfile(output_folder, 'multi_exp_comparison_overview'),'png')
 
-% multi-exp comparison
-main_fig = figure('Position',[100 100 1900 1000]);
+% multi-exp comparison with aggregate replicates
+main_fig = figure('Position',[100 100 350*length(experiments_names) 1000]);
 for i = 1:length(experiments_names)  % for each experiment
     % simulation final positions
     subplot(4,length(experiments_names),i)
     box on
     hold on
     plotEnvField(inputs{i}.Points, inputs{i}.Values, arena)
-%     plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Simulation.arena)
-    plotSwarm(xFinal_inWindow{i},0, inf, inf, false, [], false, Simulation.agentShape, Simulation.agentSize, xSemiFinal_inWindow{i});
+    plotSwarm(xFinal_inWindow{i},0, inf, inf, false, [], false, Simulation.agentShape, Simulation.agentSize*1.5, xSemiFinal_inWindow{i});
     axis('equal')
     axis(window)
     xticks([])

@@ -7,7 +7,7 @@ close all
 data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5'; % switch10s combo
 %data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
 
-identification_file_name = 'identification_GB_absw_noalpha.txt';
+identification_file_name = 'identification_GB_absw_noalpha_narrow.txt';
 identification_method = 'OLS+GB'; %OLS+GB
 downSampling = 1;
 

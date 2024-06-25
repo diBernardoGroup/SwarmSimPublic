@@ -41,7 +41,7 @@ Simulation.drawON=false;                % draw swarm during simulation (if N is 
 Simulation.drawTraj=0;                  % draw trajectories of the agents (if N is large slows down the simulation)
 Simulation.recordVideo=false;           % record video of the simulation (if true drawON must be true)
 Simulation.agentShape = "rod";          % shape to plot the agents "rod" or any defualt marker key ('.','+','diamond',...)
-Simulation.agentSize = 30;              % size to plot the agents
+Simulation.agentSize = 45;              % size to plot the agents
 Simulation.timeInstants = [0:Simulation.deltaT:Simulation.Tmax];
 
 %% Initial conditions
