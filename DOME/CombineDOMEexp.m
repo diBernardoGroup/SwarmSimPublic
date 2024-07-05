@@ -5,6 +5,8 @@ close all
 experiments_folder = '/Volumes/DOMEPEN/Experiments';
 
 % experiments must have the same inputs
+
+%% Euglena
 % switch 10s all
 tag = 'Euglena_switch_10';
 experiments_names = ["2023_06_15_Euglena_7", "2023_06_26_Euglena_23","2023_06_26_Euglena_24", "2023_07_10_Euglena_15", "2023_07_10_Euglena_16"];
@@ -41,6 +43,17 @@ experiments_names = ["2023_06_15_Euglena_2", "2023_06_26_Euglena_15", "2023_07_1
 % % Ramp
 % tag = 'Euglena_ramp';
 % experiments_names = ["2023_06_15_Euglena_6", "2023_06_26_Euglena_22", "2023_07_10_Euglena_14"];
+
+%% Volvox
+% Volvox switch 10s selected
+% tag = 'Volvox_switch_10';
+% experiments_names = ["2023_07_04_Volvox_13","2023_07_05_Volvox_2","2023_07_06_Volvox_3","2023_07_05_Volvox_7","2023_07_06_Volvox_11"];
+% experiments_names = ["2023_07_04_Volvox_13","2023_07_05_Volvox_2","2023_07_06_Volvox_3"];
+
+% Volvox OFF-ON-OFF 255
+tag = 'Volvox_255_ON';
+experiments_names = ["2023_06_08_Volvox_3", "2023_07_04_Volvox_9", "2023_07_06_Volvox_21"];
+
 
 output_folder = fullfile("/Volumes/DOMEPEN/Experiments/comparisons/",tag,"/combo");
 
@@ -88,7 +101,7 @@ u=inputs(:,1)/255;              %select blue channel and scale in [0,1]
 figure % TIME PLOT - SPEED and ANGULAR VELOCITY
 subplot(2,1,1)
 xlim([0,max(timeInstants)])
-ylim([0,120])
+ylim([0,250])
 if isvarname('u')
     highlightInputs(timeInstants, u, 'r', 0.25)
 end
@@ -100,7 +113,7 @@ rng=ylim;
 box on
 subplot(2,1,2)
 xlim([0,max(timeInstants)])
-ylim([0,2])
+ylim([0,1.5])
 if isvarname('u')
     highlightInputs(timeInstants, u, 'r', 0.25)
 end
