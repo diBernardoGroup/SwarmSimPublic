@@ -1,4 +1,4 @@
-function [p,p_lines] = plotSwarmInit(x,time,RMin,RMax,windowSize,tickStep,showGrid,gradColor,thenDelete, shape, radius, xPrevious)
+function [p,p_lines] = plotSwarmInit(x,time,RMin,RMax,windowSize,tickStep,showGrid,gradColor,thenDelete, shape, radius, xPrevious,color)
 %
 %plotSwarm set the correct axis and draws the agents and the links of the swarm.
 %
@@ -14,6 +14,7 @@ function [p,p_lines] = plotSwarmInit(x,time,RMin,RMax,windowSize,tickStep,showGr
 %       showGrid    Display grid                                        (logic = false)
 %       gradColor   Use gradient color along the Z axis (3D only)       (logic = false)
 %       thenDelete  Delete graphics, used during simulation             (logic = false)
+%       color       Color of the agents                                 (rgb array)
 %
 %   Outputs:
 %       p           Plots of the agents
@@ -38,6 +39,7 @@ arguments
     shape       string                      = "."
     radius      double {mustBePositive}     = 20
     xPrevious   double                      = x
+    color       double                      = [1 0 0]
 end
     %figure
     
@@ -57,7 +59,7 @@ end
     zticklabels('')
     box on
     set(gca,'FontSize',14)
-    set(gcf,'Position',[100 100 500 500])
+    set(gcf,'Position',[0 100 500 500])
     hold on
     if showGrid; grid on; end
     
@@ -65,7 +67,7 @@ end
        x=x'; 
     end
 
-    [p,p_lines] = plotSwarm(x,time, RMin,RMax,thenDelete, ones(size(x,1), 1), gradColor, shape, radius, xPrevious);
+    [p,p_lines] = plotSwarm(x,time, RMin,RMax,thenDelete, ones(size(x,1), 1), gradColor, shape, radius, xPrevious,color);
 
 end
 

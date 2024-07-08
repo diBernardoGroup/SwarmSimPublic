@@ -1,4 +1,4 @@
-function [] = plot_singleRod(center,angle,l,h)
+function [] = plot_singleRod(center,angle,l,h,c_rods)
 
 % Parameters for the rod-shaped bacterium
 length = l; % l: Length of the bacterium
@@ -27,7 +27,7 @@ rotated_corners(:,1) = rotated_corners(:,1) + x_center;
 rotated_corners(:,2) = rotated_corners(:,2) + y_center;
 
 % Plot the rod-shaped bacterium
-fill(rotated_corners(:,1), rotated_corners(:,2), [0 75 255]/255,'LineStyle','none'); % Draw the filled rotated rectangle
+fill(rotated_corners(:,1), rotated_corners(:,2), c_rods,'LineStyle','none'); % Draw the filled rotated rectangle
 
 
 end

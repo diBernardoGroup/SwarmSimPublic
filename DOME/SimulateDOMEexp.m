@@ -23,7 +23,7 @@ defaultParamMicroorg;               % load default parameters to simulate microo
 
 % tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16';  % switch10s
 % tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo3';  % switch10s combo
-% tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % switch10s combo 5
+tag='switch_10'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\Euglena_switch_10\combo5';  % switch10s combo 5
 % tag='switch_5'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_5/combo';  % switch5s combo
 % tag='switch_1'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_1/combo';  % switch1s combo
 % tag='75_ON'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_75_ON/combo';  % OFF-ON-OFF 75 combo
@@ -38,16 +38,16 @@ defaultParamMicroorg;               % load default parameters to simulate microo
 % tag='grad_lateral';       data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_13_E_16';   Environment.boundary = Simulation.arena * 2;
 % tag='circle_light';       data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_E_26';   Environment.boundary = Simulation.arena * 2;
 % tag='circle_dark';        data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_13_E_15';   Environment.boundary = Simulation.arena * 2;
-tag='BCLx36';             data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_E_34'; N=N*2; Simulation.arena=Simulation.arena*2.5; Environment.boundary = Simulation.arena * 2; x0=randRect(N, Simulation.arena*2, D);
+tag='BCLx36';             data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\2023_07_10_E_34'; N=N*2; Simulation.arena=Simulation.arena*2.5; Environment.boundary = Simulation.arena * 2; x0=randRect(N, Simulation.arena*2, D);
     
-id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % folder with identification data
+id_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\identifications\2024_06_17_GB_absw_noalpha_narrow';  % folder with identification data
 identification_file_name = 'identification_GB_absw_noalpha_narrow.txt';
 % identification_file_name = 'identification_manual.txt';
 % identification_file_name = 'identification_GB_median.txt';
 % id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
 % identification_file_name = 'identification_GB_absw_alpha.txt';
 
-outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
+outputDir = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\Simulations';
 % outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications';
 % [~,simulation_name,~]=fileparts(identification_file_name);
 
@@ -148,6 +148,9 @@ omega_ce=omega_ce/Simulation.deltaT;
 omega = omega_be;
                     
 %% PLOTS
+
+
+
 
 [~,indices_inWindow] = getInWindow(squeeze(xVec(end,:,:)), Simulation.arena);
 xFinal_inWindow = squeeze(xVec(end,indices_inWindow,:));

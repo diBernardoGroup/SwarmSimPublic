@@ -1,4 +1,4 @@
-function [p] = plotRodsInit(x,xp,time,windowSize,tickStep,showGrid,thenDelete)
+function [p] = plotRodsInit(x,xp,time,windowSize,tickStep,showGrid,thenDelete,c_rods)
 %
 %plotSwarm set the correct axis and draws the agents and the links of the swarm.
 %
@@ -12,6 +12,8 @@ function [p] = plotRodsInit(x,xp,time,windowSize,tickStep,showGrid,thenDelete)
 %       showGrid    Display grid                                        (logic = false)
 %       gradColor   Use gradient color along the Z axis (3D only)       (logic = false)
 %       thenDelete  Delete graphics, used during simulation             (logic = false)
+%       c_rods      Color of the bacteria                               (rgb array)
+%       
 %
 %   Outputs:
 %       p           Plots of the agents
@@ -30,6 +32,7 @@ arguments
     tickStep    double                      = windowSize/2
     showGrid    logical                     = false
     thenDelete  logical                     = false
+    c_rods      double                      = [1 0 0]
 end
     %figure
     
@@ -59,7 +62,7 @@ end
        x=x'; 
     end
 
-    [p] = plotRods(x,xp,time,thenDelete);
+    [p] = plotRods(x,xp,time,thenDelete,c_rods);
 
 
 end

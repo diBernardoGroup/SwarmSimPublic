@@ -1,4 +1,4 @@
-function [p] = plotRods(x,xp,time,thenDelete)
+function [p] = plotRods(x,xp,time,thenDelete,c_rods)
 %
 %plotSwarm draws the agents and the links of the swarm.
 %   The figure should be already open and set with the correct axis using plotSwarmInit.
@@ -12,6 +12,7 @@ function [p] = plotRods(x,xp,time,thenDelete)
 %       thenDelete  Delete graphics, used during simulation             (logic = false)
 %       spin        Spin of the agents                                  (Nx1 matrix = ones(N,1))
 %       gradColor   Use gradient color along the Z axis (3D only)       (logic = false)
+%       c_rods      Color of the bacteria                               (rgb array)
 %
 %   Outputs:
 %       p           Plots of the agents
@@ -28,6 +29,7 @@ arguments
     xp          double
     time        double
     thenDelete  logical                     = false
+    c_rods      double                      = [1 0 0]
 end
 
 warning("plotRods is deprecated, use plotSwarm instead")
@@ -43,7 +45,7 @@ p =gca;
 hold on;
 for i=1:min([size(xp,1),size(x,1)])
     ang = atan2(x(i,2)-xp(i,2),x(i,1)-xp(i,1));
-    plot_singleRod(x(i,:),ang,28,12);
+    plot_singleRod(x(i,:),ang,28,12,c_rods);
 end
 
 
