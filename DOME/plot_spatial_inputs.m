@@ -1,46 +1,46 @@
 close all;
-time_plot = 0:45:Simulation.Tmax;
-all_time = 0:Simulation.deltaT:Simulation.Tmax;
-cmap_inputs = linspace2([0,0,0], [0,0.3,.9], 100)'; 
-color_rods = [1 0 0];
-sim_c = [0.3 0.3 0.3];
-exp_c = [1 0 0];
+Render.time_plot = 0:45:Simulation.Tmax;
+Render.all_time = 0:Simulation.deltaT:Simulation.Tmax;
+Render.cmap_inputs = linspace2([0,0,0], [0,0.3,.9], 100)'; 
+Render.color_rods = [1 0 0];
+Render.sim_c = [0.3 0.3 0.3];
+Render.exp_c = [1 0 0];
 
 
 %% Plot the position of each agent at specified time instants (Time_plot)
 %%%both in silico and in vivo. Also, it plots the comparison between real and simulated histograms
 
-for i=1:length(time_plot)
+for i=1:length(Render.time_plot)
 
     %%%%%%%%%%%%%%%%%%%%%%%%% IN SILICO EXPERIMENT %%%%%%%%%%%%%%%%%%%%%%%%% 
 
     %get the position of the agents
-    cur_ind = max([time_plot(i)/Simulation.deltaT,2]);
+    cur_ind = max([Render.time_plot(i)/Simulation.deltaT,2]);
     [~,indices_inWindow] = getInWindow(squeeze(xVec(cur_ind,:,:)), Simulation.arena);
     x_cur = squeeze(xVec(cur_ind,indices_inWindow,:));
-    x_prev = squeeze(xVec(max([(time_plot(i)/Simulation.deltaT)-1,1]),indices_inWindow,:));
+    x_prev = squeeze(xVec(max([(Render.time_plot(i)/Simulation.deltaT)-1,1]),indices_inWindow,:));
 
     figure("Position",[0 0 500 300])
     %Plot the light projected on the sample
     if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
-        plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Simulation.arena, cmap_inputs)
+        plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Simulation.arena, Render.cmap_inputs)
     end
     %Plot the trajectories
     if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
     %Plot the rods in the environment
-    plotSwarmInit(x_cur,time_plot(i),inf,inf,Simulation.arena,Simulation.arena,false,false,false, 'rod', [50,20], x_prev,[1 0 0]);
+    plotSwarmInit(x_cur,Render.time_plot(i),inf,inf,Simulation.arena,Simulation.arena,false,false,false, 'rod', [50,20], x_prev,[1 0 0]);
     %Plot the boundary of the simulation
     if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
     %Save the image created in the output folder
     if outputDir
-        saveas(gcf, fullfile(output_path, sprintf("spat_%d",time_plot(i))))
-        saveas(gcf, fullfile(output_path, sprintf("spat_%d",time_plot(i))),'png')
+        saveas(gcf, fullfile(output_path, sprintf("spat_%d",Render.time_plot(i))))
+        saveas(gcf, fullfile(output_path, sprintf("spat_%d",Render.time_plot(i))),'png')
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%% IN VIVO EXPERIMENT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     % get distribution wrt light intensity
-    mask = detectObjects(data_folder, background_sub, brightness_thresh,time_plot(i)+30);
+    mask = detectObjects(data_folder, background_sub, brightness_thresh,Render.time_plot(i)+30);
 
 
     figure("Position",[500 100 500 500])
@@ -48,11 +48,11 @@ for i=1:length(time_plot)
     y_vec = linspace(window(3),window(4),size(mask,1));
     box on    
     hold on
-    colormap(cmap_inputs)
+    colormap(Render.cmap_inputs)
     %Plot the inputs
     imagesc(x_vec,y_vec,flip(u'))
     %Plot the agents detected
-    I=imagesc(x_vec,y_vec,cat(3,color_rods(1).*mask,color_rods(2).*mask,color_rods(3).*mask));
+    I=imagesc(x_vec,y_vec,cat(3,Render.color_rods(1).*mask,Render.color_rods(2).*mask,Render.color_rods(3).*mask));
     set(I, 'AlphaData', mask);
     %Resize the plot
     axis('equal')
@@ -60,8 +60,8 @@ for i=1:length(time_plot)
     xticks([])
     yticks([])
     if outputDir
-        saveas(gcf, fullfile(output_path, sprintf("spat_exp_%d",time_plot(i))))
-        saveas(gcf, fullfile(output_path, sprintf("spat_exp_%d",time_plot(i))),'png')
+        saveas(gcf, fullfile(output_path, sprintf("spat_exp_%d",Render.time_plot(i))))
+        saveas(gcf, fullfile(output_path, sprintf("spat_exp_%d",Render.time_plot(i))),'png')
     end
 
 
@@ -90,8 +90,8 @@ for i=1:length(time_plot)
     xticks(round(bins,2))
     box
     if outputDir
-        saveas(gcf, fullfile(output_path, sprintf("hist_diff_%d",time_plot(i))))
-        saveas(gcf, fullfile(output_path, sprintf("hist_diff_%d",time_plot(i))),'png')
+        saveas(gcf, fullfile(output_path, sprintf("hist_diff_%d",Render.time_plot(i))))
+        saveas(gcf, fullfile(output_path, sprintf("hist_diff_%d",Render.time_plot(i))),'png')
     end
 
 
@@ -102,11 +102,11 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Photo-accumulation Index comp %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-for i=1:length(all_time)
+for i=1:length(Render.all_time)
     %Comput PhI at every time instant
 
-    mask = detectObjects(data_folder, background_sub, brightness_thresh,all_time(i)+30);
-    cur_ind = max([all_time(i)/Simulation.deltaT,2]);
+    mask = detectObjects(data_folder, background_sub, brightness_thresh,Render.all_time(i)+30);
+    cur_ind = max([Render.all_time(i)/Simulation.deltaT,2]);
     [~,indices_inWindow] = getInWindow(squeeze(xVec(cur_ind,:,:)), Simulation.arena);
     x_cur = squeeze(xVec(cur_ind,indices_inWindow,:));
     %Get density of experimental data
@@ -117,9 +117,9 @@ end
 
 %plot the in silico and in vivo PhI to compare the settling time
 figure("Position",[500 100+150 500 300])
-plot(all_time,norm_slope_sim,'LineWidth',2,'Color',sim_c);
+plot(Render.all_time,norm_slope_sim,'LineWidth',2,'Color',Render.sim_c);
 hold on;
-plot(all_time,norm_slope_exp,'LineWidth',2,'Color',exp_c);
+plot(Render.all_time,norm_slope_exp,'LineWidth',2,'Color',Render.exp_c);
 legend({'REAL','SIMULATED'},'FontSize',14)
 xlabel('Time [s]','FontSize',14)
 ylabel('PhI','FontSize',14)

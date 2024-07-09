@@ -38,7 +38,7 @@ tag='switch_10'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli 
 % tag='grad_lateral';       data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_13_E_16';   Environment.boundary = Simulation.arena * 2;
 % tag='circle_light';       data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_E_26';   Environment.boundary = Simulation.arena * 2;
 % tag='circle_dark';        data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_13_E_15';   Environment.boundary = Simulation.arena * 2;
-tag='BCLx36';             data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\2023_07_10_E_34'; N=N*2; Simulation.arena=Simulation.arena*2.5; Environment.boundary = Simulation.arena * 2; x0=randRect(N, Simulation.arena*2, D);
+% tag='BCLx36';             data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\2023_07_10_E_34'; N=N*2; Simulation.arena=Simulation.arena*2.5; Environment.boundary = Simulation.arena * 2; x0=randRect(N, Simulation.arena*2, D);
     
 id_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\identifications\2024_06_17_GB_absw_noalpha_narrow';  % folder with identification data
 identification_file_name = 'identification_GB_absw_noalpha_narrow.txt';
@@ -341,7 +341,7 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     
 else % TEMPORAL INPUTS
 
-    [metrics_of_interest] = compareResults({data_folder,output_path}, output_path);
+    [metrics_of_interest] = compareResults({data_folder,output_path}, output_path, true, Render);
 
 end
 

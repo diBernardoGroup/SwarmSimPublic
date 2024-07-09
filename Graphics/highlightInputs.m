@@ -1,4 +1,6 @@
 function highlightInputs(x, inputs, color, alpha, axis)
+
+
     hold on
     inputs = fillmissing(inputs, 'constant', NaN);
     if size(inputs,1) > size(inputs,2); inputs=inputs'; end
