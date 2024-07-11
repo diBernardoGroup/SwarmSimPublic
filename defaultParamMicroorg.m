@@ -114,10 +114,10 @@ Environment.Inputs.Values = [0, 1, 0, 0];
 
 Render.time_plot = 0:45:Simulation.Tmax;
 Render.all_time = 0:Simulation.deltaT:Simulation.Tmax;
-Render.cmap_inputs = linspace2([0,0,0], [0,0.3,.9], 100)'; 
+Render.cmap_inputs = linspace2([42,35,31]/255, [0,71,143]/255, 100)'; 
 Render.color_rods = [1 0 0];
-Render.sim_c = [129 171 83]/255;
-Render.exp_c = [216 43 43]/255;
+Render.sim_c = [255 166 48]/255;
+Render.exp_c = [32 191 85]/255;
 
 
 

@@ -24,13 +24,13 @@ defaultParamMicroorg;               % load default parameters to simulate microo
 % tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16';  % switch10s
 % tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo3';  % switch10s combo
 tag='switch_10'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\Euglena_switch_10\combo5';  % switch10s combo 5
-% tag='switch_5'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_5/combo';  % switch5s combo
-% tag='switch_1'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_1/combo';  % switch1s combo
-% tag='75_ON'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_75_ON/combo';  % OFF-ON-OFF 75 combo
-% tag='150_ON'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_150_ON/combo';  % OFF-ON-OFF 150 combo
-% tag='255_ON'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_255_ON/combo';  % OFF-ON-OFF 255 combo
-% tag='OFF'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_OFF/combo';  % OFF combo
-% tag='ramp'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_ramp/combo';  % ramp combo
+% tag='switch_5'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_switch_5\combo';  % switch5s combo
+% tag='switch_1'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_switch_1/combo';  % switch1s combo
+% tag='75_ON'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_75_ON/combo';  % OFF-ON-OFF 75 combo
+% tag='150_ON'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons/Euglena_150_ON/combo';  % OFF-ON-OFF 150 combo
+% tag='255_ON'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_255_ON/combo';  % OFF-ON-OFF 255 combo
+% tag='OFF'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_OFF/combo';  % OFF combo
+% tag='ramp'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_ramp/combo';  % ramp combo
 
 % tag='half_half';          data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_14_E_6';    Environment.boundary = Simulation.arena * 2;
 % tag='grad_centr_light';   data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_12_E_3';    Environment.boundary = Simulation.arena * 2;

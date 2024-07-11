@@ -1,4 +1,4 @@
-function highlightInputs(x, inputs, color, alpha, axis)
+function highlightInputs_v2(x, inputs, color, alpha, axis)
 
     hold on;
     if nargin < 5 || isempty(axis)
@@ -6,14 +6,15 @@ function highlightInputs(x, inputs, color, alpha, axis)
     end
 
     in_m=max(inputs);
-    for i = 1:length(x)-1
-        a = area([x(i), x(i+1)], [1,1]*axis.YLim(2));
-        a.FaceColor = color;
+    for i = 1:2:length(x)-2
+        a = area([x(i), x(i+2)], [1,1]*axis.YLim(2));
         if in_m>0
-            a.FaceAlpha = alpha*inputs(i)/max(inputs);
+            al = inputs(i)/max(inputs);
         else
-            a.FaceAlpha = 0;
+            al = 0;
         end
+        a.FaceColor = al * color(1,:) + (1-al) * color(2,:);
+        a.FaceAlpha = alpha;
         a.EdgeAlpha = 0;
         a.Tag = 'highlighted_area';
     end
