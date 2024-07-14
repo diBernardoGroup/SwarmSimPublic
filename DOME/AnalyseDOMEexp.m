@@ -10,14 +10,14 @@ experiments_folder="/Volumes/DOMEPEN/Experiments/comparisons";                  
 
 % experiments_names=[fullfile("Euglena_75_ON","combo"),fullfile("Euglena_150_ON","combo"),fullfile("Euglena_255_ON","combo")];
 % experiments_names=[fullfile("Volvox_255_ON","combo")];
-experiments_names=[fullfile("Volvox_switch_10","combo5")];
+experiments_names=[fullfile("Euglena_255_ON","combo")];
 
 
-plot_data = true;                                   % Flag to plot the experimental data
+plot_data = false;                                   % Flag to plot the experimental data
 stat_an = true;
 
-t_a = 5;                                            % Time window after the switch I want to analyse
-t_b = 5;                                            % Time window before the switch I want to analyse
+t_a = 12;                                            % Time window after the switch I want to analyse
+t_b = 12;                                            % Time window before the switch I want to analyse
 
 
 deltaT = 0.5;
@@ -70,7 +70,7 @@ for exp=1:length(experiments_names)
     switchn_t = find(u_dotn);                                %Find all the switch on times
     switchp_t = find(u_dotp);                                %Find all the switch on times
     
-    for i=1:length(switchn_t)-1
+    for i=1:length(switchn_t)
         s_aftern{exp}  = [s_aftern{exp};  speed(switchn_t(i):switchn_t(i)+round(t_a/deltaT),:)];
         s_beforen{exp} = [s_beforen{exp}; speed(switchn_t(i)-round(t_b/deltaT):switchn_t(i),:)];
         w_aftern{exp}  = [w_aftern{exp};  abs(omega(switchn_t(i):switchn_t(i)+round(t_a/deltaT),:))];
@@ -78,7 +78,7 @@ for exp=1:length(experiments_names)
     end
     
     
-    for i=1:length(switchp_t)-1
+    for i=1:length(switchp_t)
         s_afterp{exp}  = [s_afterp{exp};  speed(switchp_t(i):switchp_t(i)+round(t_a/deltaT),:)];
         s_beforep{exp} = [s_beforep{exp}; speed(switchp_t(i)-round(t_b/deltaT):switchp_t(i),:)];
         w_afterp{exp}  = [w_afterp{exp};  abs(omega(switchp_t(i):switchp_t(i)+round(t_a/deltaT),:))];
@@ -157,7 +157,7 @@ for exp=1:length(experiments_names)
         figure("Name","Speed alpha (BoxPlot)","Position",[sc_w/4 offs sc_w/4 sc_h/3]);
         
         myboxplot({s_beforep{exp},s_beforen{exp}},true);
-        xticklabels({sprintf("OFF (%ds)",t_a),sprintf("ON (%ds)",t_a)})
+        xticklabels({sprintf("OFF (%ds)",t_b),sprintf("ON (%ds)",t_b)})
         ylabel('Speed(px/s)');
         set(gca,'FontSize',14);
         
@@ -178,7 +178,7 @@ for exp=1:length(experiments_names)
         figure("Name","Omega alpha (BoxPlot)","Position",[3*sc_w/4 offs sc_w/4 sc_h/3]);
         
         myboxplot({w_beforep{exp},w_beforen{exp}},true);
-        xticklabels({sprintf("OFF (%ds)",t_a),sprintf("ON (%ds)",t_a)})
+        xticklabels({sprintf("OFF (%ds)",t_b),sprintf("ON (%ds)",t_b)})
         ylabel('\omega(rad/s)');
         set(gca,'FontSize',14);
         
@@ -208,7 +208,7 @@ for exp=1:length(experiments_names)
         figure("Name","Speed beta (BoxPlot)","Position",[sc_w/4 offs+sc_h/3 sc_w/4 sc_h/3]);
         
         myboxplot({s_afterp{exp},s_beforen{exp}},true);
-        xticklabels({sprintf("ON as (%ds)",t_a),sprintf("ON bs (%ds)",t_a)})
+        xticklabels({sprintf("ON as (%ds)",t_a),sprintf("ON bs (%ds)",t_b)})
         ylabel('Speed(px/s)');
         set(gca,'FontSize',14);
         
@@ -229,7 +229,7 @@ for exp=1:length(experiments_names)
         figure("Name","Omega alpha (BoxPlot)","Position",[3*sc_w/4 offs+sc_h/3 sc_w/4 sc_h/3]);
         
         myboxplot({w_afterp{exp},w_beforen{exp}},true);
-        xticklabels({sprintf("ON as (%ds)",t_a),sprintf("ON bs (%ds)",t_a)})
+        xticklabels({sprintf("ON as (%ds)",t_a),sprintf("ON bs (%ds)",t_b)})
         ylabel('\omega(rad/s)');
         set(gca,'FontSize',14);
         
@@ -257,7 +257,7 @@ for exp=1:length(experiments_names)
         figure("Name","Speed gamma (BoxPlot)","Position",[sc_w/4 offs+2*sc_h/3 sc_w/4 sc_h/3]);
         
         myboxplot({s_aftern{exp},s_beforep{exp}},true);
-        xticklabels({sprintf("OFF an (%ds)",t_a),sprintf("OFF bp (%ds)",t_a)})
+        xticklabels({sprintf("OFF an (%ds)",t_a),sprintf("OFF bp (%ds)",t_b)})
         ylabel('Speed(px/s)');
         set(gca,'FontSize',14);
         
@@ -278,7 +278,7 @@ for exp=1:length(experiments_names)
         figure("Name","Omega alpha (BoxPlot)","Position",[3*sc_w/4 offs+2*sc_h/3 sc_w/4 sc_h/3]);
         
         myboxplot({w_aftern{exp},w_beforep{exp}},true);
-        xticklabels({sprintf("OFF ap (%ds)",t_a),sprintf("ON bn (%ds)",t_a)})
+        xticklabels({sprintf("OFF ap (%ds)",t_a),sprintf("ON bn (%ds)",t_b)})
         ylabel('\omega(rad/s)');
         set(gca,'FontSize',14);
         
