@@ -15,45 +15,52 @@ clear
 
 defaultParamMicroorg;               % load default parameters to simulate microorganisms
 
-% Simulation.drawON = true;
-% Simulation.recordVideo = false;
-% Simulation.Tmax = 5;                  % maximum simulation time
-% Simulation.timeInstants = [0:Simulation.deltaT:Simulation.Tmax];
-% Simulation.agentShape = "."; 
+% experiments_folder="C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\";    % DAVIDE
+experiments_folder="/Volumes/DOMEPEN/Experiments";                                          % ANDREA
 
-% tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16';  % switch10s
-% tag='switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo3';  % switch10s combo
-tag='switch_10'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\Euglena_switch_10\combo5';  % switch10s combo 5
-% tag='switch_5'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_switch_5\combo';  % switch5s combo
-% tag='switch_1'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_switch_1/combo';  % switch1s combo
-% tag='75_ON'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_75_ON/combo';  % OFF-ON-OFF 75 combo
-% tag='150_ON'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons/Euglena_150_ON/combo';  % OFF-ON-OFF 150 combo
-% tag='255_ON'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_255_ON/combo';  % OFF-ON-OFF 255 combo
-% tag='OFF'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_OFF/combo';  % OFF combo
-% tag='ramp'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_ramp/combo';  % ramp combo
+% tag='E_switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16';  % switch10s
+% tag='E_switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo3';  % switch10s combo
+% tag='E_switch_10'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\Euglena_switch_10\combo5';  % switch10s combo 5
+% tag='E_switch_5'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_switch_5\combo';  % switch5s combo
+% tag='E_switch_1'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_switch_1/combo';  % switch1s combo
+% tag='E_75_ON'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_75_ON/combo';  % OFF-ON-OFF 75 combo
+% tag='E_150_ON'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons/Euglena_150_ON/combo';  % OFF-ON-OFF 150 combo
+% tag='E_255_ON'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_255_ON/combo';  % OFF-ON-OFF 255 combo
+% tag='E_OFF'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_OFF/combo';  % OFF combo
+% tag='E_ramp'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_ramp/combo';  % ramp combo
 
-% tag='half_half';          data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_14_E_6';    Environment.boundary = Simulation.arena * 2;
-% tag='grad_centr_light';   data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_12_E_3';    Environment.boundary = Simulation.arena * 2;
-% tag='grad_centr_dark';    data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_14_E_10';   Environment.boundary = Simulation.arena * 2;
-% tag='grad_lateral';       data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_13_E_16';   Environment.boundary = Simulation.arena * 2;
-% tag='circle_light';       data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_E_26';   Environment.boundary = Simulation.arena * 2;
-% tag='circle_dark';        data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_13_E_15';   Environment.boundary = Simulation.arena * 2;
-% tag='BCLx36';             data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\2023_07_10_E_34'; N=N*2; Simulation.arena=Simulation.arena*2.5; Environment.boundary = Simulation.arena * 2; x0=randRect(N, Simulation.arena*2, D);
+% tag='E_half_half';          data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_14_E_6';    Environment.boundary = Simulation.arena * 2;
+% tag='E_grad_centr_light';   data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_12_E_3';    Environment.boundary = Simulation.arena * 2;
+% tag='E_grad_centr_dark';    data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_14_E_10';   Environment.boundary = Simulation.arena * 2;
+% tag='E_grad_lateral';       data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_13_E_16';   Environment.boundary = Simulation.arena * 2;
+% tag='E_circle_light';       data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_E_26';   Environment.boundary = Simulation.arena * 2;
+% tag='E_circle_dark';        data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_13_E_15';   Environment.boundary = Simulation.arena * 2;
+% tag='E_BCLx36';             data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\2023_07_10_E_34'; N=N*2; Simulation.arena=Simulation.arena*2.5; Environment.boundary = Simulation.arena * 2; x0=randRect(N, Simulation.arena*2, D);
     
-id_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\identifications\2024_06_17_GB_absw_noalpha_narrow';  % folder with identification data
-identification_file_name = 'identification_GB_absw_noalpha_narrow.txt';
-% identification_file_name = 'identification_manual.txt';
-% identification_file_name = 'identification_GB_median.txt';
-% id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
-% identification_file_name = 'identification_GB_absw_alpha.txt';
+tag='V_switch_10'; experiment_name = fullfile("comparisons","Volvox_switch_10","combo5");  % switch10s combo
+% tag='V_255_ON'; experiment_name = fullfile("comparisons","Volvox_255_ON","combo");  % OFF-ON-OFF 255 combo
+% tag='V_OFF'; experiment_name = fullfile("comparisons","Volvox_OFF","combo");  % OFF combo
 
-outputDir = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\Simulations';
-% outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications';
+% EUGLENA
+% id_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\identifications\2024_06_17_GB_absw_noalpha_narrow';  % folder with identification data
+% id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10'; % switch10s
+% identification_file_name = 'identification_GB_absw_noalpha_narrow.txt';
+
+%VOLVOX
+id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Volvox_switch_10/combo5'; % switch10s
+identification_file_name = 'identification_GB_absw_medianinit.txt';
+
+% outputDir = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\Simulations';
+outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications';
 % [~,simulation_name,~]=fileparts(identification_file_name);
 
 %% Loads experiment data
 
 % load identification data and instantiate simulated agents
+data_folder=fullfile(experiments_folder,experiment_name);
+data_folder = strrep(data_folder,'_E_','_Euglena_');
+data_folder = strrep(data_folder,'_V_','_Volvox_');
+
 identification=readtable(fullfile(id_folder,identification_file_name));
 ids=randsample(length(identification.agents),N, true, ones(length(identification.agents),1));
 agents = identification(ids,:); 
@@ -76,7 +83,6 @@ Dynamics=struct('model','PTWwithSignedInput', ...
 %     'omega', normrnd(0,agents.std_w,N,1), 'oldInput', zeros(N,1));
 
 % load inputs data
-data_folder = strrep(data_folder,'_E_','_Euglena_');
 if isfile(fullfile(data_folder,'inputs.txt'))   % time varying inputs
     inputs=load(fullfile(data_folder,'inputs.txt'));
     u=inputs(:,1)/255;              %select blue channel and scale in [0,1]

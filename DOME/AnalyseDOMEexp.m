@@ -9,12 +9,16 @@ close all
 experiments_folder="/Volumes/DOMEPEN/Experiments/comparisons";                                          % ANDREA
 
 % experiments_names=[fullfile("Euglena_75_ON","combo"),fullfile("Euglena_150_ON","combo"),fullfile("Euglena_255_ON","combo")];
-% experiments_names=[fullfile("Volvox_255_ON","combo")];
 experiments_names=[fullfile("Euglena_255_ON","combo")];
+% experiments_names=[fullfile("Euglena_OFF","combo")];
+
+% experiments_names=[fullfile("Volvox_75_ON","combo"),fullfile("Volvox_150_ON","combo"),fullfile("Volvox_255_ON","combo")];
+% experiments_names=[fullfile("Volvox_255_ON","combo")];
+% experiments_names=[fullfile("Volvox_OFF","combo")];
 
 
-plot_data = false;                                   % Flag to plot the experimental data
-stat_an = true;
+plot_data = false;                                   % Plot the experimental data
+stat_an = true;                                      % Plot statistical analysis of light response
 
 t_a = 12;                                            % Time window after the switch I want to analyse
 t_b = 12;                                            % Time window before the switch I want to analyse
@@ -133,6 +137,8 @@ for exp=1:length(experiments_names)
     
     if stat_an
         
+        outputDir = fullfile(data_folder,'plots');
+        if ~exist(outputDir,'dir'); mkdir(outputDir); end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%% TESTING ALPHA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Comparing the distributions of the data n seconds before the switch ON and
@@ -141,9 +147,7 @@ for exp=1:length(experiments_names)
         %FIRST pair : v, Second pair: w
         
         
-        figure("Name","Speed alpha","Position",[0 offs sc_w/4 sc_h/3]);
-        
-        
+        figure("Name","Speed alpha (Histogram)","Position",[0 offs sc_w/4 sc_h/3]);
         edges = linspace(min([s_beforep{exp},s_beforen{exp}],[],"omitnan"),max([s_beforep{exp},s_beforen{exp}],[],"omitnan"),n_bins+1);
         myHistogram(s_beforep{exp},edges,k_est);
         hold on;
@@ -155,16 +159,17 @@ for exp=1:length(experiments_names)
         
         
         figure("Name","Speed alpha (BoxPlot)","Position",[sc_w/4 offs sc_w/4 sc_h/3]);
-        
         myboxplot({s_beforep{exp},s_beforen{exp}},true);
         xticklabels({sprintf("OFF (%ds)",t_b),sprintf("ON (%ds)",t_b)})
         ylabel('Speed(px/s)');
         set(gca,'FontSize',14);
-        
+        if isfolder(outputDir)
+            saveas(gcf,fullfile(outputDir, 'boxplot_alpha_speed'))
+            saveas(gcf,fullfile(outputDir, 'boxplot_alpha_speed'),'png')
+        end
         
         
         figure("Name","Omega alpha (Histogram)","Position",[2*sc_w/4 offs sc_w/4 sc_h/3]);
-        
         edges = linspace(min([w_beforep{exp},w_beforen{exp}],[],"omitnan"),max([w_beforep{exp},w_beforen{exp}],[],"omitnan"),n_bins+1);
         myHistogram(w_beforep{exp},edges,k_est);
         hold on;
@@ -176,12 +181,14 @@ for exp=1:length(experiments_names)
         
         
         figure("Name","Omega alpha (BoxPlot)","Position",[3*sc_w/4 offs sc_w/4 sc_h/3]);
-        
         myboxplot({w_beforep{exp},w_beforen{exp}},true);
         xticklabels({sprintf("OFF (%ds)",t_b),sprintf("ON (%ds)",t_b)})
         ylabel('\omega(rad/s)');
         set(gca,'FontSize',14);
-        
+        if isfolder(outputDir)
+            saveas(gcf,fullfile(outputDir, 'boxplot_alpha_omega'))
+            saveas(gcf,fullfile(outputDir, 'boxplot_alpha_omega'),'png')
+        end
         
         
         
@@ -193,8 +200,6 @@ for exp=1:length(experiments_names)
         
         
         figure("Name","Speed beta (Histogram)","Position",[0 offs+sc_h/3 sc_w/4 sc_h/3]);
-        
-        
         edges = linspace(min([s_afterp{exp},s_beforen{exp}],[],"omitnan"),max([s_afterp{exp},s_beforen{exp}],[],"omitnan"),n_bins+1);
         myHistogram(s_afterp{exp},edges,k_est);
         hold on;
@@ -206,16 +211,17 @@ for exp=1:length(experiments_names)
         
         
         figure("Name","Speed beta (BoxPlot)","Position",[sc_w/4 offs+sc_h/3 sc_w/4 sc_h/3]);
-        
         myboxplot({s_afterp{exp},s_beforen{exp}},true);
         xticklabels({sprintf("ON as (%ds)",t_a),sprintf("ON bs (%ds)",t_b)})
         ylabel('Speed(px/s)');
         set(gca,'FontSize',14);
-        
+        if isfolder(outputDir)
+            saveas(gcf,fullfile(outputDir, 'boxplot_beta_speed'))
+            saveas(gcf,fullfile(outputDir, 'boxplot_beta_speed'),'png')
+        end
         
         
         figure("Name","Omega beta (Histogram)","Position",[2*sc_w/4 offs+sc_h/3 sc_w/4 sc_h/3]);
-        
         edges = linspace(min([w_afterp{exp},w_beforen{exp}],[],"omitnan"),max([w_afterp{exp},w_beforen{exp}],[],"omitnan"),n_bins+1);
         myHistogram(w_afterp{exp},edges,k_est);
         hold on;
@@ -226,13 +232,15 @@ for exp=1:length(experiments_names)
         set(gca,'FontSize',14);
         
         
-        figure("Name","Omega alpha (BoxPlot)","Position",[3*sc_w/4 offs+sc_h/3 sc_w/4 sc_h/3]);
-        
+        figure("Name","Omega beta (BoxPlot)","Position",[3*sc_w/4 offs+sc_h/3 sc_w/4 sc_h/3]);
         myboxplot({w_afterp{exp},w_beforen{exp}},true);
         xticklabels({sprintf("ON as (%ds)",t_a),sprintf("ON bs (%ds)",t_b)})
         ylabel('\omega(rad/s)');
         set(gca,'FontSize',14);
-        
+        if isfolder(outputDir)
+            saveas(gcf,fullfile(outputDir, 'boxplot_beta_omega'))
+            saveas(gcf,fullfile(outputDir, 'boxplot_beta_omega'),'png')
+        end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%% TESTING GAMMA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Comparing the distributions of the data n seconds before the switch ON and
@@ -241,9 +249,7 @@ for exp=1:length(experiments_names)
         %FIRST pair : v, Second pair: w
         
         
-        figure("Name","Speed \gamma (Histogram)","Position",[0 offs+2*sc_h/3 sc_w/4 sc_h/3]);
-        
-        
+        figure("Name","Speed gamma (Histogram)","Position",[0 offs+2*sc_h/3 sc_w/4 sc_h/3]);
         edges = linspace(min([s_beforep{exp},s_aftern{exp}],[],"omitnan"),max([s_beforep{exp},s_aftern{exp}],[],"omitnan"),n_bins+1);
         myHistogram(s_aftern{exp},edges,k_est);
         hold on;
@@ -255,16 +261,17 @@ for exp=1:length(experiments_names)
         
         
         figure("Name","Speed gamma (BoxPlot)","Position",[sc_w/4 offs+2*sc_h/3 sc_w/4 sc_h/3]);
-        
         myboxplot({s_aftern{exp},s_beforep{exp}},true);
         xticklabels({sprintf("OFF an (%ds)",t_a),sprintf("OFF bp (%ds)",t_b)})
         ylabel('Speed(px/s)');
         set(gca,'FontSize',14);
+        if isfolder(outputDir)
+            saveas(gcf,fullfile(outputDir, 'boxplot_gamma_speed'))
+            saveas(gcf,fullfile(outputDir, 'boxplot_gamma_speed'),'png')
+        end
         
         
-        
-        figure("Name","\omega \beta (Histogram)","Position",[2*sc_w/4 offs+2*sc_h/3 sc_w/4 sc_h/3]);
-        
+        figure("Name","Omega gamma (Histogram)","Position",[2*sc_w/4 offs+2*sc_h/3 sc_w/4 sc_h/3]);
         edges = linspace(min([w_beforen{exp},w_afterp{exp}],[],"omitnan"),max([w_beforen{exp},w_afterp{exp}],[],"omitnan"),n_bins+1);
         myHistogram(w_aftern{exp},edges,k_est);
         hold on;
@@ -275,12 +282,15 @@ for exp=1:length(experiments_names)
         set(gca,'FontSize',14);
         
         
-        figure("Name","Omega alpha (BoxPlot)","Position",[3*sc_w/4 offs+2*sc_h/3 sc_w/4 sc_h/3]);
-        
+        figure("Name","Omega gamma (BoxPlot)","Position",[3*sc_w/4 offs+2*sc_h/3 sc_w/4 sc_h/3]);
         myboxplot({w_aftern{exp},w_beforep{exp}},true);
         xticklabels({sprintf("OFF ap (%ds)",t_a),sprintf("ON bn (%ds)",t_b)})
         ylabel('\omega(rad/s)');
         set(gca,'FontSize',14);
+        if isfolder(outputDir)
+            saveas(gcf,fullfile(outputDir, 'boxplot_gamma_omega'))
+            saveas(gcf,fullfile(outputDir, 'boxplot_gamma_omega'),'png')
+        end
         
         
         pause;
@@ -293,7 +303,6 @@ for exp=1:length(experiments_names)
     %%
     
     if plot_data
-        
         
         outputDir = fullfile(data_folder,'plots');
         if ~exist(outputDir,'dir'); mkdir(outputDir); end
@@ -348,7 +357,7 @@ for exp=1:length(experiments_names)
             saveas(gcf,fullfile(outputDir, 'time_plot'),'png')
         end
         
-        figure % BOX PLOT - SPEED and ANGULAR VELOCITY - Mean over time
+        figure % BOX PLOT - ANGULAR VELOCITY - Mean over time
         hold on
         set(gca,'FontSize',12)
         yline(0)
@@ -363,7 +372,7 @@ for exp=1:length(experiments_names)
         end
         
         
-        figure % BOX PLOT - SPEED and ANGULAR VELOCITY - Mean over time
+        figure % BOX PLOT - SPEED - Mean over time
         hold on
         set(gca,'FontSize',12)
         yline(0)
@@ -372,7 +381,10 @@ for exp=1:length(experiments_names)
         xticks([])
         ylabel('$v$ [px/s]','Interpreter','Latex','FontSize',16)
         set(gcf,'position',[300,300,300,420])
-        
+        if isfolder(outputDir)
+            saveas(gcf,fullfile(outputDir, 'speed_boxplot_meanovertime'))
+            saveas(gcf,fullfile(outputDir, 'speed_boxplot_meanovertime'),'png')
+        end
         
         %         figure
         %         hold on
@@ -398,7 +410,7 @@ if length(experiments_names)>1
     for i=1:length(experiments_names)
         s_afterp{i}= s_afterp{i}/median(s_beforen{i},"omitnan");
         sm(i) = median(s_afterp{i},"omitnan");
-        bp(i) = quantile(s_afterp{i},0.25)
+        bp(i) = quantile(s_afterp{i},0.25);
         up(i) = quantile(s_afterp{i},0.75);
     end
     plotWithShade([0 75/255 150/255 255/255],[1 sm],[1 bp],[1 up],[1 0 0],0.3);

@@ -1,30 +1,48 @@
 clear
 close all
 
+% Add the path to your data
+% experiments_folder="C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\";    % DAVIDE
+experiments_folder="/Volumes/DOMEPEN/Experiments/comparisons";                                          % ANDREA
 
-% data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_1/tracking_2023_10_12'; % off
-% data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % switch10s
-data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5'; % switch10s combo
-%data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_26_Euglena_19/tracking_2023_10_16'; % on255
+% experiment_name=[fullfile("Euglena_switch_10","combo5")];
+experiment_name=[fullfile("Volvox_switch_10","combo5")];
 
-identification_file_name = 'identification_GB_absw_noalpha_narrow.txt';
+identification_file_name = 'identification_GB_absw_medianinit.txt';
 identification_method = 'OLS+GB'; %OLS+GB
 downSampling = 1;
 
+% % EUGLENA PARAMETERS
+% min_duration = 10; %[s]
+% no_mu_w = true;
+% %parameters [theta, alpha, beta, mu]
+% init_v    = 'identification_GB_median.txt';%[0.15, 0, -45, 75];
+% init_w    = 'identification_GB_median.txt';%[0.15, 0, 0.6,  0];
+% init_wabs = 'identification_GB_median.txt';%[0.15, 0, 0.6,  0];
+% % limits_v = [init_v;init_v]; 
+% % limits_w = [init_w;init_w];
+% limits_v =    [  0    0 -inf   0; 
+%                inf    0   0   inf]; 
+% limits_w =    [  0    0   0    0; 
+%                inf    0  inf   0];
+% limits_wabs = [  0    0   0    0; 
+%                inf    0  inf  inf];
+           
+% VOLVOX PARAMETERS
 min_duration = 10; %[s]
 no_mu_w = true;
 %parameters [theta, alpha, beta, mu]
-init_v    = 'identification_manual.txt';%[0.15, 0, -45, 75];
-init_w    = 'identification_GB_median.txt';%[0.15, 0, 0.6,  0];
-init_wabs = 'identification_manual.txt';%[0.15, 0, 0.6,  0.2];
+init_v    = 'identification_GB_absw_median.txt'; %[0.15, 0, -45, 50];
+init_w    = 'identification_GB_absw_median.txt'; %[0.15, 0,   0,  0];
+init_wabs = 'identification_GB_absw_median.txt'; %[0.15, 0,   0,  0];
 % limits_v = [init_v;init_v]; 
 % limits_w = [init_w;init_w];
 limits_v =    [  0    0 -inf   0; 
                inf    0   0   inf]; 
 limits_w =    [  0    0   0    0; 
-               inf    0  inf   0];
+               inf    0   0   0];
 limits_wabs = [  0    0   0    0; 
-               inf    0  inf  inf];
+               inf    0   0  inf];
         
 deltaT = 0.5;
 dT = 0.01;
@@ -32,6 +50,8 @@ thresholdfactor = 1; % parameters outliers detection
 
 current_folder = fileparts(which('AnalyseDOMEexp'));
 addpath(genpath(current_folder));
+
+data_folder=fullfile(experiments_folder,experiment_name);
 
 %% Load data
 if ischar(init_v)

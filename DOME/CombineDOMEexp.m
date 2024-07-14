@@ -1,5 +1,5 @@
 clear
-close all
+% close all
 
 % experiments data folders
 experiments_folder = '/Volumes/DOMEPEN/Experiments';
@@ -45,15 +45,41 @@ experiments_names = ["2023_06_15_Euglena_2", "2023_06_26_Euglena_15", "2023_07_1
 % experiments_names = ["2023_06_15_Euglena_6", "2023_06_26_Euglena_22", "2023_07_10_Euglena_14"];
 
 %% Volvox
-% Volvox switch 10s selected
-% tag = 'Volvox_switch_10';
-% experiments_names = ["2023_07_04_Volvox_13","2023_07_05_Volvox_2","2023_07_06_Volvox_3","2023_07_05_Volvox_7","2023_07_06_Volvox_11"];
-% experiments_names = ["2023_07_04_Volvox_13","2023_07_05_Volvox_2","2023_07_06_Volvox_3"];
+
+% Volvox OFF
+tag = 'Volvox_OFF';
+experiments_names = ["2023_07_04_V_2", "2023_07_05_V_1", "2023_07_06_V_10"]; 
+
+% Volvox OFF-ON-OFF 75
+tag = 'Volvox_75_ON';
+experiments_names = ["2023_06_08_V_7", "2023_07_04_V_4", "2023_07_06_V_18"];
+
+% Volvox OFF-ON-OFF 150
+tag = 'Volvox_150_ON';
+experiments_names = ["2023_06_08_V_6", "2023_07_05_V_4", "2023_07_06_V_20"];
 
 % Volvox OFF-ON-OFF 255
 tag = 'Volvox_255_ON';
-experiments_names = ["2023_06_08_Volvox_3", "2023_07_04_Volvox_9", "2023_07_06_Volvox_21"];
+% experiments_names = ["2023_06_08_V_3", "2023_07_05_V_5", "2023_07_06_V_21"];
+% experiments_names = ["2023_07_04_V_9", "2023_07_05_V_5", "2023_07_06_V_21"];
+experiments_names = ["2023_07_04_V_9", "2023_07_05_V_5", "2023_07_06_V_23"];
 
+% Volvox ramp
+tag = 'Volvox_ramp';
+experiments_names = ["2023_06_08_V_13", "2023_07_05_V_6", "2023_07_06_V_14"];
+
+% Volvox switch 10s
+tag = 'Volvox_switch_10';
+experiments_names = ["2023_07_04_V_13","2023_07_05_V_2","2023_07_06_V_3","2023_07_06_V_5","2023_07_06_V_11"];
+experiments_names = ["2023_07_04_V_13","2023_07_05_V_2","2023_07_06_V_5"];
+
+% Volvox switch 5s
+tag = 'Volvox_switch_5';
+experiments_names = ["2023_07_04_V_14","2023_07_05_V_8","2023_07_06_V_12"];
+
+% Volvox switch 1s
+tag = 'Volvox_switch_1';
+experiments_names = ["2023_07_04_V_16","2023_07_05_V_9","2023_07_06_V_13"];
 
 output_folder = fullfile("/Volumes/DOMEPEN/Experiments/comparisons/",tag,"/combo");
 
@@ -62,15 +88,19 @@ speed = [];
 omega = [];
 
 for i=1:length(experiments_names)
-    tracking = getLastTracking(fullfile(experiments_folder,experiments_names(i)));
-    data_folders(i) =  fullfile(experiments_folder,experiments_names(i), tracking);
+    experiment = experiments_names(i);
+    experiment = strrep(experiment,'_E_','_Euglena_');
+    experiment = strrep(experiment,'_V_','_Volvox_');
+
+    tracking = getLastTracking(fullfile(experiments_folder,experiment));
+    data_folders(i) =  fullfile(experiments_folder,experiment, tracking);
     speed  = horzcat(speed, load(fullfile(data_folders(i),'speeds_smooth.txt')));
     omega  = horzcat(omega, load(fullfile(data_folders(i),'ang_vel_smooth.txt')));
     
     if i==1
         inputs = load(fullfile(data_folders(i),'inputs.txt'));
     else
-        assert( all(inputs==load(fullfile(data_folders(i),'inputs.txt')),'all'), 'Experiments have different inputs!')
+        assert( all(abs(inputs-load(fullfile(data_folders(i),'inputs.txt')))<3,'all'), 'Experiments have different inputs!')
     end
 end
 
@@ -125,5 +155,16 @@ rng=ylim;
 box on
 saveas(gcf,fullfile(output_folder, 'plots', 'time_plot'))
 saveas(gcf,fullfile(output_folder, 'plots', 'time_plot'),'png')
+
+figure % NUMBER OF AGENTS
+active_agents = ~isnan(speed);
+plot(timeInstants, sum(active_agents,2),lineWidth=1.5)
+if isvarname('u')
+    highlightInputs(timeInstants, u, 'r', 0.25)
+end
+xlabel('$t$ [s]','Interpreter','Latex','FontSize',16)
+title(sprintf('Number of agents (avg=%.1f)',mean(sum(active_agents,2))))
+saveas(gcf,fullfile(output_folder, 'plots', 'number_of_agents'))
+saveas(gcf,fullfile(output_folder, 'plots', 'number_of_agents'),'png')
 
 
