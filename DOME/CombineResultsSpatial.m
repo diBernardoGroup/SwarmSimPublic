@@ -175,7 +175,7 @@ for i = 1:length(experiments_names)  % for each experiment
     box on
     hold on
     plotEnvField(inputs{i}.Points, inputs{i}.Values, arena)
-    plotSwarm(xFinal_inWindow{i},0, inf, inf, false, [], false, Simulation.agentShape, Simulation.agentSize*1.5, xSemiFinal_inWindow{i});
+    plotSwarm(xFinal_inWindow{i},0, inf, inf, false, [], false, Simulation.agentShape, Simulation.agentSize, xSemiFinal_inWindow{i}, Render.agentsColor);
     axis('equal')
     axis(window)
     xticks([])

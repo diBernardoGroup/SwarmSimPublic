@@ -37,7 +37,7 @@ arguments
     shape       string                      = "."
     radius      double {mustBePositive}     = 20
     xPrevious   double                      = x
-    color       double                      = [1 0 0]
+    color       double                      = [0 0 1]
 end
 
 assert(all(size(x)==size(xPrevious)),'x and xPrevious must have the same size!')

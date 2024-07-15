@@ -9,16 +9,18 @@ close all
 experiments_folder="/Volumes/DOMEPEN/Experiments/comparisons";                                          % ANDREA
 
 % experiments_names=[fullfile("Euglena_75_ON","combo"),fullfile("Euglena_150_ON","combo"),fullfile("Euglena_255_ON","combo")];
-experiments_names=[fullfile("Euglena_255_ON","combo")];
+% experiments_names=[fullfile("Euglena_255_ON","combo")];
 % experiments_names=[fullfile("Euglena_OFF","combo")];
 
 % experiments_names=[fullfile("Volvox_75_ON","combo"),fullfile("Volvox_150_ON","combo"),fullfile("Volvox_255_ON","combo")];
-% experiments_names=[fullfile("Volvox_255_ON","combo")];
+experiments_names=[fullfile("Volvox_255_ON","combo")];
+experiments_names=[fullfile("Volvox_switch_10","combo5")];
 % experiments_names=[fullfile("Volvox_OFF","combo")];
 
 
-plot_data = false;                                   % Plot the experimental data
-stat_an = true;                                      % Plot statistical analysis of light response
+plot_data = true;                                   % Plot the experimental data
+stat_an = false;                                      % Plot statistical analysis of light response
+avg_an = true;                                       % Use average values (over times) for stat analysis
 
 t_a = 12;                                            % Time window after the switch I want to analyse
 t_b = 12;                                            % Time window before the switch I want to analyse
@@ -26,6 +28,11 @@ t_b = 12;                                            % Time window before the sw
 
 deltaT = 0.5;
 
+speed_lim = 200;
+omega_lim = 1.75;
+
+
+% allocate vars
 s_afterp = cell(1,length(experiments_names));                                           %Speed after the switch
 s_beforep =cell(1,length(experiments_names));                                           %Speed before the switch
 w_afterp = cell(1,length(experiments_names));                                           %Angular velocity after the switch
@@ -70,72 +77,71 @@ for exp=1:length(experiments_names)
     
     %% Statistical analysis of the signal (All points)
     
-    
-    switchn_t = find(u_dotn);                                %Find all the switch on times
-    switchp_t = find(u_dotp);                                %Find all the switch on times
-    
-    for i=1:length(switchn_t)
-        s_aftern{exp}  = [s_aftern{exp};  speed(switchn_t(i):switchn_t(i)+round(t_a/deltaT),:)];
-        s_beforen{exp} = [s_beforen{exp}; speed(switchn_t(i)-round(t_b/deltaT):switchn_t(i),:)];
-        w_aftern{exp}  = [w_aftern{exp};  abs(omega(switchn_t(i):switchn_t(i)+round(t_a/deltaT),:))];
-        w_beforen{exp} = [w_beforen{exp}; abs(omega(switchn_t(i)-round(t_b/deltaT):switchn_t(i),:))];
-    end
-    
-    
-    for i=1:length(switchp_t)
-        s_afterp{exp}  = [s_afterp{exp};  speed(switchp_t(i):switchp_t(i)+round(t_a/deltaT),:)];
-        s_beforep{exp} = [s_beforep{exp}; speed(switchp_t(i)-round(t_b/deltaT):switchp_t(i),:)];
-        w_afterp{exp}  = [w_afterp{exp};  abs(omega(switchp_t(i):switchp_t(i)+round(t_a/deltaT),:))];
-        w_beforep{exp} = [w_beforep{exp}; abs(omega(switchp_t(i)-round(t_b/deltaT):switchp_t(i),:))];
-    end
-    
-    s_beforen_avg = mean(s_beforen{exp},1,"omitnan");
-    s_aftern_avg = mean(s_aftern{exp},1,"omitnan");
-    
-    w_beforen_avg = mean(w_beforen{exp},1,"omitnan");
-    w_aftern_avg = mean(w_aftern{exp},1,"omitnan");
-    
-    
-    s_beforep_avg = mean(s_beforep{exp},1,"omitnan");
-    s_afterp_avg = mean(s_afterp{exp},1,"omitnan");
-    
-    w_beforep_avg = mean(w_beforep{exp},1,"omitnan");
-    w_afterp_avg = mean(w_afterp{exp},1,"omitnan");
-    
-    
-    %Parameters of the plots
-    k_est = true;                                   %Show continous densities
-    n_bins = 16;                                    %Bins of the Histogram
-    Pix_SS = get(0,'screensize');                   %Get screen n of pixels
-    sc_w = Pix_SS(3);                               %Get screen width
-    sc_h = Pix_SS(4);                               %Get screen heigt
-    offs = 50;                                      %Offset to compensate windows bar
-    sc_h = sc_h-offs;
-    avg_an = true;
-    
-    
-    %Analysis of the average in time
-    if avg_an
-        
-        s_beforen{exp} = s_beforen_avg;
-        s_aftern{exp} = s_aftern_avg;
-        
-        w_beforen{exp} = w_beforen_avg;
-        w_aftern{exp} = w_aftern_avg;
-        
-        
-        s_beforep{exp} = s_beforep_avg;
-        s_afterp{exp} = s_afterp_avg;
-        
-        w_beforep{exp} = w_beforep_avg;
-        w_afterp{exp} = w_afterp_avg;
-        
-    end
-    
-    
-    
-    
     if stat_an
+        
+        switchn_t = find(u_dotn);                                %Find all the switch on times
+        switchp_t = find(u_dotp);                                %Find all the switch on times
+        
+        for i=1:length(switchn_t)
+            s_aftern{exp}  = [s_aftern{exp};  speed(switchn_t(i):switchn_t(i)+round(t_a/deltaT),:)];
+            s_beforen{exp} = [s_beforen{exp}; speed(switchn_t(i)-round(t_b/deltaT):switchn_t(i),:)];
+            w_aftern{exp}  = [w_aftern{exp};  abs(omega(switchn_t(i):switchn_t(i)+round(t_a/deltaT),:))];
+            w_beforen{exp} = [w_beforen{exp}; abs(omega(switchn_t(i)-round(t_b/deltaT):switchn_t(i),:))];
+        end
+        
+        
+        for i=1:length(switchp_t)
+            s_afterp{exp}  = [s_afterp{exp};  speed(switchp_t(i):switchp_t(i)+round(t_a/deltaT),:)];
+            s_beforep{exp} = [s_beforep{exp}; speed(switchp_t(i)-round(t_b/deltaT):switchp_t(i),:)];
+            w_afterp{exp}  = [w_afterp{exp};  abs(omega(switchp_t(i):switchp_t(i)+round(t_a/deltaT),:))];
+            w_beforep{exp} = [w_beforep{exp}; abs(omega(switchp_t(i)-round(t_b/deltaT):switchp_t(i),:))];
+        end
+        
+        s_beforen_avg = mean(s_beforen{exp},1,"omitnan");
+        s_aftern_avg = mean(s_aftern{exp},1,"omitnan");
+        
+        w_beforen_avg = mean(w_beforen{exp},1,"omitnan");
+        w_aftern_avg = mean(w_aftern{exp},1,"omitnan");
+        
+        
+        s_beforep_avg = mean(s_beforep{exp},1,"omitnan");
+        s_afterp_avg = mean(s_afterp{exp},1,"omitnan");
+        
+        w_beforep_avg = mean(w_beforep{exp},1,"omitnan");
+        w_afterp_avg = mean(w_afterp{exp},1,"omitnan");
+        
+        
+        %Parameters of the plots
+        k_est = true;                                   %Show continous densities
+        n_bins = 16;                                    %Bins of the Histogram
+        Pix_SS = get(0,'screensize');                   %Get screen n of pixels
+        sc_w = Pix_SS(3);                               %Get screen width
+        sc_h = Pix_SS(4);                               %Get screen heigt
+        offs = 50;                                      %Offset to compensate windows bar
+        sc_h = sc_h-offs;
+        
+        
+        %Analysis of the average in time
+        if avg_an
+            
+            s_beforen{exp} = s_beforen_avg;
+            s_aftern{exp} = s_aftern_avg;
+            
+            w_beforen{exp} = w_beforen_avg;
+            w_aftern{exp} = w_aftern_avg;
+            
+            
+            s_beforep{exp} = s_beforep_avg;
+            s_afterp{exp} = s_afterp_avg;
+            
+            w_beforep{exp} = w_beforep_avg;
+            w_afterp{exp} = w_afterp_avg;
+            
+        end
+        
+        
+        
+        
         
         outputDir = fullfile(data_folder,'plots');
         if ~exist(outputDir,'dir'); mkdir(outputDir); end
@@ -153,6 +159,7 @@ for exp=1:length(experiments_names)
         hold on;
         myHistogram(s_beforen{exp},edges,k_est);
         xlabel('Speed(px/s)');
+        xlim([0,speed_lim]);
         % ylabel('Probability');
         % legend(sprintf("OFF (%ds before switch)",t_b),sprintf("ON (%ds before switch)",t_b))
         set(gca,'FontSize',14);
@@ -162,6 +169,7 @@ for exp=1:length(experiments_names)
         myboxplot({s_beforep{exp},s_beforen{exp}},true);
         xticklabels({sprintf("OFF (%ds)",t_b),sprintf("ON (%ds)",t_b)})
         ylabel('Speed(px/s)');
+        ylim([0,speed_lim]);
         set(gca,'FontSize',14);
         if isfolder(outputDir)
             saveas(gcf,fullfile(outputDir, 'boxplot_alpha_speed'))
@@ -175,6 +183,7 @@ for exp=1:length(experiments_names)
         hold on;
         myHistogram(w_beforen{exp},edges,k_est);
         xlabel('\omega(rad/s)');
+        xlim([0,omega_lim]);
         % ylabel('Probability');
         % legend(sprintf("OFF (%ds before switch)",t_a),sprintf("ON (%ds before switch)",t_a))
         set(gca,'FontSize',14);
@@ -184,6 +193,7 @@ for exp=1:length(experiments_names)
         myboxplot({w_beforep{exp},w_beforen{exp}},true);
         xticklabels({sprintf("OFF (%ds)",t_b),sprintf("ON (%ds)",t_b)})
         ylabel('\omega(rad/s)');
+        ylim([0,omega_lim]);
         set(gca,'FontSize',14);
         if isfolder(outputDir)
             saveas(gcf,fullfile(outputDir, 'boxplot_alpha_omega'))
@@ -205,6 +215,7 @@ for exp=1:length(experiments_names)
         hold on;
         myHistogram(s_beforen{exp},edges,k_est);
         xlabel('Speed(px/s)');
+        xlim([0,speed_lim]);
         % ylabel('Probability');
         % legend(sprintf("ON (%ds after switch)",t_a),sprintf("ON (%ds before switch)",t_a))
         set(gca,'FontSize',14);
@@ -214,6 +225,7 @@ for exp=1:length(experiments_names)
         myboxplot({s_afterp{exp},s_beforen{exp}},true);
         xticklabels({sprintf("ON as (%ds)",t_a),sprintf("ON bs (%ds)",t_b)})
         ylabel('Speed(px/s)');
+        ylim([0,speed_lim]);
         set(gca,'FontSize',14);
         if isfolder(outputDir)
             saveas(gcf,fullfile(outputDir, 'boxplot_beta_speed'))
@@ -227,6 +239,7 @@ for exp=1:length(experiments_names)
         hold on;
         myHistogram(w_beforen{exp},edges,k_est);
         xlabel('\omega(rad/s)');
+        xlim([0,omega_lim]);
         % ylabel('Probability');
         % legend(sprintf("ON (%ds after switch)",t_a),sprintf("ON (%ds before switch)",t_a))
         set(gca,'FontSize',14);
@@ -236,6 +249,7 @@ for exp=1:length(experiments_names)
         myboxplot({w_afterp{exp},w_beforen{exp}},true);
         xticklabels({sprintf("ON as (%ds)",t_a),sprintf("ON bs (%ds)",t_b)})
         ylabel('\omega(rad/s)');
+        ylim([0,omega_lim]);
         set(gca,'FontSize',14);
         if isfolder(outputDir)
             saveas(gcf,fullfile(outputDir, 'boxplot_beta_omega'))
@@ -255,6 +269,7 @@ for exp=1:length(experiments_names)
         hold on;
         myHistogram(s_beforep{exp},edges,k_est);
         xlabel('Speed(px/s)');
+        xlim([0,speed_lim]);
         % ylabel('Probability');
         % legend(sprintf("OFF (%ds after switch)",t_a),sprintf("OFF (%ds before switch)",t_a))
         set(gca,'FontSize',14);
@@ -264,6 +279,7 @@ for exp=1:length(experiments_names)
         myboxplot({s_aftern{exp},s_beforep{exp}},true);
         xticklabels({sprintf("OFF an (%ds)",t_a),sprintf("OFF bp (%ds)",t_b)})
         ylabel('Speed(px/s)');
+        ylim([0,speed_lim]);
         set(gca,'FontSize',14);
         if isfolder(outputDir)
             saveas(gcf,fullfile(outputDir, 'boxplot_gamma_speed'))
@@ -277,6 +293,7 @@ for exp=1:length(experiments_names)
         hold on;
         myHistogram(w_beforep{exp},edges,k_est);
         xlabel('\omega(rad/s)');
+        xlim([0,omega_lim]);
         % ylabel('Probability');
         % legend(sprintf("OFF (%ds after switch)",t_a),sprintf("OFF (%ds before switch)",t_a))
         set(gca,'FontSize',14);
@@ -286,6 +303,7 @@ for exp=1:length(experiments_names)
         myboxplot({w_aftern{exp},w_beforep{exp}},true);
         xticklabels({sprintf("OFF ap (%ds)",t_a),sprintf("ON bn (%ds)",t_b)})
         ylabel('\omega(rad/s)');
+        ylim([0,omega_lim]);
         set(gca,'FontSize',14);
         if isfolder(outputDir)
             saveas(gcf,fullfile(outputDir, 'boxplot_gamma_omega'))
@@ -321,8 +339,8 @@ for exp=1:length(experiments_names)
         s(3).Position = [0.82   0.1    0.125    0.7];
         s(1).Position(3) = 0.7;
         s(1).Position(4) = 0.7;
-        % ylim([0,3])
-        % xlim([0,120])
+        ylim([0,omega_lim])
+        xlim([0,speed_lim])
         if isfolder(outputDir)
             saveas(gcf,fullfile(outputDir, 'scatter_meanOnTime'))
             saveas(gcf,fullfile(outputDir, 'scatter_meanOnTime'),'png')
@@ -332,7 +350,7 @@ for exp=1:length(experiments_names)
         subplot(2,1,1)
         hold on
         xlim([0,max(timeInstants)])
-        ylim([0,250])
+        ylim([0,speed_lim])
         if isvarname('u')
             highlightInputs(timeInstants, u, 'r', 0.25)
         end
@@ -343,7 +361,7 @@ for exp=1:length(experiments_names)
         box on
         subplot(2,1,2)
         xlim([0,max(timeInstants)])
-        ylim([0,2])
+        ylim([0,omega_lim])
         if isvarname('u')
             highlightInputs(timeInstants, u, 'r', 0.25)
         end
@@ -364,6 +382,7 @@ for exp=1:length(experiments_names)
         myboxplot({mean(omega,1,'omitnan')}, true, 3, {'b'})%, [0,0.4470,0.7410])
         % myboxplot({omega(:)}, true, 3, {'b'})%, [0,0.4470,0.7410])
         xticks([])
+        ylim([-omega_lim,omega_lim])
         ylabel('$\omega$ [rad/s]','Interpreter','Latex','FontSize',16)
         set(gcf,'position',[300,300,300,420])
         if isfolder(outputDir)

@@ -1,10 +1,11 @@
-function [] = myboxplot(data, significance, whisker, colors)
+function [] = myboxplot(data, significance, whisker, colors, out_threshold)
 
     arguments
         data
         significance = false
         whisker = 1.5
         colors = get(gca,'ColorOrder')
+        out_threshold = 2
     end
     
     hold on
@@ -15,6 +16,9 @@ function [] = myboxplot(data, significance, whisker, colors)
         xlim([0.5 length(data.Properties.VariableNames)+0.5])
     else
         for i=1:length(data)
+            data{i}=data{i}(~isnan(data{i}));
+            out_indx = isoutlier(data{i},'quartiles',thresholdfactor=out_threshold);
+            data{i}=data{i}(~out_indx);
             boxplot(data{i},positions=i,labels=num2str(i),whisker=whisker,colors='k');
         end
         xticks(1:length(data))
@@ -40,7 +44,7 @@ function [] = myboxplot(data, significance, whisker, colors)
     if significance
         all_data = [];
         for d=1:length(data)
-            all_data = [all_data, data{d}'];
+            all_data = [all_data, data{d}];
         end
         y_max=max(all_data,[],'all');
         y_min=min(all_data,[],'all');

@@ -18,7 +18,8 @@ defaultParamMicroorg;               % load default parameters to simulate microo
 % experiments_folder="C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\";    % DAVIDE
 experiments_folder="/Volumes/DOMEPEN/Experiments";                                          % ANDREA
 
-% tag='E_switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16';  % switch10s
+% EUGLENA
+% tag='E_switch_10';  experiment_name = fullfile("comparisons","Euglena_switch_10","combo3");
 % tag='E_switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo3';  % switch10s combo
 % tag='E_switch_10'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\Euglena_switch_10\combo5';  % switch10s combo 5
 % tag='E_switch_5'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_switch_5\combo';  % switch5s combo
@@ -35,23 +36,26 @@ experiments_folder="/Volumes/DOMEPEN/Experiments";                              
 % tag='E_grad_lateral';       data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_13_E_16';   Environment.boundary = Simulation.arena * 2;
 % tag='E_circle_light';       data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_E_26';   Environment.boundary = Simulation.arena * 2;
 % tag='E_circle_dark';        data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_13_E_15';   Environment.boundary = Simulation.arena * 2;
+tag='E_circle_dark';          experiment_name = "2023_06_13_E_15";                          Environment.boundary = Simulation.arena * 2;
 % tag='E_BCLx36';             data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\2023_07_10_E_34'; N=N*2; Simulation.arena=Simulation.arena*2.5; Environment.boundary = Simulation.arena * 2; x0=randRect(N, Simulation.arena*2, D);
     
-tag='V_switch_10'; experiment_name = fullfile("comparisons","Volvox_switch_10","combo5");  % switch10s combo
+% VOLVOX
+% tag='V_switch_10'; experiment_name = fullfile("comparisons","Volvox_switch_10","combo5");  % switch10s combo
 % tag='V_255_ON'; experiment_name = fullfile("comparisons","Volvox_255_ON","combo");  % OFF-ON-OFF 255 combo
 % tag='V_OFF'; experiment_name = fullfile("comparisons","Volvox_OFF","combo");  % OFF combo
 
 % EUGLENA
 % id_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\identifications\2024_06_17_GB_absw_noalpha_narrow';  % folder with identification data
-% id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10'; % switch10s
-% identification_file_name = 'identification_GB_absw_noalpha_narrow.txt';
+id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5'; % switch10s
+identification_file_name = 'identification_GB_absw_noalpha_narrow.txt';
 
 %VOLVOX
-id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Volvox_switch_10/combo5'; % switch10s
-identification_file_name = 'identification_GB_absw_medianinit.txt';
+% id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Volvox_switch_10/combo5'; % switch10s
+% identification_file_name = 'identification_GB_absw_medianinit.txt';
 
 % outputDir = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\Simulations';
-outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications';
+outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
+% outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications';
 % [~,simulation_name,~]=fileparts(identification_file_name);
 
 %% Loads experiment data
@@ -211,9 +215,9 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
 end
 if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
 if isfield(LocalIntFunction, 'DistanceRange')
-    plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, squeeze(xVec(2,:,:)));
+    plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, squeeze(xVec(2,:,:)), Render.agentsColor);
 else
-    plotSwarmInit(x0, 0, inf, inf, Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, squeeze(xVec(2,:,:)));
+    plotSwarmInit(x0, 0, inf, inf, Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, squeeze(xVec(2,:,:)), Render.agentsColor);
 end
 if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
 if outputDir
@@ -228,9 +232,9 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
 end
 if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
 if isfield(LocalIntFunction, 'DistanceRange')
-    plotSwarmInit(xFinal_inWindow, Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, xSemiFinal_inWindow);
+    plotSwarmInit(xFinal_inWindow, Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, xSemiFinal_inWindow, Render.agentsColor);
 else
-    plotSwarmInit(xFinal_inWindow, Simulation.Tmax, inf, inf, Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, xSemiFinal_inWindow);
+    plotSwarmInit(xFinal_inWindow, Simulation.Tmax, inf, inf, Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, xSemiFinal_inWindow, Render.agentsColor);
 end
 if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
 if outputDir
