@@ -81,12 +81,12 @@ else
     wmape_speed = mape(median(experiments{2}.speed(:,1:overlap),1,'omitnan'), median(experiments{1}.speed(:,1:overlap),1,'omitnan'),'wMAPE');
     wmape_omega = mape(median(abs(experiments{2}.omega(:,1:overlap)),1,'omitnan'), median(abs(experiments{1}.omega(:,1:overlap)),1,'omitnan'),'wMAPE');
     wmape_total = mean([wmape_speed, wmape_omega]);
-        
+    
     % metrics_of_interest = {NMSE_speed, NMSE_omega, NMSE_total}; metrics_tags = ["NMSE_v", "NMSE_\omega", "NMSE_{tot}"];
     % metrics_of_interest = {mape_speed, mape_omega, mape_total}; metrics_tags = ["mape_v", "mape_\omega", "mape_{tot}"];
     metrics_of_interest = {wmape_speed, wmape_omega, wmape_total}; metrics_tags = ["wmape_v", "wmape_\omega", "wmape_{tot}"];
     % metrics_of_interest = {NMSE_total, mape_total, wmape_total}; metrics_tags = ["NMSE_{tot}", "mape_{tot}", "wmape_{tot}"];
-
+    
     for m=1:length(metrics_tags)
         disp(metrics_tags(m)+" = "+num2str(metrics_of_interest{m},'%.2f'))
     end
@@ -179,28 +179,30 @@ if make_plots
     %     saveas(gcf,fullfile(outputDir, 'comparison_scatter_meanOnTime'),'png')
     % end
     
-
+    
     %%%%%%%%%%%%%%%%%%%%%%%%%%% IN VIVO vs IN SILICO v and w %%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    figure 
+    
+    figure
     %%%%%%%%%%%%% Speed plot %%%%%%%%%%%%%%%
     subplot(2,1,1)
     xlim([0,max(timeInstants)])
     ylim([0,120])
     %Plot temporal inputs
     if isvarname('u')
-        highlightInputs(timeInstants, u, Render.cmap_inputs(end,:), 0.7);
-        highlightInputs(timeInstants, 1-u, Render.cmap_inputs(1,:), 0.7);
+        highlightInputs(timeInstants, u, [Render.cmap_inputs(1,:);Render.cmap_inputs(end,:)], 0.7);
     end
     %Plot v in vivo and in silico
-%     l1=plot(timeInstants, median(abs(experiments{1}.speed),1,'omitnan'),'linewidth',2,'Color', Render.sim_c);
-%     l2=plot(timeInstants, median(abs(experiments{2}.speed),1,'omitnan'),'linewidth',2,'Color', Render.exp_c);
-    l2=plotWithShade(timeInstants, median(experiments{2}.speed,1,'omitnan'), quantile(experiments{2}.speed, 0.1, 1), quantile(experiments{2}.speed, 0.9, 1), Render.exp_c, 0.4);
-    l1=plotWithShade(timeInstants, median(experiments{1}.speed,1,'omitnan'), quantile(experiments{1}.speed, 0.1, 1), quantile(experiments{1}.speed, 0.9, 1), Render.sim_c, 0.4);
+    if Render.shaded
+        l1=plotWithShade(timeInstants, median(experiments{1}.speed,1,'omitnan'), quantile(experiments{1}.speed, 0.1, 1), quantile(experiments{1}.speed, 0.9, 1), Render.exp_c, 0.3);
+        l2=plotWithShade(timeInstants, median(experiments{2}.speed,1,'omitnan'), quantile(experiments{2}.speed, 0.1, 1), quantile(experiments{2}.speed, 0.9, 1), Render.sim_c, 0.3);
+    else
+        l1=plot(timeInstants, median(abs(experiments{1}.speed),1,'omitnan'),'linewidth',2,'Color', Render.exp_c);
+        l2=plot(timeInstants, median(abs(experiments{2}.speed),1,'omitnan'),'linewidth',2,'Color', Render.sim_c);
+    end
     xlabel('$t$ [s]','Interpreter','Latex','FontSize',16)
     ylabel('$v$ [$\mu$m/s]','Interpreter','Latex','FontSize',16)
     legend('REAL','SIMULATED')
-    % legend([l1,l2],'REAL','SIMULATED')
+    legend([l1,l2],'REAL','SIMULATED')
     rng=ylim;
     box on
     %%%%%%%%%%%%% Omega plot %%%%%%%%%%%%%%%
@@ -209,17 +211,19 @@ if make_plots
     ylim([0,2])
     %Plot the inputs
     if isvarname('u')
-        highlightInputs(timeInstants, u, Render.cmap_inputs(end,:), 0.7);
-        highlightInputs(timeInstants, 1-u, Render.cmap_inputs(1,:), 0.7);
+        highlightInputs(timeInstants, u, [Render.cmap_inputs(1,:);Render.cmap_inputs(end,:)], 0.7);
     end
     %Plot w in vivo and in silico
-%     l1=plot(timeInstants, median(abs(experiments{1}.omega),1,'omitnan'),'linewidth',2,'Color', Render.sim_c);
-%     l2=plot(timeInstants, median(abs(experiments{2}.omega),1,'omitnan'),'linewidth',2,'Color', Render.exp_c);
-    l1=plotWithShade(timeInstants, median(abs(experiments{1}.omega),1,'omitnan'), quantile(abs(experiments{1}.omega), 0.1, 1), quantile(abs(experiments{1}.omega), 0.9, 1), Render.sim_c, 0.3);
-    l2=plotWithShade(timeInstants, median(abs(experiments{2}.omega),1,'omitnan'), quantile(abs(experiments{2}.omega), 0.1, 1), quantile(abs(experiments{2}.omega), 0.9, 1), Render.exp_c, 0.3);
+    if Render.shaded
+        l1=plotWithShade(timeInstants, median(abs(experiments{1}.omega),1,'omitnan'), quantile(abs(experiments{1}.omega), 0.1, 1), quantile(abs(experiments{1}.omega), 0.9, 1), Render.exp_c, 0.3);
+        l2=plotWithShade(timeInstants, median(abs(experiments{2}.omega),1,'omitnan'), quantile(abs(experiments{2}.omega), 0.1, 1), quantile(abs(experiments{2}.omega), 0.9, 1), Render.sim_c, 0.3);
+    else
+        l1=plot(timeInstants, median(abs(experiments{1}.omega),1,'omitnan'),'linewidth',2,'Color', Render.exp_c);
+        l2=plot(timeInstants, median(abs(experiments{2}.omega),1,'omitnan'),'linewidth',2,'Color', Render.sim_c);
+    end
     xlabel('$t$ [s]','Interpreter','Latex','FontSize',16)
     ylabel('$|\omega|$ [rad/s]','Interpreter','Latex','FontSize',16)
-    % legend([l1,l2],'REAL','SIMULATED')
+    legend([l1,l2],'REAL','SIMULATED')
     rng=ylim;
     box on
     if outputDir
@@ -227,7 +231,7 @@ if make_plots
         saveas(gcf,fullfile(outputDir, 'comparison_time_plot'),'png')
     end
     
-
+    
 end
 
 end
