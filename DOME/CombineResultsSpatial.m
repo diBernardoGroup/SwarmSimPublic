@@ -7,12 +7,14 @@ simulations_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiN
 simulations_folder = fullfile(simulations_folder,'2024_06_17_GB_absw_noalpha_narrow');
 experiments_folder = "/Volumes/DOMEPEN/Experiments";
 
+time_to_plot   = 90;    % time of simulation and experiment to look at [s]
+exp_setup_time = 30;    % initial time window to be discarded from the experiment [s] (set to 30 for BCL, 0 for other exp)
 
 % half_half
 tags = ["BCL"];
 sim_names = ["2024_06_25_BCLx36_1"];
 experiments_names = {["2023_07_10_E_30","2023_07_10_E_34","2023_07_10_E_35"]};
-output_folder = simulations_folder;
+output_folder = fullfile(simulations_folder,sim_names(1));
 
 % % spatial
 % tags = ["half_half","grad_centr_light","grad_centr_dark","grad_lateral","circle_light","circle_dark"];
@@ -45,20 +47,22 @@ for i = 1:length(experiments_names)  % for each experiment
     % load simulation data
     sim_folder = fullfile(simulations_folder,sim_names(i));
     sim_data = load(fullfile(sim_folder,'data.mat'));
-    [~,indices] = getInWindow(squeeze(sim_data.xVec(end,:,:)), sim_data.Simulation.arena);
-    xFinal_inWindow{i} = squeeze(sim_data.xVec(end,indices,:));
-    xSemiFinal_inWindow{i} = squeeze(sim_data.xVec(end-1,indices,:));
+    frame_index = round(time_to_plot / sim_data.Simulation.deltaT) + 1;
+    [~,indices] = getInWindow(squeeze(sim_data.xVec(frame_index,:,:)), sim_data.Simulation.arena);
+    x_atTime_inWindow{i} = squeeze(sim_data.xVec(frame_index,indices,:));
+    x_previous_inWindow{i} = squeeze(sim_data.xVec(max(frame_index-1,2),indices,:));
     arena = sim_data.Simulation.arena;
     window = [-arena(1),arena(1),-arena(2),arena(2)]/2;
     inputs{i} = sim_data.Environment.Inputs;
-    [density_by_input_sim{i}, bins, norm_slope_sim(i), c_coeff_sim(i)] = agentsDensityByInput(inputs{i}.Points, inputs{i}.Values, xFinal_inWindow{i}, window);
+    [density_by_input_sim{i}, bins, norm_slope_sim(i), c_coeff_sim(i)] = agentsDensityByInput(inputs{i}.Points, inputs{i}.Values, x_atTime_inWindow{i}, window);
     
     % load experiment data
     for j=1:length(experiments_names{i})   % for each replicate
+        time_to_plot_exp = time_to_plot+exp_setup_time;
         experiments_names{i}(j) = strrep(experiments_names{i}(j),'_E_','_Euglena_');
         data_folder =  fullfile(experiments_folder,experiments_names{i}(j));
-        mask{i}{j} = detectObjects(data_folder, background_sub, brightness_thresh);
-        u{i}{j} = loadInputPattern(data_folder, pattern_blurring);
+        mask{i}{j} = detectObjects(data_folder, background_sub, brightness_thresh, time_to_plot_exp);
+        u{i}{j} = loadInputPattern(data_folder, pattern_blurring, time_to_plot_exp);
         assert( mean(abs(u{i}{1} - imresize(u{i}{j},size(u{i}{1}))),'all')<0.1, 'Replicates have different inputs' )
         %fprintf('exp %d rep %d size(u)=[%d, %d] mean(u-u1)=%.2f\n',i,j,size(u{i,j}), mean(abs(u{i,1} - imresize(u{i,j},size(u{i,1}))),'all'))
         
@@ -84,7 +88,7 @@ for i = 1:length(experiments_names)  % for each experiment
 end
 
 %% PRINT RESULTS
-metrics_of_interest = {tvd}; metrics_tags = ["TVD"]; metrics_color = ['b'];
+metrics_of_interest = {tvd}; metrics_tags = ["TVD"]; metrics_color = ['b']; metrics_range = [0, 0.2];
 cmap = linspace2([1,1,1], [1,0.5,0.5], 100)';
 x_vec = linspace(window(1),window(2),size(mask,2));
 y_vec = linspace(window(3),window(4),size(mask,1));
@@ -97,8 +101,8 @@ y_vec = linspace(window(3),window(4),size(mask,1));
 %     box on
 %     hold on
 %     plotEnvField(inputs{i}.Points, inputs{i}.Values, arena)
-%     %plotSwarmInit(xFinal_inWindow{i}, [], inf, inf, Simulation.arena);
-%     plotSwarm(xFinal_inWindow{i});
+%     %plotSwarmInit(x_atTime_inWindow{i}, [], inf, inf, Simulation.arena);
+%     plotSwarm(x_atTime_inWindow{i});
 %     axis('equal')
 %     axis(window)
 %     xticks([])
@@ -175,12 +179,14 @@ for i = 1:length(experiments_names)  % for each experiment
     box on
     hold on
     plotEnvField(inputs{i}.Points, inputs{i}.Values, arena)
-    plotSwarm(xFinal_inWindow{i},0, inf, inf, false, [], false, Simulation.agentShape, Simulation.agentSize, xSemiFinal_inWindow{i}, Render.agentsColor);
+    plotSwarm(x_atTime_inWindow{i},0, inf, inf, false, [], false, Simulation.agentShape, Simulation.agentSize, x_previous_inWindow{i}, Render.agentsColor);
     axis('equal')
     axis(window)
     xticks([])
     yticks([])
-    title(sim_names{i},'Interpreter','none','FontSize',12)
+%         title(sprintf('t=%fs',time_to_plot_exp))
+
+    title(sprintf('%s (t=%.1fs)',sim_names{i},time_to_plot),'Interpreter','none','FontSize',12)
     if i==1
         ylabel('Simulation','FontSize',12)
     end
@@ -199,6 +205,7 @@ for i = 1:length(experiments_names)  % for each experiment
     axis(window)
     xticks([])
     yticks([])
+    title(sprintf('t=%.1fs',time_to_plot_exp))
     if i==1
         ylabel('Combo Experiment','FontSize',12)
     end
@@ -217,9 +224,9 @@ for i = 1:length(experiments_names)  % for each experiment
     xlabel('Input intensity','FontSize',12)
     ylabel('Density of agents','FontSize',12)
     yticks([0:0.25:1]);
-    text(0,0.9,['TVD=',num2str(mean_tvd(i),'%.2f')],'FontSize',12)%,'HorizontalAlignment','center'
-    ylim([0,1])
+    ylim([0,0.5])
     xlim([-0.1,1.1])
+    text(0,max(ylim)-0.1,['TVD=',num2str(mean_tvd(i),'%.2f')],'FontSize',12)%,'HorizontalAlignment','center'
     xticks(round(bins,2))
     box
 end
@@ -241,11 +248,13 @@ xticklabels(tags)
 set(gca, 'TickLabelInterpreter', 'none');
 set(gca,'FontSize',12)
 xlim([0.7,length(tags)+0.3])
-ylim([0, 0.5])
+ylim(metrics_range)
 legend(plots(:,1),metrics_tags,'FontSize',12,'Orientation','horizontal')
 box on
 set(gca,'XGrid','off','YGrid','on')
-saveas(gcf,fullfile(output_folder, 'multi_exp_comparison_spatial'))
-saveas(gcf,fullfile(output_folder, 'multi_exp_comparison_spatial'),'png')
+fig=gcf; fig.Units = fig.PaperUnits; fig.PaperSize = fig.Position(3:4); % set correct pdf size
+saveas(gcf,fullfile(output_folder, sprintf('multi_exp_comparison_spatial_%d',time_to_plot)))
+saveas(fig,fullfile(output_folder, sprintf('multi_exp_comparison_spatial_%d',time_to_plot)),'pdf')
+% saveas(gcf,fullfile(output_folder, sprintf('multi_exp_comparison_spatial_%d',time_to_plot)),'png')
 
 
