@@ -189,7 +189,7 @@ if make_plots
     ylim([0,120])
     %Plot temporal inputs
     if isvarname('u')
-        highlightInputs(timeInstants, u, [Render.cmap_inputs(1,:);Render.cmap_inputs(end,:)], 0.7);
+        highlightInputs(timeInstants, u, Render.cmap_inputs, 0.7);
     end
     %Plot v in vivo and in silico
     if Render.shaded
@@ -211,7 +211,7 @@ if make_plots
     ylim([0,2])
     %Plot the inputs
     if isvarname('u')
-        highlightInputs(timeInstants, u, [Render.cmap_inputs(1,:);Render.cmap_inputs(end,:)], 0.7);
+        highlightInputs(timeInstants, u, Render.cmap_inputs, 0.7);
     end
     %Plot w in vivo and in silico
     if Render.shaded

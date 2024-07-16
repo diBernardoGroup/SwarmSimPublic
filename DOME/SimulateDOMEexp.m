@@ -19,30 +19,29 @@ defaultParamMicroorg;               % load default parameters to simulate microo
 experiments_folder="/Volumes/DOMEPEN/Experiments";                                          % ANDREA
 
 % EUGLENA
-% tag='E_switch_10';  experiment_name = fullfile("comparisons","Euglena_switch_10","combo3");
-% tag='E_switch_10'; data_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo3';  % switch10s combo
-% tag='E_switch_10'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\Euglena_switch_10\combo5';  % switch10s combo 5
-% tag='E_switch_5'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_switch_5\combo';  % switch5s combo
-% tag='E_switch_1'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_switch_1/combo';  % switch1s combo
-% tag='E_75_ON'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_75_ON/combo';  % OFF-ON-OFF 75 combo
-% tag='E_150_ON'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons/Euglena_150_ON/combo';  % OFF-ON-OFF 150 combo
-% tag='E_255_ON'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_255_ON/combo';  % OFF-ON-OFF 255 combo
-% tag='E_OFF'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_OFF/combo';  % OFF combo
-% tag='E_ramp'; data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\comparisons\Euglena_ramp/combo';  % ramp combo
+% tag='E_switch_10';    experiment_name = fullfile("comparisons","Euglena_switch_10","combo5");  % switch10s combo 5
+% tag='E_switch_10';    experiment_name = fullfile("comparisons","Euglena_switch_10","combo3");  % switch10s combo
+% tag='E_switch_5';     experiment_name = fullfile("comparisons","Euglena_switch_5","combo");  % switch5s combo
+% tag='E_switch_1';     experiment_name = fullfile("comparisons","Euglena_switch_1","combo");  % switch1s combo
+% tag='E_75_ON';        experiment_name = fullfile("comparisons","Euglena_75_ON","combo");  % OFF-ON-OFF 75 combo
+% tag='E_150_ON';       experiment_name = fullfile("comparisons","Euglena_150_ON","combo");  % OFF-ON-OFF 150 combo
+% tag='E_255_ON';       experiment_name = fullfile("comparisons","Euglena_255_ON","combo");  % OFF-ON-OFF 255 combo
+tag='E_OFF';          experiment_name = fullfile("comparisons","Euglena_off","combo");  % OFF combo
+% tag='E_ramp';         experiment_name = fullfile("comparisons","Euglena_ramp","combo");  % ramp combo
 
-% tag='E_half_half';          data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_14_E_6';    Environment.boundary = Simulation.arena * 2;
-% tag='E_grad_centr_light';   data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_12_E_3';    Environment.boundary = Simulation.arena * 2;
-% tag='E_grad_centr_dark';    data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_14_E_10';   Environment.boundary = Simulation.arena * 2;
-% tag='E_grad_lateral';       data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_13_E_16';   Environment.boundary = Simulation.arena * 2;
-% tag='E_circle_light';       data_folder = '/Volumes/DOMEPEN/Experiments/2023_07_10_E_26';   Environment.boundary = Simulation.arena * 2;
-% tag='E_circle_dark';        data_folder = '/Volumes/DOMEPEN/Experiments/2023_06_13_E_15';   Environment.boundary = Simulation.arena * 2;
-tag='E_circle_dark';          experiment_name = "2023_06_13_E_15";                          Environment.boundary = Simulation.arena * 2;
-% tag='E_BCLx36';             data_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\2023_07_10_E_34'; N=N*2; Simulation.arena=Simulation.arena*2.5; Environment.boundary = Simulation.arena * 2; x0=randRect(N, Simulation.arena*2, D);
-    
+% tag='E_half_half';          experiment_name = "2023_06_14_E_6";    Environment.boundary = Simulation.arena * 2;
+% tag='E_grad_centr_light';   experiment_name = "2023_06_12_E_3";    Environment.boundary = Simulation.arena * 2;
+% tag='E_grad_centr_dark';    experiment_name = "2023_06_14_E_10";   Environment.boundary = Simulation.arena * 2;
+% tag='E_grad_lateral';       experiment_name = "2023_06_13_E_16";   Environment.boundary = Simulation.arena * 2;
+% tag='E_circle_light';       experiment_name = "2023_07_10_E_26";   Environment.boundary = Simulation.arena * 2;
+% tag='E_circle_dark';        experiment_name = "2023_06_13_E_15";   Environment.boundary = Simulation.arena * 2;
+% tag='E_circle_dark';        experiment_name = "2023_06_13_E_15";   Environment.boundary = Simulation.arena * 2;
+% tag='E_BCLx36';             experiment_name = "2023_07_10_E_34";   N=N*2; Simulation.arena=Simulation.arena*2.5; Environment.boundary = Simulation.arena * 2; x0=randRect(N, Simulation.arena*2, D);
+
 % VOLVOX
-% tag='V_switch_10'; experiment_name = fullfile("comparisons","Volvox_switch_10","combo5");  % switch10s combo
-% tag='V_255_ON'; experiment_name = fullfile("comparisons","Volvox_255_ON","combo");  % OFF-ON-OFF 255 combo
-% tag='V_OFF'; experiment_name = fullfile("comparisons","Volvox_OFF","combo");  % OFF combo
+% tag='V_switch_10';    experiment_name = fullfile("comparisons","Volvox_switch_10","combo5");  % switch10s combo
+% tag='V_255_ON';       experiment_name = fullfile("comparisons","Volvox_255_ON","combo");  % OFF-ON-OFF 255 combo
+% tag='V_OFF';          experiment_name = fullfile("comparisons","Volvox_OFF","combo");  % OFF combo
 
 % EUGLENA
 % id_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\identifications\2024_06_17_GB_absw_noalpha_narrow';  % folder with identification data
@@ -67,7 +66,7 @@ data_folder = strrep(data_folder,'_V_','_Volvox_');
 
 identification=readtable(fullfile(id_folder,identification_file_name));
 ids=randsample(length(identification.agents),N, true, ones(length(identification.agents),1));
-agents = identification(ids,:); 
+agents = identification(ids,:);
 
 Dynamics=struct('model','PTWwithSignedInput', ...
     'avgSpeed',agents.mu_s, 'rateSpeed', agents.theta_s, 'sigmaSpeed', agents.sigma_s, 'gainSpeed', agents.alpha_s, 'gainDerSpeed', agents.beta_s,...
@@ -156,7 +155,7 @@ omega_ce(length(Simulation.timeInstants),:) = angleBetweenVectors(squeeze(xVec(e
 omega_ce=omega_ce/Simulation.deltaT;
 
 omega = omega_be;
-                    
+
 %% PLOTS
 
 
@@ -165,7 +164,7 @@ omega = omega_be;
 [~,indices_inWindow] = getInWindow(squeeze(xVec(end,:,:)), Simulation.arena);
 xFinal_inWindow = squeeze(xVec(end,indices_inWindow,:));
 xSemiFinal_inWindow = squeeze(xVec(end-1,indices_inWindow,:));
-                    
+
 % create output folder, save data and parameters
 
 if outputDir
@@ -208,58 +207,66 @@ if outputDir
 end
 
 if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
-% SWARM initial
-figure
-if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
-    plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Simulation.arena)
-end
-if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
-if isfield(LocalIntFunction, 'DistanceRange')
-    plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, squeeze(xVec(2,:,:)), Render.agentsColor);
-else
-    plotSwarmInit(x0, 0, inf, inf, Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, squeeze(xVec(2,:,:)), Render.agentsColor);
-end
-if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
-if outputDir
-    saveas(gcf, fullfile(output_path, 'x_0'))
-    saveas(gcf, fullfile(output_path, 'x_0'),'png')
+    % SWARM initial
+    figure
+    if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
+        plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Simulation.arena)
+    end
+    if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
+    if isfield(LocalIntFunction, 'DistanceRange')
+        plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, squeeze(xVec(2,:,:)), Render.agentsColor);
+    else
+        plotSwarmInit(x0, 0, inf, inf, Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, squeeze(xVec(2,:,:)), Render.agentsColor);
+    end
+    if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
+    if outputDir
+        saveas(gcf, fullfile(output_path, 'x_0'))
+        saveas(gcf, fullfile(output_path, 'x_0'),'png')
+    end
+    
+    % SWARM final
+    figure
+    if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
+        plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Simulation.arena)
+    end
+    if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
+    if isfield(LocalIntFunction, 'DistanceRange')
+        plotSwarmInit(xFinal_inWindow, Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, xSemiFinal_inWindow, Render.agentsColor);
+    else
+        plotSwarmInit(xFinal_inWindow, Simulation.Tmax, inf, inf, Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, xSemiFinal_inWindow, Render.agentsColor);
+    end
+    if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
+    if outputDir
+        saveas(gcf, fullfile(output_path, 'x_final'))
+        saveas(gcf, fullfile(output_path, 'x_final'),'png')
+    end
 end
 
-% SWARM final
-figure
-if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
-    plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Simulation.arena)
+figure % colored trajectories
+hold on
+colors = get(gca, 'ColorOrder');
+final = 45;
+window = [-Simulation.arena(1),Simulation.arena(1),-Simulation.arena(2),Simulation.arena(2)]/2;
+x_inWindow = xVec(:,indices_inWindow,:);
+for i=1:size(x_inWindow,2)
+    c = colors(mod(i-1,7)+1,:);
+    plot(x_inWindow(1:final,i,1),x_inWindow(1:final,i,2), 'color', c, 'LineWidth',1.25);
+    ang = atan2(x_inWindow(final,i,2)-x_inWindow(final-1,i,2),x_inWindow(final,i,1)-x_inWindow(final-1,i,1));
+    plot_singleRod(x_inWindow(final,i,:), ang, Simulation.agentSize*1.5, Simulation.agentSize*1.5/2, c);
+    %plot(x_inWindow(final,i,1),x_inWindow(final,i,2),'o', 'color', c, 'MarkerFaceColor', c);
 end
-if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
-if isfield(LocalIntFunction, 'DistanceRange')
-    plotSwarmInit(xFinal_inWindow, Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, xSemiFinal_inWindow, Render.agentsColor);
-else
-    plotSwarmInit(xFinal_inWindow, Simulation.Tmax, inf, inf, Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, xSemiFinal_inWindow, Render.agentsColor);
-end
-if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
+xticks([])
+yticks([])
+axis('equal')
+axis(window)
+box on
+set(gca,'Color',[0.05, 0.05, 0.05]); set(gcf, 'InvertHardCopy', 'off'); % dark background
 if outputDir
-    saveas(gcf, fullfile(output_path, 'x_final'))
-    saveas(gcf, fullfile(output_path, 'x_final'),'png')
+    fig=gcf; fig.Units = fig.PaperUnits; fig.PaperSize = fig.Position(3:4); % set correct pdf size
+    saveas(fig,fullfile(output_path, 'trajectories_colored'))
+    saveas(fig,fullfile(output_path, 'trajectories_colored'),'pdf')
+    saveas(fig,fullfile(output_path, 'trajectories_colored'),'png')
 end
-end
-
-% figure % colored trajectories
-% hold on
-% colors = get(gca, 'ColorOrder');
-% final=Simulation.Tmax;
-% window = [-1920/3*2,1920/3,-1080/2,1080/2];
-% for i=1:N
-%     if xVec(final,i,1) > window(1) && xVec(final,i,1) < window(2) && xVec(final,i,2) > window(3) && xVec(final,i,2) < window(4)
-%         c = colors(mod(i-1,7)+1,:);
-%         plot(xVec(1:final,i,1),xVec(1:final,i,2), 'color', c); 
-%         plot(xVec(final,i,1),xVec(final,i,2),'o', 'color', c, 'MarkerFaceColor', c); 
-%     end
-% end
-% xticks([])
-% yticks([])
-% axis('equal')
-% axis(window)
-% box on
 
 % SPATIAL INPUTS
 if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
@@ -287,11 +294,11 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     % get distribution wrt light intensity
     mask = detectObjects(data_folder, background_sub, brightness_thresh);
     [density_by_input_exp, bins, norm_slope_exp, c_coeff_exp, coefficents, ~,~, u_values_exp] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, mask, window);
-
+    
     figure
     x_vec = linspace(window(1),window(2),size(mask,2));
     y_vec = linspace(window(3),window(4),size(mask,1));
-    box on    
+    box on
     hold on
     cmap = linspace2([1,1,1], [1,0.5,0.5], 100)';
     colormap(cmap)
@@ -350,9 +357,9 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     end
     
 else % TEMPORAL INPUTS
-
+    
     [metrics_of_interest] = compareResults({data_folder,output_path}, output_path, true, Render);
-
+    
 end
 
 % figure % TIME PLOT - SPEED and ANGULAR VELOCITY
@@ -388,7 +395,7 @@ end
 %     saveas(gcf,fullfile(output_path, 'time_plot'))
 %     saveas(gcf,fullfile(output_path, 'time_plot'),'png')
 % end
-% 
+%
 % figure % SCATTER PLOT - SPEED and ANGULAR VELOCITY
 % s=scatterhist(speed(:),abs(omega(:)), 'Location','NorthEast','Direction','out');
 % xlabel(s,'speed')
@@ -403,7 +410,7 @@ end
 % saveas(gcf,fullfile(output_path, 'scatter_plot'))
 % saveas(gcf,fullfile(output_path, 'scatter_plot'),'png')
 % end
-% 
+%
 % figure % SCATTER PLOT - MEAN SPEED and ANGULAR VELOCITY
 % s=scatterhist(mean(speed,1),mean(abs(omega),1), 'Location','NorthEast','Direction','out');
 % xlabel(s,'mean speed [px/s]')

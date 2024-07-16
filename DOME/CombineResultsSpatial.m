@@ -4,29 +4,32 @@ close all
 defaultParamMicroorg
 
 simulations_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
-simulations_folder = fullfile(simulations_folder,'2024_06_17_GB_absw_noalpha_narrow');
+% simulations_folder = fullfile(simulations_folder,'2024_06_17_GB_absw_noalpha_narrow');
+simulations_folder = fullfile(simulations_folder,'2024_06_21_spatial_8k');
 experiments_folder = "/Volumes/DOMEPEN/Experiments";
 
-time_to_plot   = 90;    % time of simulation and experiment to look at [s]
-exp_setup_time = 30;    % initial time window to be discarded from the experiment [s] (set to 30 for BCL, 0 for other exp)
+time_to_plot   = 180;   % time of simulation and experiment to look at [s]
+exp_setup_time = 0;     % initial time window to be discarded from the experiment [s] (set to 30 for BCL, 0 for other exp)
+n_bins         = 2;     % number of bins for light distribution
+diustr_up_lim  = 1;     % ylim of the distribution plot
 
-% half_half
-tags = ["BCL"];
-sim_names = ["2024_06_25_BCLx36_1"];
-experiments_names = {["2023_07_10_E_30","2023_07_10_E_34","2023_07_10_E_35"]};
-output_folder = fullfile(simulations_folder,sim_names(1));
+% % half_half
+% tags = ["BCL"];
+% sim_names = ["2024_06_25_BCLx36_1"];
+% experiments_names = {["2023_07_10_E_30","2023_07_10_E_34","2023_07_10_E_35"]};
+% output_folder = fullfile(simulations_folder,sim_names(1));
 
-% % spatial
-% tags = ["half_half","grad_centr_light","grad_centr_dark","grad_lateral","circle_light","circle_dark"];
-% % sim_names = ["2024_06_06_half_half_1";"2024_06_06_grad_centr_light_1";"2024_06_06_grad_centr_dark_1";"2024_06_06_grad_lateral_1";"2024_06_06_circle_light_1";"2024_06_06_circle_dark_1"];
-% sim_names = ["experiment_half_half_1";"experiment_grad_centr_light_1";"experiment_grad_centr_dark_1";"experiment_grad_lateral_1";"experiment_circle_light_1";"experiment_circle_dark_1"];
-% experiments_names = {["2023_06_12_E_2","2023_06_14_E_6","2023_06_15_E_12","2023_06_26_E_29","2023_06_26_E_30","2023_06_23_E_1","2023_06_23_E_2","2023_06_26_E_2"];
-%                      ["2023_06_12_E_4","2023_06_14_E_7","2023_06_15_E_14","2023_06_23_E_5","2023_06_23_E_6","2023_06_26_E_5","2023_06_26_E_6","2023_06_26_E_33"];
-%                      ["2023_06_23_E_7","2023_06_23_E_8","2023_06_23_E_9","2023_06_26_E_7","2023_06_26_E_8","2023_06_26_E_34","2023_06_26_E_35","2023_07_10_E_23"];
-%                      ["2023_06_13_E_16","2023_06_14_E_8","2023_06_15_E_13","2023_06_23_E_3","2023_06_26_E_3","2023_06_26_E_4","2023_06_26_E_31","2023_06_26_E_32"];
-%                      ["2023_06_15_E_16","2023_06_23_E_10","2023_06_23_E_11","2023_06_26_E_9","2023_06_26_E_10","2023_06_26_E_36","2023_06_26_E_37","2023_07_10_E_26"];
-%                      ["2023_06_13_E_15","2023_06_15_E_17","2023_06_23_E_13","2023_06_26_E_11","2023_06_26_E_12","2023_06_26_E_39","2023_07_10_E_25","2023_07_10_E_22"]};
-% output_folder = simulations_folder;
+% spatial
+tags = ["half_half","grad_centr_light","grad_centr_dark","grad_lateral","circle_light","circle_dark"];
+%sim_names = ["2024_06_06_half_half_1";"2024_06_06_grad_centr_light_1";"2024_06_06_grad_centr_dark_1";"2024_06_06_grad_lateral_1";"2024_06_06_circle_light_1";"2024_06_06_circle_dark_1"];
+sim_names = ["experiment_half_half_1";"experiment_grad_centr_light_1";"experiment_grad_centr_dark_1";"experiment_grad_lateral_1";"experiment_circle_light_1";"experiment_circle_dark_1"];
+experiments_names = {["2023_06_12_E_2","2023_06_14_E_6","2023_06_15_E_12","2023_06_26_E_29","2023_06_26_E_30","2023_06_23_E_1","2023_06_23_E_2","2023_06_26_E_2"];
+                     ["2023_06_12_E_4","2023_06_14_E_7","2023_06_15_E_14","2023_06_23_E_5","2023_06_23_E_6","2023_06_26_E_5","2023_06_26_E_6","2023_06_26_E_33"];
+                     ["2023_06_23_E_7","2023_06_23_E_8","2023_06_23_E_9","2023_06_26_E_7","2023_06_26_E_8","2023_06_26_E_34","2023_06_26_E_35","2023_07_10_E_23"];
+                     ["2023_06_13_E_16","2023_06_14_E_8","2023_06_15_E_13","2023_06_23_E_3","2023_06_26_E_3","2023_06_26_E_4","2023_06_26_E_31","2023_06_26_E_32"];
+                     ["2023_06_15_E_16","2023_06_23_E_10","2023_06_23_E_11","2023_06_26_E_9","2023_06_26_E_10","2023_06_26_E_36","2023_06_26_E_37","2023_07_10_E_26"];
+                     ["2023_06_13_E_15","2023_06_15_E_17","2023_06_23_E_13","2023_06_26_E_11","2023_06_26_E_12","2023_06_26_E_39","2023_07_10_E_25","2023_07_10_E_22"]};
+output_folder = simulations_folder;
 
 % %test
 % sim_names = getSubfolders(simulations_folder)';
@@ -54,7 +57,7 @@ for i = 1:length(experiments_names)  % for each experiment
     arena = sim_data.Simulation.arena;
     window = [-arena(1),arena(1),-arena(2),arena(2)]/2;
     inputs{i} = sim_data.Environment.Inputs;
-    [density_by_input_sim{i}, bins, norm_slope_sim(i), c_coeff_sim(i)] = agentsDensityByInput(inputs{i}.Points, inputs{i}.Values, x_atTime_inWindow{i}, window);
+    [density_by_input_sim{i}, bins, norm_slope_sim(i), c_coeff_sim(i)] = agentsDensityByInput(inputs{i}.Points, inputs{i}.Values, x_atTime_inWindow{i}, window, n_bins);
     
     % load experiment data
     for j=1:length(experiments_names{i})   % for each replicate
@@ -68,7 +71,7 @@ for i = 1:length(experiments_names)  % for each experiment
         
         
         % get distribution wrt light intensity
-        [density_by_input_exp{i}(j,:), bins, norm_slope{i}(j), c_coeff{i}(j), coefficents{i}(j,:), agents_by_input{i}(j,:), pixels_by_input{i}(j,:)] = agentsDensityByInput(inputs{i}.Points, inputs{i}.Values, mask{i}{j}, window);
+        [density_by_input_exp{i}(j,:), bins, norm_slope{i}(j), c_coeff{i}(j), coefficents{i}(j,:), agents_by_input{i}(j,:), pixels_by_input{i}(j,:)] = agentsDensityByInput(inputs{i}.Points, inputs{i}.Values, mask{i}{j}, window, n_bins);
         
         % evaluate quality of fit
         tvd{i}(j) = 0.5 * norm(density_by_input_sim{i}-squeeze(density_by_input_exp{i}(j,:)),1); % Total Variation Distance
@@ -88,7 +91,7 @@ for i = 1:length(experiments_names)  % for each experiment
 end
 
 %% PRINT RESULTS
-metrics_of_interest = {tvd}; metrics_tags = ["TVD"]; metrics_color = ['b']; metrics_range = [0, 0.2];
+metrics_of_interest = {tvd}; metrics_tags = ["TVD"]; metrics_color = ['b']; metrics_range = [0, 0.5];
 cmap = linspace2([1,1,1], [1,0.5,0.5], 100)';
 x_vec = linspace(window(1),window(2),size(mask,2));
 y_vec = linspace(window(3),window(4),size(mask,1));
@@ -224,9 +227,9 @@ for i = 1:length(experiments_names)  % for each experiment
     xlabel('Input intensity','FontSize',12)
     ylabel('Density of agents','FontSize',12)
     yticks([0:0.25:1]);
-    ylim([0,0.5])
+    ylim([0,diustr_up_lim])
     xlim([-0.1,1.1])
-    text(0,max(ylim)-0.1,['TVD=',num2str(mean_tvd(i),'%.2f')],'FontSize',12)%,'HorizontalAlignment','center'
+    text(0,max(ylim)*0.9,['TVD=',num2str(mean_tvd(i),'%.2f')],'FontSize',12)%,'HorizontalAlignment','center'
     xticks(round(bins,2))
     box
 end
@@ -253,7 +256,7 @@ legend(plots(:,1),metrics_tags,'FontSize',12,'Orientation','horizontal')
 box on
 set(gca,'XGrid','off','YGrid','on')
 fig=gcf; fig.Units = fig.PaperUnits; fig.PaperSize = fig.Position(3:4); % set correct pdf size
-saveas(gcf,fullfile(output_folder, sprintf('multi_exp_comparison_spatial_%d',time_to_plot)))
+saveas(fig,fullfile(output_folder, sprintf('multi_exp_comparison_spatial_%d',time_to_plot)))
 saveas(fig,fullfile(output_folder, sprintf('multi_exp_comparison_spatial_%d',time_to_plot)),'pdf')
 % saveas(gcf,fullfile(output_folder, sprintf('multi_exp_comparison_spatial_%d',time_to_plot)),'png')
 

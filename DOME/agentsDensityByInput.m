@@ -1,4 +1,12 @@
-function [density_by_input, bins, norm_slope, c_coeff, coefficents, agents_by_input,pixels_by_input, u_values] = agentsDensityByInput(points, values, x, window)
+function [density_by_input, bins, norm_slope, c_coeff, coefficents, agents_by_input,pixels_by_input, u_values] = agentsDensityByInput(points, values, x, window, n_bins)
+arguments
+    points
+    values
+    x
+    window
+    n_bins = 3
+end
+
     F = griddedInterpolant(points,values, 'linear', 'nearest');
     
     if size(x,2)>2
@@ -14,7 +22,7 @@ function [density_by_input, bins, norm_slope, c_coeff, coefficents, agents_by_in
         u_values = F(x(:,1),x(:,2));    % input intensity measured by the agents
     end
     
-    [pixels_by_input,bins] = histcounts(F(x_mesh',y_mesh'), [0:1/5:1]);
+    [pixels_by_input,bins] = histcounts(F(x_mesh',y_mesh'), [0:1/n_bins:1]);
     [agents_by_input,bins] = histcounts(u_values, bins);
     density_by_input = agents_by_input./pixels_by_input;
     density_by_input = density_by_input/sum(density_by_input);

@@ -29,7 +29,7 @@ if in_max>0
     for i = 1:length(switches)-1
         a = area([x(switches(i)), x(switches(i+1))], [1,1]*axis.YLim(2));
         norm_input = inputs(switches(i))/in_max;
-        a.FaceColor = norm_input * color(2,:) + (1-norm_input) * color(1,:);
+        a.FaceColor = norm_input * color(end,:) + (1-norm_input) * color(1,:);
         a.FaceAlpha = alpha;
         a.EdgeAlpha = 0;
         a.Tag = 'highlighted_area';
