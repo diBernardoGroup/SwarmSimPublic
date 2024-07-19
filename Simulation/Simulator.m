@@ -57,7 +57,7 @@ if length(Simulation.arena)==1
     Simulation.arena = [Simulation.arena, Simulation.arena];
 end
 
-cmap = linspace2([1,1,1], [1,0.5,0.5], 100)';
+cmap = Render.cmap_inputs;
 if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     x_vec = linspace(-Simulation.arena(1)/2,Simulation.arena(1)/2,1000);
     y_vec = linspace(-Simulation.arena(2)/2,Simulation.arena(2)/2,1000);
@@ -80,9 +80,9 @@ if Render.drawON
     %         plotSwarmInit(x0, 0, inf, inf, Simulation.arena, thenDelete=true);
     %     end
     if isfield(LocalIntFunction, 'DistanceRange')
-        plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, Simulation.arena, false, false, true, Render.agentShape, Render.agentSize, x0-v0);
+        plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Render.window, [Render.window(2)-Render.window(1), Render.window(4)-Render.window(3)]/2, false, false, true, Render.agentShape, Render.agentSize, Render.agentsColor, x0-v0);
     else
-        plotSwarmInit(x0, 0, inf, inf, Simulation.arena, Simulation.arena, false, false, true, Render.agentShape, Render.agentSize, x0-v0);
+        plotSwarmInit(x0, 0, inf, inf, Render.window, [Render.window(2)-Render.window(1), Render.window(4)-Render.window(3)]/2, false, false, true, Render.agentShape, Render.agentSize, Render.agentsColor, x0-v0);
     end
 end
 
@@ -165,9 +165,9 @@ while t<Simulation.Tmax
             if Render.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Render.drawTraj); end
             if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
             if isfield(LocalIntFunction, 'DistanceRange')
-                plotSwarm(x, t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), ~Render.recordVideo, ones(size(x,1), 1), false, Render.agentShape, Render.agentSize, x-v);
+                plotSwarm(x, t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), ~Render.recordVideo, ones(size(x,1), 1), false, Render.agentShape, Render.agentSize, Render.agentsColor, x-v);
             else
-                plotSwarm(x, t, inf, inf, ~Render.recordVideo, ones(size(x,1), 1), false, Render.agentShape, Render.agentSize, x-v);
+                plotSwarm(x, t, inf, inf, ~Render.recordVideo, ones(size(x,1), 1), false, Render.agentShape, Render.agentSize, Render.agentsColor, x-v);
             end
             
             if Render.recordVideo
@@ -207,9 +207,9 @@ if Render.drawON
     end
     if Render.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Render.drawTraj); end
     if isfield(LocalIntFunction, 'DistanceRange')
-        plotSwarm(squeeze(xVec(end,:,:)), t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), flase, ones(size(x,1), 1), false, Render.agentShape, Render.agentSize, x-v);
+        plotSwarm(squeeze(xVec(end,:,:)), t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), flase, ones(size(x,1), 1), false, Render.agentShape, Render.agentSize, Render.agentsColor, x-v);
     else
-        plotSwarm(squeeze(xVec(end,:,:)), t, inf, inf, false, ones(size(x,1), 1), false, Render.agentShape, Render.agentSize, x-v);
+        plotSwarm(squeeze(xVec(end,:,:)), t, inf, inf, false, ones(size(x,1), 1), false, Render.agentShape, Render.agentSize, Render.agentsColor, x-v);
     end
     if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
     
@@ -217,7 +217,6 @@ if Render.drawON
         currFrame = getframe(gcf);
         writeVideo(video,currFrame);
         close(video);
-        
     end
 end
 

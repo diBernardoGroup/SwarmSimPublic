@@ -154,7 +154,7 @@ for i_times=1:Nconfig
     
     for k_times=1:Ntimes
         % run simulation
-        [xVec] = Simulator(squeeze(x0Data(k_times,:,:)), v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction, Environment);
+        [xVec] = Simulator(squeeze(x0Data(k_times,:,:)), v0, Simulation, Dynamics, Render, GlobalIntFunction, LocalIntFunction, Environment);
         
         % analyse final configuration
         xFinal=squeeze(xVec(end,:,:));

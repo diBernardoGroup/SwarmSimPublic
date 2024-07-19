@@ -1,4 +1,4 @@
-function [p,p_lines] = plotSwarmInit(x,time,RMin,RMax,windowSize,tickStep,showGrid,gradColor,thenDelete, shape, radius, xPrevious,color)
+function [p,p_lines] = plotSwarmInit(x,time,RMin,RMax,window,tickStep,showGrid,gradColor,thenDelete, shape, radius, color, xPrevious)
 %
 %plotSwarm set the correct axis and draws the agents and the links of the swarm.
 %
@@ -31,29 +31,30 @@ arguments
     time        double
     RMin        double {mustBeNonnegative}
     RMax        double {mustBeNonnegative}
-    windowSize  double {mustBePositive}     = 10
-    tickStep    double                      = windowSize/2
+    %windowSize  double {mustBePositive}     = 10
+    window      double      = [-5 5, -5, 5]
+    tickStep    double                      = [window(2)-window(1), window(4)-window(3)]/2
     showGrid    logical                     = false
     gradColor   logical                     = false
     thenDelete  logical                     = false
     shape       string                      = "."
     radius      double {mustBePositive}     = 20
+    color       double                      = [0 0 1]
     xPrevious   double                      = x
-    color       double                      = [1 0 0]
 end
     %figure
     
-    if length(windowSize)==1
-        windowSize = [windowSize, windowSize];
-    end
+%     if length(windowSize)==1
+%         windowSize = [windowSize, windowSize];
+%     end
     
     if length(tickStep)==1
         tickStep = [tickStep, tickStep];
     end
     
-    axis('equal',[-windowSize(1)/2 windowSize(1)/2 -windowSize(2)/2 windowSize(2)/2])
-    xticks([-windowSize(1)/2:tickStep(1):windowSize(1)/2])
-    yticks([-windowSize(2)/2:tickStep(2):windowSize(2)/2])
+    axis('equal',window)
+    xticks([window(1):tickStep(1):window(2)])
+    xticks([window(3):tickStep(2):window(4)])
     xticklabels('')
     yticklabels('')
     zticklabels('')
@@ -67,7 +68,7 @@ end
        x=x'; 
     end
 
-    [p,p_lines] = plotSwarm(x,time, RMin,RMax,thenDelete, ones(size(x,1), 1), gradColor, shape, radius, xPrevious,color);
+    [p,p_lines] = plotSwarm(x,time, RMin,RMax,thenDelete, ones(size(x,1), 1), gradColor, shape, radius, color, xPrevious);
 
 end
 

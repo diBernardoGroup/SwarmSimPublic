@@ -1,4 +1,4 @@
-function [p,p_lines] = plotSwarm(x,time,RMin,RMax,thenDelete, spin, gradColor, shape, radius, xPrevious,color)
+function [p,p_lines] = plotSwarm(x,time,RMin,RMax,thenDelete, spin, gradColor, shape, radius, color, xPrevious)
 %
 %plotSwarm draws the agents and the links of the swarm.
 %   The figure should be already open and set with the correct axis using plotSwarmInit.
@@ -36,8 +36,8 @@ arguments
     gradColor   logical                     = true
     shape       string                      = "."
     radius      double {mustBePositive}     = 20
-    xPrevious   double                      = x
     color       double                      = [0 0 1]
+    xPrevious   double                      = x
 end
 
 assert(all(size(x)==size(xPrevious)),'x and xPrevious must have the same size!')

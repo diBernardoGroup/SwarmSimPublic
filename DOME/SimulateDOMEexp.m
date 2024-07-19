@@ -32,7 +32,7 @@ tag='E_OFF';          experiment_name = fullfile("comparisons","Euglena_off","co
 % tag='E_half_half';          experiment_name = "2023_06_14_E_6";    Environment.boundary = Simulation.arena * 2;
 % tag='E_grad_centr_light';   experiment_name = "2023_06_12_E_3";    Environment.boundary = Simulation.arena * 2;
 % tag='E_grad_centr_dark';    experiment_name = "2023_06_14_E_10";   Environment.boundary = Simulation.arena * 2;
-tag='E_grad_lateral';       experiment_name = "2023_06_13_E_16";   Environment.boundary = Simulation.arena * 2;
+% tag='E_grad_lateral';       experiment_name = "2023_06_13_E_16";   Environment.boundary = Simulation.arena * 2;
 % tag='E_circle_light';       experiment_name = "2023_07_10_E_26";   Environment.boundary = Simulation.arena * 2;
 % tag='E_circle_dark';        experiment_name = "2023_06_13_E_15";   Environment.boundary = Simulation.arena * 2;
 % tag='E_circle_dark';        experiment_name = "2023_06_13_E_15";   Environment.boundary = Simulation.arena * 2;
@@ -218,9 +218,9 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     end
     if Render.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Render.drawTraj); end
     if isfield(LocalIntFunction, 'DistanceRange')
-        plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, Simulation.arena, false, false, false, Render.agentShape, Render.agentSize, squeeze(xVec(2,:,:)), Render.agentsColor);
+        plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Render.window, [Render.window(2)-Render.window(1), Render.window(4)-Render.window(3)]/2, false, false, false, Render.agentShape, Render.agentSize, squeeze(xVec(2,:,:)), Render.agentsColor);
     else
-        plotSwarmInit(x0, 0, inf, inf, Simulation.arena, Simulation.arena, false, false, false, Render.agentShape, Render.agentSize, squeeze(xVec(2,:,:)), Render.agentsColor);
+        plotSwarmInit(x0, 0, inf, inf, Render.window, [Render.window(2)-Render.window(1), Render.window(4)-Render.window(3)]/2, false, false, false, Render.agentShape, Render.agentSize, squeeze(xVec(2,:,:)), Render.agentsColor);
     end
     if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
     if outputDir
@@ -235,9 +235,9 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     end
     if Render.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Render.drawTraj); end
     if isfield(LocalIntFunction, 'DistanceRange')
-        plotSwarmInit(xFinal_inWindow, Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, Simulation.arena, false, false, false, Render.agentShape, Render.agentSize, xSemiFinal_inWindow, Render.agentsColor);
+        plotSwarmInit(xFinal_inWindow, Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Render.window, [Render.window(2)-Render.window(1), Render.window(4)-Render.window(3)]/2, false, false, false, Render.agentShape, Render.agentSize, xSemiFinal_inWindow, Render.agentsColor);
     else
-        plotSwarmInit(xFinal_inWindow, Simulation.Tmax, inf, inf, Simulation.arena, Simulation.arena, false, false, false, Render.agentShape, Render.agentSize, xSemiFinal_inWindow, Render.agentsColor);
+        plotSwarmInit(xFinal_inWindow, Simulation.Tmax, inf, inf, Render.window, [Render.window(2)-Render.window(1), Render.window(4)-Render.window(3)]/2, false, false, false, Render.agentShape, Render.agentSize, xSemiFinal_inWindow, Render.agentsColor);
     end
     if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
     if outputDir

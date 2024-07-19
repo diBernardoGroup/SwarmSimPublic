@@ -33,15 +33,10 @@ px_size = 1.25;             % size of a pixel [um]
 %% Simulation parameters
 % All these fields are mandatory
 Simulation=struct();
-Simulation.Tmax = 3;                  % maximum simulation time
+Simulation.Tmax = 180;                  % maximum simulation time
 Simulation.deltaT = 0.5;                % sampling time step
 Simulation.dT =     0.01;               % integration time step
 Simulation.arena = [1920,1080]*px_size; % size of the simulation window
-% Simulation.drawON=false;                % draw swarm during simulation (if N is large slows down the simulation)
-% Simulation.drawTraj=0;                  % draw trajectories of the agents (if N is large slows down the simulation)
-% Simulation.recordVideo=false;           % record video of the simulation (if true drawON must be true)
-% Simulation.agentShape = "rod";          % shape to plot the agents "rod" or any defualt marker key ('.','+','diamond',...)
-% Simulation.agentSize = 30;              % size to plot the agents
 Simulation.timeInstants = [0:Simulation.deltaT:Simulation.Tmax];
 
 %% Initial conditions
@@ -112,9 +107,10 @@ Environment.Inputs.Values = [0, 1, 0, 0];
 
 %% Render parameters
 Render.window = [-Simulation.arena(1),Simulation.arena(1),-Simulation.arena(2),Simulation.arena(2)]/2; % size of the simulation window
-Render.drawON=true;                % draw swarm during simulation (if N is large slows down the simulation)
+Render.drawON=false;                % draw swarm during simulation (if N is large slows down the simulation)
 Render.drawTraj=0;                  % draw trajectories of the agents (if N is large slows down the simulation)
-Render.recordVideo=true;           % record video of the simulation (if true drawON must be true)
+Render.recordVideo=false;           % record video of the simulation (if true drawON must be true)
+Render.frameRate = 1/Simulation.deltaT;
 Render.agentShape = "rod";          % shape to plot the agents "rod" or any defualt marker key ('.','+','diamond',...)
 Render.agentSize = 30; 
 Render.time_plot = 0:45:Simulation.Tmax;
