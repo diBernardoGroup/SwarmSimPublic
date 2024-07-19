@@ -70,9 +70,7 @@ for i = 1:length(experiments_names)  % for each experiment
         data_folder =  fullfile(experiments_folder,experiments_names{i}(j));
         mask{i}{j} = detectObjects(data_folder, background_sub, brightness_thresh, time_to_plot_exp);
         u{i}{j} = loadInputPattern(data_folder, pattern_blurring, time_to_plot_exp);
-        assert( mean(abs(u{i}{1} - imresize(u{i}{j},size(u{i}{1}))),'all')<0.1, 'Replicates have different inputs' )
-        %fprintf('exp %d rep %d size(u)=[%d, %d] mean(u-u1)=%.2f\n',i,j,size(u{i,j}), mean(abs(u{i,1} - imresize(u{i,j},size(u{i,1}))),'all'))
-        
+        assert( mean(abs(u{i}{1} - imresize(u{i}{j},size(u{i}{1}))),'all')<0.1, 'Replicates have different inputs' )        
         
         % get distribution wrt light intensity
         [density_by_input_exp{i}(j,:), bins, norm_slope{i}(j), c_coeff{i}(j), coefficents{i}(j,:), agents_by_input{i}(j,:), pixels_by_input{i}(j,:)] = agentsDensityByInput(inputs{i}.Points, inputs{i}.Values, mask{i}{j}, window, n_bins);
@@ -263,30 +261,30 @@ saveas(fig,fullfile(output_folder, sprintf('multi_exp_comparison_spatial_%d',tim
 saveas(fig,fullfile(output_folder, sprintf('multi_exp_comparison_spatial_%d',time_to_plot)),'pdf')
 % saveas(gcf,fullfile(output_folder, sprintf('multi_exp_comparison_spatial_%d',time_to_plot)),'png')
 
-% ONLY DISTRIBUTION ISTOGRAMS
-figure('Position',[100 100 350*length(experiments_names) 240]);
-for i = 1:length(experiments_names)  % for each experiment
-    % distributions wrt light
-    subplot(1,length(experiments_names),i)
-    title(sprintf('%s (t=%.1fs)',sim_names{i},time_to_plot),'Interpreter','none','FontSize',12)
-    hold on
-    b_exp_mean = bar((bins(1:end-1)+bins(2:end))/2,mean_dist{i}, 1, FaceColor = 'b', FaceAlpha = 0.5);
-    b_sim = bar((bins(1:end-1)+bins(2:end))/2,density_by_input_sim{i}, 1, FaceColor = 'k', FaceAlpha = 0.4);
-    %[f,xi] = ksdensity(u_values_exp, support=[-0.001,1.001], BoundaryCorrection='reflection');
-    %f=f/sum(f);
-    %plot(xi,f)
-    if i==length(experiments_names)
-    legend({'REAL','SIMULATED'},'FontSize',12)%,'Location','best')
-    end
-    xlabel('Input intensity','FontSize',12)
-    ylabel('Density of agents','FontSize',12)
-    yticks([0:diustr_up_lim/4:diustr_up_lim]);
-    ylim([0,diustr_up_lim])
-    xlim([-0.1,1.1])
-    text(0,max(ylim)*0.9,['TVD=',num2str(mean_tvd(i),'%.2f')],'FontSize',12)%,'HorizontalAlignment','center'
-    xticks(round(bins,2))
-    box
-end
-fig=gcf; fig.Units = fig.PaperUnits; fig.PaperSize = fig.Position(3:4); % set correct pdf size
-saveas(fig,fullfile(output_folder, sprintf('multi_exp_comparison_spatial_distributions_%d',time_to_plot)))
-saveas(fig,fullfile(output_folder, sprintf('multi_exp_comparison_spatial_distributions_%d',time_to_plot)),'pdf')
+% % ONLY DISTRIBUTION ISTOGRAMS
+% figure('Position',[100 100 350*length(experiments_names) 240]);
+% for i = 1:length(experiments_names)  % for each experiment
+%     % distributions wrt light
+%     subplot(1,length(experiments_names),i)
+%     title(sprintf('%s (t=%.1fs)',sim_names{i},time_to_plot),'Interpreter','none','FontSize',12)
+%     hold on
+%     b_exp_mean = bar((bins(1:end-1)+bins(2:end))/2,mean_dist{i}, 1, FaceColor = 'b', FaceAlpha = 0.5);
+%     b_sim = bar((bins(1:end-1)+bins(2:end))/2,density_by_input_sim{i}, 1, FaceColor = 'k', FaceAlpha = 0.4);
+%     %[f,xi] = ksdensity(u_values_exp, support=[-0.001,1.001], BoundaryCorrection='reflection');
+%     %f=f/sum(f);
+%     %plot(xi,f)
+%     if i==length(experiments_names)
+%     legend({'REAL','SIMULATED'},'FontSize',12)%,'Location','best')
+%     end
+%     xlabel('Input intensity','FontSize',12)
+%     ylabel('Density of agents','FontSize',12)
+%     yticks([0:diustr_up_lim/4:diustr_up_lim]);
+%     ylim([0,diustr_up_lim])
+%     xlim([-0.1,1.1])
+%     text(0,max(ylim)*0.9,['TVD=',num2str(mean_tvd(i),'%.2f')],'FontSize',12)%,'HorizontalAlignment','center'
+%     xticks(round(bins,2))
+%     box
+% end
+% fig=gcf; fig.Units = fig.PaperUnits; fig.PaperSize = fig.Position(3:4); % set correct pdf size
+% saveas(fig,fullfile(output_folder, sprintf('multi_exp_comparison_spatial_distributions_%d',time_to_plot)))
+% saveas(fig,fullfile(output_folder, sprintf('multi_exp_comparison_spatial_distributions_%d',time_to_plot)),'pdf')

@@ -9,8 +9,9 @@
 %
 
 %% Add subfolders to the Matlab path
-SSdir = getSSfolder();
-addpath(genpath(SSdir));
+cur_dir = mfilename('fullpath');
+cur_dir = fileparts(cur_dir);
+addpath(genpath(cur_dir));
 
 %% Default Parameters
 
