@@ -181,6 +181,10 @@ if make_plots
     
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%% IN VIVO vs IN SILICO v and w %%%%%%%%%%%%%%%%%%%%%%%%%%%
+    experiments{1}.speed=experiments{1}.speed(:,1:overlap);
+    experiments{2}.speed=experiments{2}.speed(:,1:overlap);
+    experiments{1}.omega=experiments{1}.omega(:,1:overlap);
+    experiments{2}.omega=experiments{2}.omega(:,1:overlap);
     
     figure
     %%%%%%%%%%%%% Speed plot %%%%%%%%%%%%%%%

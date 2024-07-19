@@ -32,7 +32,7 @@ tag='E_OFF';          experiment_name = fullfile("comparisons","Euglena_off","co
 % tag='E_half_half';          experiment_name = "2023_06_14_E_6";    Environment.boundary = Simulation.arena * 2;
 % tag='E_grad_centr_light';   experiment_name = "2023_06_12_E_3";    Environment.boundary = Simulation.arena * 2;
 % tag='E_grad_centr_dark';    experiment_name = "2023_06_14_E_10";   Environment.boundary = Simulation.arena * 2;
-% tag='E_grad_lateral';       experiment_name = "2023_06_13_E_16";   Environment.boundary = Simulation.arena * 2;
+tag='E_grad_lateral';       experiment_name = "2023_06_13_E_16";   Environment.boundary = Simulation.arena * 2;
 % tag='E_circle_light';       experiment_name = "2023_07_10_E_26";   Environment.boundary = Simulation.arena * 2;
 % tag='E_circle_dark';        experiment_name = "2023_06_13_E_15";   Environment.boundary = Simulation.arena * 2;
 % tag='E_circle_dark';        experiment_name = "2023_06_13_E_15";   Environment.boundary = Simulation.arena * 2;
@@ -51,6 +51,8 @@ identification_file_name = 'identification_GB_absw_noalpha_narrow.txt';
 %VOLVOX
 % id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Volvox_switch_10/combo5'; % switch10s
 % identification_file_name = 'identification_GB_absw_medianinit.txt';
+
+tag = 'test';
 
 % outputDir = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\Simulations';
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
@@ -90,7 +92,7 @@ if isfile(fullfile(data_folder,'inputs.txt'))   % time varying inputs
     inputs=load(fullfile(data_folder,'inputs.txt'));
     u=inputs(:,1)/255;              %select blue channel and scale in [0,1]
     Environment.Inputs.Times  = Simulation.timeInstants;
-    Environment.Inputs.Values = u;
+    Environment.Inputs.Values = u(1:length(Simulation.timeInstants));
 else                                            % spatial inputs
     u = loadInputPattern(data_folder, pattern_blurring);
     Environment.Inputs.Points = {linspace(-Simulation.arena(1),Simulation.arena(1),size(u,1))/2, linspace(-Simulation.arena(2),Simulation.arena(2),size(u,2))/2};
@@ -106,7 +108,7 @@ v0 = speeds0 .* [cos(theta0), sin(theta0)];
 %v0 = zeros(size(x0));
 
 %% Run Simulation
-[xVec, uVec, ~] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction, Environment);
+[xVec, uVec, ~] = Simulator(x0, v0, Simulation, Dynamics, Render, GlobalIntFunction, LocalIntFunction, Environment);
 
 %% Analysis
 if smoothing
@@ -201,6 +203,8 @@ if outputDir
     fprintStruct(fileID,LocalIntFunction)
     fprintf(fileID,'Environment:\n');
     fprintStruct(fileID,Environment)
+    fprintf(fileID,'Render:\n');
+    fprintStruct(fileID,Render)
     fprintf(fileID,'smoothing= %s\n',mat2str(smoothing));
     fprintf(fileID,'delta= %.2f\n',delta);
     fclose(fileID);
@@ -212,11 +216,11 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
         plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Simulation.arena)
     end
-    if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
+    if Render.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Render.drawTraj); end
     if isfield(LocalIntFunction, 'DistanceRange')
-        plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, squeeze(xVec(2,:,:)), Render.agentsColor);
+        plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, Simulation.arena, false, false, false, Render.agentShape, Render.agentSize, squeeze(xVec(2,:,:)), Render.agentsColor);
     else
-        plotSwarmInit(x0, 0, inf, inf, Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, squeeze(xVec(2,:,:)), Render.agentsColor);
+        plotSwarmInit(x0, 0, inf, inf, Simulation.arena, Simulation.arena, false, false, false, Render.agentShape, Render.agentSize, squeeze(xVec(2,:,:)), Render.agentsColor);
     end
     if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
     if outputDir
@@ -229,11 +233,11 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
         plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Simulation.arena)
     end
-    if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
+    if Render.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Render.drawTraj); end
     if isfield(LocalIntFunction, 'DistanceRange')
-        plotSwarmInit(xFinal_inWindow, Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, xSemiFinal_inWindow, Render.agentsColor);
+        plotSwarmInit(xFinal_inWindow, Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, Simulation.arena, false, false, false, Render.agentShape, Render.agentSize, xSemiFinal_inWindow, Render.agentsColor);
     else
-        plotSwarmInit(xFinal_inWindow, Simulation.Tmax, inf, inf, Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, xSemiFinal_inWindow, Render.agentsColor);
+        plotSwarmInit(xFinal_inWindow, Simulation.Tmax, inf, inf, Simulation.arena, Simulation.arena, false, false, false, Render.agentShape, Render.agentSize, xSemiFinal_inWindow, Render.agentsColor);
     end
     if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
     if outputDir
@@ -245,20 +249,19 @@ end
 figure % colored trajectories
 hold on
 colors = get(gca, 'ColorOrder');
-final = 45;
-window = [-Simulation.arena(1),Simulation.arena(1),-Simulation.arena(2),Simulation.arena(2)]/2;
+final = Simulation.Tmax;
 x_inWindow = xVec(:,indices_inWindow,:);
 for i=1:size(x_inWindow,2)
     c = colors(mod(i-1,7)+1,:);
     plot(x_inWindow(1:final,i,1),x_inWindow(1:final,i,2), 'color', c, 'LineWidth',1.25);
     ang = atan2(x_inWindow(final,i,2)-x_inWindow(final-1,i,2),x_inWindow(final,i,1)-x_inWindow(final-1,i,1));
-    plot_singleRod(x_inWindow(final,i,:), ang, Simulation.agentSize*1.5, Simulation.agentSize*1.5/2, c);
+    plot_singleRod(x_inWindow(final,i,:), ang, Render.agentSize, Render.agentSize/2, c);
     %plot(x_inWindow(final,i,1),x_inWindow(final,i,2),'o', 'color', c, 'MarkerFaceColor', c);
 end
 xticks([])
 yticks([])
 axis('equal')
-axis(window)
+axis(Render.window)
 box on
 set(gca,'Color',[0.05, 0.05, 0.05]); set(gcf, 'InvertHardCopy', 'off'); % dark background
 if outputDir
@@ -270,8 +273,7 @@ end
 
 % SPATIAL INPUTS
 if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
-    window = [-Simulation.arena(1),Simulation.arena(1),-Simulation.arena(2),Simulation.arena(2)]/2;
-    [density_by_input_sim, bins, norm_slope_sim, c_coeff_sim, coefficents, ~,~, u_values_sim] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, xFinal_inWindow, window);
+    [density_by_input_sim, bins, norm_slope_sim, c_coeff_sim, coefficents, ~,~, u_values_sim] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, xFinal_inWindow, Render.window);
     
     figure % simulation light distribution
     bar((bins(1:end-1)+bins(2:end))/2,density_by_input_sim, 1)
@@ -293,11 +295,11 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     
     % get distribution wrt light intensity
     mask = detectObjects(data_folder, background_sub, brightness_thresh);
-    [density_by_input_exp, bins, norm_slope_exp, c_coeff_exp, coefficents, ~,~, u_values_exp] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, mask, window);
+    [density_by_input_exp, bins, norm_slope_exp, c_coeff_exp, coefficents, ~,~, u_values_exp] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, mask, Render.window);
     
     figure
-    x_vec = linspace(window(1),window(2),size(mask,2));
-    y_vec = linspace(window(3),window(4),size(mask,1));
+    x_vec = linspace(Render.window(1),Render.window(2),size(mask,2));
+    y_vec = linspace(Render.window(3),Render.window(4),size(mask,1));
     box on
     hold on
     cmap = linspace2([1,1,1], [1,0.5,0.5], 100)';
@@ -306,7 +308,7 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     I=imagesc(x_vec,y_vec,cat(3,zeros(size(mask)),zeros(size(mask)),mask));
     set(I, 'AlphaData', mask);
     axis('equal')
-    axis(window)
+    axis(Render.window)
     xticks([])
     yticks([])
     title('Experimental')
@@ -433,8 +435,9 @@ end
 % saveas(gcf,fullfile(output_path, 'scatter_plot'),'png')
 % end
 
-if Simulation.recordVideo
-    copyfile('./Output/video.mp4',output_path)
+if Render.recordVideo
+    SSdir = getSSfolder();
+    copyfile(fullfile(SSdir,'Output','video.mp4'),output_path)
 end
 
 % pause

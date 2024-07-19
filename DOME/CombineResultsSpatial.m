@@ -4,32 +4,26 @@ close all
 defaultParamMicroorg
 
 simulations_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
-% simulations_folder = fullfile(simulations_folder,'2024_06_17_GB_absw_noalpha_narrow');
-simulations_folder = fullfile(simulations_folder,'2024_06_21_spatial_8k');
+simulations_folder = fullfile(simulations_folder,'2024_06_17_GB_absw_noalpha_narrow');
+% simulations_folder = fullfile(simulations_folder,'2024_06_21_spatial_8k');
 experiments_folder = "/Volumes/DOMEPEN/Experiments";
 
 time_to_plot   = 180;   % time of simulation and experiment to look at [s]
 exp_setup_time = 0;     % initial time window to be discarded from the experiment [s] (set to 30 for BCL, 0 for other exp)
-n_bins         = 2;     % number of bins for light distribution
-diustr_up_lim  = 1;     % ylim of the distribution plot
+n_bins         = 3;     % number of bins for light distribution
+diustr_up_lim  = 0.75;     % ylim of the distribution plot
 
-% % half_half
-% tags = ["BCL"];
-% sim_names = ["2024_06_25_BCLx36_1"];
-% experiments_names = {["2023_07_10_E_30","2023_07_10_E_34","2023_07_10_E_35"]};
-% output_folder = fullfile(simulations_folder,sim_names(1));
-
-% spatial
-tags = ["half_half","grad_centr_light","grad_centr_dark","grad_lateral","circle_light","circle_dark"];
-%sim_names = ["2024_06_06_half_half_1";"2024_06_06_grad_centr_light_1";"2024_06_06_grad_centr_dark_1";"2024_06_06_grad_lateral_1";"2024_06_06_circle_light_1";"2024_06_06_circle_dark_1"];
-sim_names = ["experiment_half_half_1";"experiment_grad_centr_light_1";"experiment_grad_centr_dark_1";"experiment_grad_lateral_1";"experiment_circle_light_1";"experiment_circle_dark_1"];
-experiments_names = {["2023_06_12_E_2","2023_06_14_E_6","2023_06_15_E_12","2023_06_26_E_29","2023_06_26_E_30","2023_06_23_E_1","2023_06_23_E_2","2023_06_26_E_2"];
-                     ["2023_06_12_E_4","2023_06_14_E_7","2023_06_15_E_14","2023_06_23_E_5","2023_06_23_E_6","2023_06_26_E_5","2023_06_26_E_6","2023_06_26_E_33"];
-                     ["2023_06_23_E_7","2023_06_23_E_8","2023_06_23_E_9","2023_06_26_E_7","2023_06_26_E_8","2023_06_26_E_34","2023_06_26_E_35","2023_07_10_E_23"];
-                     ["2023_06_13_E_16","2023_06_14_E_8","2023_06_15_E_13","2023_06_23_E_3","2023_06_26_E_3","2023_06_26_E_4","2023_06_26_E_31","2023_06_26_E_32"];
-                     ["2023_06_15_E_16","2023_06_23_E_10","2023_06_23_E_11","2023_06_26_E_9","2023_06_26_E_10","2023_06_26_E_36","2023_06_26_E_37","2023_07_10_E_26"];
-                     ["2023_06_13_E_15","2023_06_15_E_17","2023_06_23_E_13","2023_06_26_E_11","2023_06_26_E_12","2023_06_26_E_39","2023_07_10_E_25","2023_07_10_E_22"]};
-output_folder = simulations_folder;
+% % spatial
+% tags = ["half_half","grad_centr_light","grad_centr_dark","grad_lateral","circle_light","circle_dark"];
+% %sim_names = ["2024_06_06_half_half_1";"2024_06_06_grad_centr_light_1";"2024_06_06_grad_centr_dark_1";"2024_06_06_grad_lateral_1";"2024_06_06_circle_light_1";"2024_06_06_circle_dark_1"];
+% sim_names = ["experiment_half_half_1";"experiment_grad_centr_light_1";"experiment_grad_centr_dark_1";"experiment_grad_lateral_1";"experiment_circle_light_1";"experiment_circle_dark_1"];
+% experiments_names = {["2023_06_12_E_2","2023_06_14_E_6","2023_06_15_E_12","2023_06_26_E_29","2023_06_26_E_30","2023_06_23_E_1","2023_06_23_E_2","2023_06_26_E_2"];
+%                      ["2023_06_12_E_4","2023_06_14_E_7","2023_06_15_E_14","2023_06_23_E_5","2023_06_23_E_6","2023_06_26_E_5","2023_06_26_E_6","2023_06_26_E_33"];
+%                      ["2023_06_23_E_7","2023_06_23_E_8","2023_06_23_E_9","2023_06_26_E_7","2023_06_26_E_8","2023_06_26_E_34","2023_06_26_E_35","2023_07_10_E_23"];
+%                      ["2023_06_13_E_16","2023_06_14_E_8","2023_06_15_E_13","2023_06_23_E_3","2023_06_26_E_3","2023_06_26_E_4","2023_06_26_E_31","2023_06_26_E_32"];
+%                      ["2023_06_15_E_16","2023_06_23_E_10","2023_06_23_E_11","2023_06_26_E_9","2023_06_26_E_10","2023_06_26_E_36","2023_06_26_E_37","2023_07_10_E_26"];
+%                      ["2023_06_13_E_15","2023_06_15_E_17","2023_06_23_E_13","2023_06_26_E_11","2023_06_26_E_12","2023_06_26_E_39","2023_07_10_E_25","2023_07_10_E_22"]};
+% output_folder = simulations_folder;
 
 % %test
 % sim_names = getSubfolders(simulations_folder)';
@@ -41,6 +35,16 @@ output_folder = simulations_folder;
 %                      ["2023_06_12_E_1", "2023_06_14_E_1", "2023_06_15_E_16","2023_06_23_E_10","2023_06_23_E_11","2023_06_26_E_9", "2023_06_26_E_10","2023_06_26_E_36","2023_06_26_E_37","2023_07_10_E_26"];
 %                      ["2023_06_12_E_5", "2023_06_13_E_16","2023_06_14_E_8", "2023_06_15_E_13","2023_06_23_E_3", "2023_06_23_E_4", "2023_06_26_E_3", "2023_06_26_E_4", "2023_06_26_E_31","2023_06_26_E_32"]};
 % output_folder = simulations_folder;
+
+% half_half
+tags = ["BCL"];
+sim_names = ["2024_06_25_BCLx36_1"];
+experiments_names = {["2023_07_10_E_30","2023_07_10_E_34","2023_07_10_E_35"]};
+output_folder = fullfile(simulations_folder,sim_names(1));
+time_to_plot   = 180;   % time of simulation and experiment to look at [s]
+exp_setup_time = 30;     % initial time window to be discarded from the experiment [s] (set to 30 for BCL, 0 for other exp)
+n_bins         = 5;     % number of bins for light distribution
+diustr_up_lim  = 0.4;     % ylim of the distribution plot
 
 %% LOAD DATA
 combo_mask = cell(1,length(experiments_names));
@@ -187,7 +191,6 @@ for i = 1:length(experiments_names)  % for each experiment
     axis(window)
     xticks([])
     yticks([])
-%         title(sprintf('t=%fs',time_to_plot_exp))
 
     title(sprintf('%s (t=%.1fs)',sim_names{i},time_to_plot),'Interpreter','none','FontSize',12)
     if i==1
@@ -260,4 +263,30 @@ saveas(fig,fullfile(output_folder, sprintf('multi_exp_comparison_spatial_%d',tim
 saveas(fig,fullfile(output_folder, sprintf('multi_exp_comparison_spatial_%d',time_to_plot)),'pdf')
 % saveas(gcf,fullfile(output_folder, sprintf('multi_exp_comparison_spatial_%d',time_to_plot)),'png')
 
-
+% ONLY DISTRIBUTION ISTOGRAMS
+figure('Position',[100 100 350*length(experiments_names) 240]);
+for i = 1:length(experiments_names)  % for each experiment
+    % distributions wrt light
+    subplot(1,length(experiments_names),i)
+    title(sprintf('%s (t=%.1fs)',sim_names{i},time_to_plot),'Interpreter','none','FontSize',12)
+    hold on
+    b_exp_mean = bar((bins(1:end-1)+bins(2:end))/2,mean_dist{i}, 1, FaceColor = 'b', FaceAlpha = 0.5);
+    b_sim = bar((bins(1:end-1)+bins(2:end))/2,density_by_input_sim{i}, 1, FaceColor = 'k', FaceAlpha = 0.4);
+    %[f,xi] = ksdensity(u_values_exp, support=[-0.001,1.001], BoundaryCorrection='reflection');
+    %f=f/sum(f);
+    %plot(xi,f)
+    if i==length(experiments_names)
+    legend({'REAL','SIMULATED'},'FontSize',12)%,'Location','best')
+    end
+    xlabel('Input intensity','FontSize',12)
+    ylabel('Density of agents','FontSize',12)
+    yticks([0:diustr_up_lim/4:diustr_up_lim]);
+    ylim([0,diustr_up_lim])
+    xlim([-0.1,1.1])
+    text(0,max(ylim)*0.9,['TVD=',num2str(mean_tvd(i),'%.2f')],'FontSize',12)%,'HorizontalAlignment','center'
+    xticks(round(bins,2))
+    box
+end
+fig=gcf; fig.Units = fig.PaperUnits; fig.PaperSize = fig.Position(3:4); % set correct pdf size
+saveas(fig,fullfile(output_folder, sprintf('multi_exp_comparison_spatial_distributions_%d',time_to_plot)))
+saveas(fig,fullfile(output_folder, sprintf('multi_exp_comparison_spatial_distributions_%d',time_to_plot)),'pdf')

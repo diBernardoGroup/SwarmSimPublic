@@ -1,4 +1,4 @@
-function [xVec, uVec, vVec] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction, Environment)
+function [xVec, uVec, vVec] = Simulator(x0, v0, Simulation, Dynamics, Render, GlobalIntFunction, LocalIntFunction, Environment)
 %
 %Simulator executes a complete simulation of the swarm.
 %   This function is called by a launcher script (Launcher, SequentialLauncher...).
@@ -29,6 +29,7 @@ arguments
     v0                  double
     Simulation          struct
     Dynamics            struct
+    Render              struct = struct()
     GlobalIntFunction   struct = struct('function','None')
     LocalIntFunction    struct = struct('function','None')
     Environment         struct = struct()
@@ -37,17 +38,17 @@ end
 assert(ismember(size(x0,2), [2,3]), 'x0 must have second dimension equal to 2 or 3!')
 assert(all(size(v0,2)==size(x0,2)), 'v0 must have same dimensions of x0!')
 
-assert(Simulation.recordVideo <= Simulation.drawON, 'Simulation.recordVideo must be false if Simulation.drawON is false')
+assert(Render.recordVideo <= Render.drawON, 'Render.recordVideo must be false if Render.drawON is false')
 
 if ~isfield(Simulation, 'InteractionFactor')
-    Simulation.InteractionFactor = 1; % fraction of agents to interact with ]0,1] 
+    Simulation.InteractionFactor = 1; % fraction of agents to interact with ]0,1]
 end
 %(if InteractionFactor<1 a subset of agents is randomly selected by each agent at each update step to interact with)
 assert(Simulation.InteractionFactor <=1 & Simulation.InteractionFactor >0, 'Simulation.InteractionFactor must be in range ]0;1]')
 if (Simulation.InteractionFactor~=1); warning("Simulation.InteractionFactor is NOT set to 1"); end
 
 if ~isfield(GlobalIntFunction, 'SensingNumber')
-    GlobalIntFunction.SensingNumber = inf; % fraction of agents to interact with ]0,1] 
+    GlobalIntFunction.SensingNumber = inf; % fraction of agents to interact with ]0,1]
 end
 assert(GlobalIntFunction.SensingNumber>0, 'GlobalIntFunction.SensingNumber must be positive')
 if (GlobalIntFunction.SensingNumber~=inf); warning("SensingNumber is NOT set to inf"); end
@@ -64,10 +65,10 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     %F=scatteredInterpolant(Environment.Inputs.Points, Environment.Inputs.Values, 'linear', 'nearest');
     F = griddedInterpolant(Environment.Inputs.Points,Environment.Inputs.Values, 'linear', 'nearest');
 end
-    
+
 %% Instantiate Simulation Window
 
-if Simulation.drawON
+if Render.drawON
     figure
     if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
         imagesc(x_vec,y_vec,F(x_mesh',y_mesh')')
@@ -79,9 +80,9 @@ if Simulation.drawON
     %         plotSwarmInit(x0, 0, inf, inf, Simulation.arena, thenDelete=true);
     %     end
     if isfield(LocalIntFunction, 'DistanceRange')
-        plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, Simulation.arena, false, false, true, Simulation.agentShape, Simulation.agentSize, x0-v0);
+        plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, Simulation.arena, false, false, true, Render.agentShape, Render.agentSize, x0-v0);
     else
-        plotSwarmInit(x0, 0, inf, inf, Simulation.arena, Simulation.arena, false, false, true, Simulation.agentShape, Simulation.agentSize, x0-v0);
+        plotSwarmInit(x0, 0, inf, inf, Simulation.arena, Simulation.arena, false, false, true, Render.agentShape, Render.agentSize, x0-v0);
     end
 end
 
@@ -102,12 +103,12 @@ envInput = zeros(N,1);
 % xVec(1,:,:)=x0;
 v=v0;
 
-if Simulation.recordVideo
-    video = VideoWriter('.SwarmSimV2/Output/video','MPEG-4');
+if Render.recordVideo
+    SSdir = getSSfolder();
+    out_dir = fullfile(SSdir,'Output');
+    video = VideoWriter(fullfile(out_dir,'video'),'MPEG-4');
     video.FrameRate = 1/Simulation.deltaT;
     open(video);
-%     currFrame = getframe(gcf);
-%     writeVideo(video,currFrame);
 end
 
 log_txt = ['- Simulating ',num2str(N),' ',Dynamics.model, ' agents in ', num2str(size(x0,2)),'D space'];
@@ -151,25 +152,25 @@ while t<Simulation.Tmax
         count= count+1;
         
         % plot swarm
-        if Simulation.drawON
+        if Render.drawON
             cla
             hold on
-            if isfield(Environment,'Inputs') 
+            if isfield(Environment,'Inputs')
                 if isfield(Environment.Inputs,'Points')
-                imagesc(x_vec,y_vec,F(x_mesh',y_mesh')')
+                    imagesc(x_vec,y_vec,F(x_mesh',y_mesh')')
                 elseif isfield(Environment.Inputs,'Times')
-                set(gca,'Color',interp1(linspace(0,1,100),cmap,interp1(Environment.Inputs.Times, Environment.Inputs.Values, t, Environment.Inputs.InterpMethod)))
+                    set(gca,'Color',interp1(linspace(0,1,100),cmap,interp1(Environment.Inputs.Times, Environment.Inputs.Values, t, Environment.Inputs.InterpMethod)))
                 end
             end
-            if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
+            if Render.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Render.drawTraj); end
             if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
             if isfield(LocalIntFunction, 'DistanceRange')
-                plotSwarm(x, t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), ~Simulation.recordVideo, ones(size(x,1), 1), false, Simulation.agentShape, Simulation.agentSize, x-v);
+                plotSwarm(x, t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), ~Render.recordVideo, ones(size(x,1), 1), false, Render.agentShape, Render.agentSize, x-v);
             else
-                plotSwarm(x, t, inf, inf, ~Simulation.recordVideo, ones(size(x,1), 1), false, Simulation.agentShape, Simulation.agentSize, x-v);
+                plotSwarm(x, t, inf, inf, ~Render.recordVideo, ones(size(x,1), 1), false, Render.agentShape, Render.agentSize, x-v);
             end
             
-            if Simulation.recordVideo
+            if Render.recordVideo
                 currFrame = getframe(gcf);
                 writeVideo(video,currFrame);
             end
@@ -181,7 +182,7 @@ while t<Simulation.Tmax
     
     % Compute boundaries interaction
     if isfield(Environment,'boundary')
-    [x, v, out_agents] = boundaryInteraction(x, v, Environment.boundary);
+        [x, v, out_agents] = boundaryInteraction(x, v, Environment.boundary);
     end
     
     % Update time
@@ -193,27 +194,31 @@ xVec(count,:,:)=x;
 vVec(count,:,:)=v;
 uVec(count,:,:)=forces;
 
-if Simulation.recordVideo
-    close(video);
-    %disp(['Video saved in ', video.Path])
-end
+
 
 %% PLOTS
 
 % plot swarm
-if Simulation.drawON
+if Render.drawON
     cla
     if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
         imagesc(x_vec,y_vec,F(x_mesh',y_mesh')')
         %colormap(cmap)
     end
-    if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
+    if Render.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Render.drawTraj); end
     if isfield(LocalIntFunction, 'DistanceRange')
-        plotSwarm(squeeze(xVec(end,:,:)), t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), flase, ones(size(x,1), 1), false, Simulation.agentShape, Simulation.agentSize, x-v);
+        plotSwarm(squeeze(xVec(end,:,:)), t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), flase, ones(size(x,1), 1), false, Render.agentShape, Render.agentSize, x-v);
     else
-        plotSwarm(squeeze(xVec(end,:,:)), t, inf, inf, false, ones(size(x,1), 1), false, Simulation.agentShape, Simulation.agentSize, x-v);
+        plotSwarm(squeeze(xVec(end,:,:)), t, inf, inf, false, ones(size(x,1), 1), false, Render.agentShape, Render.agentSize, x-v);
     end
     if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
+    
+    if Render.recordVideo
+        currFrame = getframe(gcf);
+        writeVideo(video,currFrame);
+        close(video);
+        
+    end
 end
 
 end

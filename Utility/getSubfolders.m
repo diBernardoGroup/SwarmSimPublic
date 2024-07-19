@@ -7,6 +7,7 @@ function subfolders = getSubfolders(directory)
     dfolders = dfolders(~ismember({dfolders(:).name},{'.','..'}));
     % get only the names
     dfolders = {dfolders(:).name};
+    subfolders = strings(size(dfolders));
     for i = 1:length(dfolders)
         subfolders(i) = string(dfolders(i));
     end
