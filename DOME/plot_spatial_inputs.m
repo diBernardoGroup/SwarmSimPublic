@@ -215,14 +215,14 @@ plot(Render.all_time,tvd,'LineWidth',2,'Color', [1 1 1]*0.5);
 xlabel('Time [s]','FontSize',14)
 ylabel('TVD','FontSize',14)
 xlim([0, Simulation.Tmax]);
-ylim([0, 0.12])
+ylim([0,0.15])
 box on
 grid on
 if output_path
     fig=gcf; fig.Units = fig.PaperUnits; fig.PaperSize = fig.Position(3:4); % set correct pdf size
-    saveas(gcf, fullfile(output_path, 'slope_comp'))
-    saveas(gcf, fullfile(output_path, 'slope_comp'),'png')
-    saveas(gcf, fullfile(output_path, 'slope_comp'),'pdf')
+    saveas(gcf, fullfile(output_path, 'TVD'))
+    saveas(gcf, fullfile(output_path, 'TVD'),'png')
+    saveas(gcf, fullfile(output_path, 'TVD'),'pdf')
 end
 
 

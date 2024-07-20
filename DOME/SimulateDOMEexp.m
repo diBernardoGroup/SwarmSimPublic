@@ -163,7 +163,7 @@ omega = omega_be;
 
 
 
-[~,indices_inWindow] = getInWindow(squeeze(xVec(end,:,:)), Simulation.arena);
+[~,indices_inWindow] = getInWindow(squeeze(xVec(end,:,:)), Render.window);
 xFinal_inWindow = squeeze(xVec(end,indices_inWindow,:));
 xSemiFinal_inWindow = squeeze(xVec(end-1,indices_inWindow,:));
 
@@ -214,7 +214,7 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     % SWARM initial
     figure
     if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
-        plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Simulation.arena)
+        plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Render.window)
     end
     if Render.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Render.drawTraj); end
     if isfield(LocalIntFunction, 'DistanceRange')
@@ -231,7 +231,7 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     % SWARM final
     figure
     if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
-        plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Simulation.arena)
+        plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Render.window)
     end
     if Render.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Render.drawTraj); end
     if isfield(LocalIntFunction, 'DistanceRange')

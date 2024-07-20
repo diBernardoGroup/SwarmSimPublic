@@ -107,7 +107,7 @@ if Render.recordVideo
     SSdir = getSSfolder();
     out_dir = fullfile(SSdir,'Output');
     video = VideoWriter(fullfile(out_dir,'video'),'MPEG-4');
-    video.FrameRate = 1/Simulation.deltaT;
+    video.FrameRate = Render.frameRate;
     open(video);
 end
 
