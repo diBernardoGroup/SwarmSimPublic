@@ -14,14 +14,13 @@ Environment = sim_data.Environment;
 inputs = sim_data.Environment.Inputs;
 xVec = sim_data.xVec;
 data_folder = sim_data.data_folder;
-% u_sim = sim_data.u;
 
-Render.time_plot = 0:180:Simulation.Tmax;
+Render.time_plot = 0:45:Simulation.Tmax;
 Render.all_time  = 0:1:Simulation.Tmax;
 Render.window = [-Simulation.arena(1),Simulation.arena(1),-Simulation.arena(2),Simulation.arena(2)]/2; % size of the simulation window
 
 exp_setup_time = 30;     % initial time window to be discarded from the experiment [s] (set to 30 for BCL, 0 for other exp)
-n_bins         = 5;     % number of bins for light distribution
+n_bins         = 5;     % number of bins for light distribution (set to 5 for BCL, 3 for other exp)
 
 
 % Render.window = [-Simulation.arena(1),Simulation.arena(1),-Simulation.arena(2),Simulation.arena(2)]/2; % size of the simulation window
@@ -50,29 +49,31 @@ for i=1:length(Render.time_plot)
     %%%%%%%%%%%%%%%%%%%%%%%%% IN SILICO EXPERIMENT %%%%%%%%%%%%%%%%%%%%%%%%%
     
     %get the position of the agents
-    cur_ind = max([Render.time_plot(i)/Simulation.deltaT,2]);
-    [~,indices_inWindow] = getInWindow(squeeze(xVec(cur_ind,:,:)), Simulation.arena);
-    x_cur = squeeze(xVec(cur_ind,indices_inWindow,:));
-    x_prev = squeeze(xVec(max([(Render.time_plot(i)/Simulation.deltaT)-1,1]),indices_inWindow,:));
+    frame_index = round(Render.time_plot(i) / Simulation.deltaT) + 1;
+    [x_cur,indices_inWindow] = getInWindow(squeeze(xVec(frame_index,:,:)), Render.window);
+    if frame_index == 1
+        x_prev = squeeze(2*xVec(1,indices_inWindow,:)-xVec(2,indices_inWindow,:));
+    else
+        x_prev = squeeze(xVec(frame_index-1,indices_inWindow,:));
+    end
+    [density_by_input_sim, bins] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, x_cur, Render.window, n_bins);
     
-    [density_by_input_sim, bins, norm_slope_sim(i), ~, ~, ~,~, ~] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, x_cur, Render.window, n_bins);
-    
-    %     figure("Position",[0 0 500 300])
-    %     %Plot the light projected on the sample
-    %     if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
-    %         plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Simulation.arena, Render.cmap_inputs)
-    %     end
-    %     %Plot the trajectories
-    %     if Render.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Render.drawTraj); end
-    %     %Plot the rods in the environment
-    %     plotSwarmInit(x_cur,Render.time_plot(i),inf,inf,Render.window,Simulation.arena,false,false,false, Render.agentShape, Render.agentSize, Render.agentsColor, x_prev);
-    %     %Plot the boundary of the simulation
-    %     if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
-    %     %Save the image created in the output folder
-    %     if output_path
-    %         saveas(gcf, fullfile(output_path, sprintf("spat_%d",Render.time_plot(i))))
-    %         saveas(gcf, fullfile(output_path, sprintf("spat_%d",Render.time_plot(i))),'png')
-    %     end
+    figure("Position",[0 0 500 300])
+    %Plot the light projected on the sample
+    if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
+        plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Render.window, Render.cmap_inputs)
+    end
+    %Plot the trajectories
+    if Render.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Render.drawTraj); end
+    %Plot the rods in the environment
+    plotSwarmInit(x_cur,Render.time_plot(i),inf,inf,Render.window,Simulation.arena,false,false,false, Render.agentShape, Render.agentSize, Render.agentsColor, x_prev);
+    %Plot the boundary of the simulation
+    if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
+    %Save the image created in the output folder
+    if output_path
+        saveas(gcf, fullfile(output_path, sprintf("positions_sim_%d",Render.time_plot(i))))
+        saveas(gcf, fullfile(output_path, sprintf("positions_sim_%d",Render.time_plot(i))),'png')
+    end
     
     %%%%%%%%%%%%%%%%%%%%%%%%% IN VIVO EXPERIMENT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
@@ -88,7 +89,7 @@ for i=1:length(Render.time_plot)
         assert( mean(abs(u{1} - imresize(u{j},size(u{1}))),'all')<0.1, 'Replicates have different inputs' )
         
         % get distribution wrt light intensity
-        [~, ~, ~, ~, ~, agents_by_input(j,:), pixels_by_input(j,:)] = agentsDensityByInput(inputs.Points, inputs.Values, mask{j}, Render.window, n_bins);
+        [~, ~, agents_by_input(j,:), pixels_by_input(j,:)] = agentsDensityByInput(inputs.Points, inputs.Values, mask{j}, Render.window, n_bins);
         
         % combination of masks over the replicates
         if j==1
@@ -120,16 +121,12 @@ for i=1:length(Render.time_plot)
     xticks([])
     yticks([])
     if output_path
-        saveas(gcf, fullfile(output_path, sprintf("spat_exp_%d",Render.time_plot(i))))
-        saveas(gcf, fullfile(output_path, sprintf("spat_exp_%d",Render.time_plot(i))),'png')
+        saveas(gcf, fullfile(output_path, sprintf("positions_exp_%d",Render.time_plot(i))))
+        saveas(gcf, fullfile(output_path, sprintf("positions_exp_%d",Render.time_plot(i))),'png')
     end
     
     
-    %%%%%%%%%%%%%%%%%%%%%%%%% HISTOGTAM COMPARISON %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    %Get density of experimental data
-    %[density_by_input_exp, bins, norm_slope_exp(i), ~, ~, ~,~, ~] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, mask, Render.window);
-    
+    %%%%%%%%%%%%%%%%%%%%%%%%% HISTOGTAM COMPARISON %%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
     
     figure("Position",[500+500 100+130 500 250])
     %Compute TVD between the distributions
@@ -148,8 +145,8 @@ for i=1:length(Render.time_plot)
     xticks(round(bins,2))
     box
     if output_path
-        saveas(gcf, fullfile(output_path, sprintf("hist_diff_%d",Render.time_plot(i))))
-        saveas(gcf, fullfile(output_path, sprintf("hist_diff_%d",Render.time_plot(i))),'png')
+        saveas(gcf, fullfile(output_path, sprintf("difference_light_distribution_%d",Render.time_plot(i))))
+        saveas(gcf, fullfile(output_path, sprintf("difference_light_distribution_%d",Render.time_plot(i))),'png')
     end
     
     
@@ -157,18 +154,19 @@ for i=1:length(Render.time_plot)
     
 end
 
-
+%% Plot at each time instant
 %%%%%%%%%%%%%%%%%%%%%%%%% Photo-accumulation Index comp %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 for i=1:length(Render.all_time)
     %Comput PhI at every time instant
     
     % simulation data
-    cur_ind = max([Render.all_time(i)/Simulation.deltaT,2]);
-    [~,indices_inWindow] = getInWindow(squeeze(xVec(cur_ind,:,:)), Simulation.arena);
-    x_cur = squeeze(xVec(cur_ind,indices_inWindow,:));
-    [density_by_input_sim, ~, norm_slope_sim(i), ~, ~, ~,~, ~] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, x_cur, Render.window, n_bins);
-    
+    frame_index = round(Render.all_time(i) / Simulation.deltaT) + 1;
+    [x_cur,indices_inWindow] = getInWindow(squeeze(xVec(frame_index,:,:)), Render.window);
+
+    [density_by_input_sim] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, x_cur, Render.window, n_bins);
+    [~,norm_slope_sim(i),~] = linearDependence((bins(1:end-1)+bins(2:end))'/2, density_by_input_sim');
+
     % combo exp data
     for j=1:length(experiments_names)   % for each replicate
         time_to_plot_exp = Render.all_time(i)+exp_setup_time;
@@ -179,7 +177,7 @@ for i=1:length(Render.all_time)
         assert( mean(abs(u{1} - imresize(u{j},size(u{1}))),'all')<0.1, 'Replicates have different inputs' )
         
         % get distribution wrt light intensity
-        [~, ~, ~, ~, ~, agents_by_input(j,:), pixels_by_input(j,:)] = agentsDensityByInput(inputs.Points, inputs.Values, mask{j}, Render.window, n_bins);
+        [~, ~, agents_by_input(j,:), pixels_by_input(j,:)] = agentsDensityByInput(inputs.Points, inputs.Values, mask{j}, Render.window, n_bins);
         
         % combination of masks over the replicates
         if j==1
@@ -192,24 +190,30 @@ for i=1:length(Render.all_time)
     % weighted average light distribution over the replicates
     density_by_input_exp_mean = sum(squeeze(agents_by_input)./squeeze(pixels_by_input),1);
     density_by_input_exp_mean = density_by_input_exp_mean/sum(density_by_input_exp_mean);
-    
-    
+    [~,norm_slope_exp(i),~] = linearDependence((bins(1:end-1)+bins(2:end))'/2, density_by_input_exp_mean');
+
     %Get density of experimental data
     tvd(i) = 0.5 * norm(density_by_input_exp_mean-density_by_input_sim,1); % Total Variation Distance
 end
 
-% %plot the in silico and in vivo PhAI to compare the settling time
-% figure("Position",[500 100+150 500 300])
-% hold on;
-% plot(Render.all_time,norm_slope_exp,'LineWidth',2,'Color',Render.exp_c);
-% plot(Render.all_time,norm_slope_sim,'LineWidth',2,'Color',Render.sim_c);
-% legend({'REAL','SIMULATED'},'FontSize',14)
-% xlabel('Time [s]','FontSize',14)
-% ylabel('PhAI','FontSize',14)
-% xlim([0, Simulation.Tmax]);
-% box on
-% grid on
+% plot the in silico and in vivo PhAI to compare the settling time
+figure("Position",[500 100+150 500 300])
+hold on;
+plot(Render.all_time,norm_slope_exp,'LineWidth',2,'Color',Render.exp_c);
+plot(Render.all_time,norm_slope_sim,'LineWidth',2,'Color',Render.sim_c);
+legend({'REAL','SIMULATED'},'FontSize',14)
+xlabel('Time [s]','FontSize',14)
+ylabel('PhAI','FontSize',14)
+xlim([0, Simulation.Tmax]);
+box on
+grid on
+if output_path
+    fig=gcf; fig.Units = fig.PaperUnits; fig.PaperSize = fig.Position(3:4); % set correct pdf size
+    saveas(gcf, fullfile(output_path, 'photo_acc_index'))
+    saveas(gcf, fullfile(output_path, 'photo_acc_index'),'pdf')
+end
 
+% plot TVD in time
 figure("Position",[500 100+450 500 300])
 plot(Render.all_time,tvd,'LineWidth',2,'Color', [1 1 1]*0.5);
 xlabel('Time [s]','FontSize',14)
@@ -221,7 +225,6 @@ grid on
 if output_path
     fig=gcf; fig.Units = fig.PaperUnits; fig.PaperSize = fig.Position(3:4); % set correct pdf size
     saveas(gcf, fullfile(output_path, 'TVD'))
-    saveas(gcf, fullfile(output_path, 'TVD'),'png')
     saveas(gcf, fullfile(output_path, 'TVD'),'pdf')
 end
 

@@ -57,7 +57,12 @@ for i = 1:length(experiments_names)  % for each experiment
     frame_index = round(time_to_plot / sim_data.Simulation.deltaT) + 1;
     [~,indices] = getInWindow(squeeze(sim_data.xVec(frame_index,:,:)), sim_data.Simulation.arena);
     x_atTime_inWindow{i} = squeeze(sim_data.xVec(frame_index,indices,:));
-    x_previous_inWindow{i} = squeeze(sim_data.xVec(max(frame_index-1,2),indices,:));
+    %x_previous_inWindow{i} = squeeze(sim_data.xVec(max(frame_index-1,2),indices,:));
+    if frame_index == 1
+        x_previous_inWindow{i} = squeeze(2*sim_data.xVec(1,indices,:)-sim_data.xVec(2,indices,:));
+    else
+        x_previous_inWindow{i} = squeeze(sim_data.xVec(frame_index-1,indices,:));
+    end
     arena = sim_data.Simulation.arena;
     window = [-arena(1),arena(1),-arena(2),arena(2)]/2;
     inputs{i} = sim_data.Environment.Inputs;

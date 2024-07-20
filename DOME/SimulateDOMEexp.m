@@ -293,7 +293,7 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
         saveas(gcf, fullfile(output_path, 'light_distribution'),'png')
     end
     
-    % get distribution wrt light intensity
+    % experimental positions get distribution wrt light intensity
     mask = detectObjects(data_folder, background_sub, brightness_thresh);
     [density_by_input_exp, bins, norm_slope_exp, c_coeff_exp, coefficents, ~,~, u_values_exp] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, mask, Render.window);
     
