@@ -1,9 +1,15 @@
 clear
 close all
 
-% id_folder = '/Volumes/DOMEPEN/Experiments/2023_06_15_Euglena_7/tracking_2023_10_16'; % folder with identification data
-id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';
-outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Identifications/id_comparison_absw';
+% Add the path to your data
+% experiments_folder="C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\";    % DAVIDE
+experiments_folder="/Volumes/DOMEPEN/Experiments/comparisons";                                          % ANDREA
+
+id_folder = fullfile(experiments_folder,"Euglena_switch_10","combo5"); %Euglena
+%id_folder = fullfile(experiments_folder,"Volvox_switch_10","combo5"); %Volvox
+
+outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Euglena Identifications/id_comp_init';
+% outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Volvox identifications/id_comp_init';
 
 % identification_file_names = ["identification_OLS_ds1_sign.txt","identification_OLS_ds2_sign.txt","identification_OLS_ds3_sign.txt";
 %                              %"identification_OLS_ds1_abs.txt","identification_OLS_ds2_abs.txt","identification_OLS_ds3_abs.txt";
@@ -11,50 +17,56 @@ outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFede
 %                              "identification_GBCT_ds1_sign_grad.txt","identification_GBCT_ds2_sign_grad.txt","identification_GBCT_ds3_sign_grad.txt";
 %                              "identification_GBCT_ds1_sign_diff.txt","identification_GBCT_ds2_sign_diff.txt","identification_GBCT_ds3_sign_diff.txt"];
 
-identification_file_names = ["identification_OLS_ds1_sign_grad.txt","identification_OLS_ds2_sign_grad.txt","identification_OLS_ds3_sign_grad.txt";
-    "identification_GBCT_ds1_sign_grad.txt","identification_GBCT_ds2_sign_grad.txt","identification_GBCT_ds3_sign_grad.txt"];
-tags = ["OLS","GBDT","GBCT grad","GBCT diff"];
+% identification_file_names = ["identification_OLS_ds1_sign_grad.txt","identification_OLS_ds2_sign_grad.txt","identification_OLS_ds3_sign_grad.txt";
+%     "identification_GBCT_ds1_sign_grad.txt","identification_GBCT_ds2_sign_grad.txt","identification_GBCT_ds3_sign_grad.txt"];
+% tags = ["OLS","GBDT","GBCT grad","GBCT diff"];
+% 
+% identification_file_names = ["identification_OLS+GB_ds1_old.txt";
+%     "identification_OLS+GB_ds1_diff.txt";
+%     "identification_OLS+GB_ds1_diff_min20.txt";
+%     "identification_OLS+GB_ds1_diff_noalpha.txt";
+%     "identification_OLS+GB_ds1_diff_nosign.txt";
+%     "identification_OLS+GB_ds1_diff_median";
+%     "identification_OLS+GB_ds1_diff_smooth_median";
+%     "identification_OLS+GB_ds1_diff_median_smooth";
+%     "identification_OLS+GB_ds1_diff_smooth_median_smooth"];
+% tags = ["old","min=5s","min=20s","no\_alpha","nosign","med","smooth_med","med_smooth","s_med_s"];
+% 
+% identification_file_names =    ["identification_OLS+GB_ds1_diff_sign.txt";
+%     "identification_OLS+GB_ds1_diff_nosign.txt";
+%     "identification_OLS+GB_ds1_diff_sign_nomu.txt";
+%     "identification_OLS+GB_ds1_diff_nosign_nomu.txt"];
+% tags = ["signed","nosign","signed-nomu","nosign-nomu"];
+% 
+% identification_file_names =    ["identification_GA_nolim.txt";      "identification_GB_nolim";
+%                                 "identification_GA_nolim_nomu.txt"; "identification_GB_nolim_nomu.txt";
+%                                 "identification_GA_lim.txt";        "identification_GB_lim.txt";
+%                                 "identification_GA_lim_nomu.txt";   "identification_GB_lim_nomu.txt";
+%                                 ];
+% tags = ["GA_nolim","GB_nolim","GA_nolim_nomu","GB_nolim_nomu","GA_lim","GB_lim","GA_lim_nomu","GB_lim_nomu"];
+% 
+% identification_file_names =    [ "identification_GB_lim"; "identification_GB_lim_nomu"; 
+%                                  "identification_GB_lim_v_nomu"; "identification_GB_lim_w_nomu";
+%                                  "identification_GB_lim_b_nomu"; 
+%                                  "identification_GB_lim_bv_nomu"; "identification_GB_lim_bw_nomu";
+%                                  "identification_GB_lim_b"; "identification_GB_lim_b_discardmu"];
+% tags = ["GB_lim","GB_lim_nomu","GB_lim_v_nomu","GB_lim_w_nomu","GB_lim_b_nomu","GB_lim_bv_nomu","GB_lim_bw_nomu","GB_lim_b","GB_lim_b_discardmu"];
+% 
+% identification_file_names =    [ "identification_manual"; "identification_GB_median"; 
+%                                  "identification_GB_absw_noalpha"; "identification_GB_absw_alphaw+"; 
+%                                  "identification_GB_absw_alphaw";  "identification_GB_absw_alpha";
+%                                  "identification_GB_absw_alpha_noinit"; "identification_GB_absw_alpha_medianinit";
+%                                  "identification_GB_absw_alphav_medianinit"; "identification_GB_absw_alphav+_medianinit"];
+% tags = ["manual","median","absw_noalpha","absw_alphaw+","absw_alphaw","absw_alpha","alpha_noinit","alpha_medinit","alphav_medinit","alphav+_medinit"];
+%
+% identification_file_names =    [ "identification_GB_absw_alpha_noinit"; "identification_GB_absw_alpha_medianinit";
+%                                  "identification_GB_absw_alphav_medianinit"; "identification_GB_absw_alphav+_medianinit"];
+% tags = ["alpha_noinit","alpha_medinit","alphav_medinit","alphav+_medinit"];
+% identification_file_names =    ["identification_GB_median";"identification_GB_absw_noalpha"; "identification_GB_absw_noalpha_narrow"; "identification_GB_absw_noalpha_narrow05"];
+% tags = ["median","no_alpha","noalpha_narrow1","noalpha_narrow05"];
 
-identification_file_names = ["identification_OLS+GB_ds1_old.txt";
-    "identification_OLS+GB_ds1_diff.txt";
-    "identification_OLS+GB_ds1_diff_min20.txt";
-    "identification_OLS+GB_ds1_diff_noalpha.txt";
-    "identification_OLS+GB_ds1_diff_nosign.txt";
-    "identification_OLS+GB_ds1_diff_median";
-    "identification_OLS+GB_ds1_diff_smooth_median";
-    "identification_OLS+GB_ds1_diff_median_smooth";
-    "identification_OLS+GB_ds1_diff_smooth_median_smooth"];
-tags = ["old","min=5s","min=20s","no\_alpha","nosign","med","smooth_med","med_smooth","s_med_s"];
-
-identification_file_names =    ["identification_OLS+GB_ds1_diff_sign.txt";
-    "identification_OLS+GB_ds1_diff_nosign.txt";
-    "identification_OLS+GB_ds1_diff_sign_nomu.txt";
-    "identification_OLS+GB_ds1_diff_nosign_nomu.txt"];
-tags = ["signed","nosign","signed-nomu","nosign-nomu"];
-
-identification_file_names =    ["identification_GA_nolim.txt";      "identification_GB_nolim";
-                                "identification_GA_nolim_nomu.txt"; "identification_GB_nolim_nomu.txt";
-                                "identification_GA_lim.txt";        "identification_GB_lim.txt";
-                                "identification_GA_lim_nomu.txt";   "identification_GB_lim_nomu.txt";
-                                ];
-tags = ["GA_nolim","GB_nolim","GA_nolim_nomu","GB_nolim_nomu","GA_lim","GB_lim","GA_lim_nomu","GB_lim_nomu"];
-
-identification_file_names =    [ "identification_GB_lim"; "identification_GB_lim_nomu"; 
-                                 "identification_GB_lim_v_nomu"; "identification_GB_lim_w_nomu";
-                                 "identification_GB_lim_b_nomu"; 
-                                 "identification_GB_lim_bv_nomu"; "identification_GB_lim_bw_nomu";
-                                 "identification_GB_lim_b"; "identification_GB_lim_b_discardmu"];
-tags = ["GB_lim","GB_lim_nomu","GB_lim_v_nomu","GB_lim_w_nomu","GB_lim_b_nomu","GB_lim_bv_nomu","GB_lim_bw_nomu","GB_lim_b","GB_lim_b_discardmu"];
-
-identification_file_names =    [ "identification_manual"; "identification_GB_median"; 
-                                 "identification_GB_absw_noalpha"; "identification_GB_absw_alphaw+"; 
-                                 "identification_GB_absw_alphaw";  "identification_GB_absw_alpha";
-                                 "identification_GB_absw_alpha_noinit"; "identification_GB_absw_alpha_medianinit";
-                                 "identification_GB_absw_alphav_medianinit"; "identification_GB_absw_alphav+_medianinit"];
-tags = ["manual","median","absw_noalpha","absw_alphaw+","absw_alphaw","absw_alpha","alpha_noinit","alpha_medinit","alphav_medinit","alphav+_medinit"];
-
-identification_file_names =    ["identification_GB_median";"identification_GB_absw_noalpha"; "identification_GB_absw_noalpha_narrow"; "identification_GB_absw_noalpha_narrow05"];
-tags = ["median","no_alpha","noalpha_narrow1","noalpha_narrow05"];
+identification_file_names =    ["identification_GB_absw_noalpha_narrow"; "identification_GB_absw_meaninit"; "identification_GB_absw_noinit"];
+tags = ["medianinit", "meaninit", "noinit"];
 
 dT = 0.01;
 deltaT = 0.5;
@@ -204,7 +216,7 @@ else % if considering a single down sampling value
         ax=subplot(2,5,k);
         
         for j=1:size(identification_file_names,1); data_to_plot{j} = identifications{j,1}{:,k+1}; end
-        myboxplot(data_to_plot, false, 3);
+        myboxplot(data_to_plot, true, 3);
         xticks([])
         set(ax,'PositionConstraint','innerposition')
         yline(0,'Color',[0.5,0.5,0.5])
@@ -214,9 +226,24 @@ else % if considering a single down sampling value
     end
     legend(tags,"AutoUpdate","off",'Interpreter','none','Orientation','horizontal','Position',[0.1 0.95 0.8 0.04])
     legend('Position',[0.1 0.95 0.8 0.04])
+    legend('Box','off')
     if outputDir
         saveas(gcf, fullfile(outputDir, 'id_comparison_parameters'))
         saveas(gcf, fullfile(outputDir, 'id_comparison_parameters'),'png')
+    end
+    
+    figure('Position',[100 100 500 350]); % NUMBER OF PARAMETERS SETS
+    hold on
+    for j=1:size(identification_file_names,1)
+        len(j) = size(identifications{j,1},1);
+        bar(j,len(j))
+        text(j, len(j)*0.5, num2str(len(j)), HorizontalAlignment='center', FontSize=12)
+    end
+    xticks([1:j])    
+    xticklabels(tags)   
+    if outputDir
+        saveas(gcf, fullfile(outputDir, 'id_comparison_number'))
+        saveas(gcf, fullfile(outputDir, 'id_comparison_number'),'png')
     end
     
 %     figure('Position',[100 100 1900 600]); % metrics scatter comparison

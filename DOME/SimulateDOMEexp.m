@@ -26,7 +26,7 @@ experiments_folder="/Volumes/DOMEPEN/Experiments";                              
 % tag='E_75_ON';        experiment_name = fullfile("comparisons","Euglena_75_ON","combo");  % OFF-ON-OFF 75 combo
 % tag='E_150_ON';       experiment_name = fullfile("comparisons","Euglena_150_ON","combo");  % OFF-ON-OFF 150 combo
 % tag='E_255_ON';       experiment_name = fullfile("comparisons","Euglena_255_ON","combo");  % OFF-ON-OFF 255 combo
-tag='E_OFF';          experiment_name = fullfile("comparisons","Euglena_off","combo");  % OFF combo
+% tag='E_OFF';          experiment_name = fullfile("comparisons","Euglena_off","combo");  % OFF combo
 % tag='E_ramp';         experiment_name = fullfile("comparisons","Euglena_ramp","combo");  % ramp combo
 
 % tag='E_half_half';          experiment_name = "2023_06_14_E_6";    Environment.boundary = Simulation.arena * 2;
@@ -39,20 +39,20 @@ tag='E_OFF';          experiment_name = fullfile("comparisons","Euglena_off","co
 % tag='E_BCLx36';             experiment_name = "2023_07_10_E_34";   N=N*2; Simulation.arena=Simulation.arena*2.5; Environment.boundary = Simulation.arena * 2; x0=randRect(N, Simulation.arena*2, D);
 
 % VOLVOX
-% tag='V_switch_10';    experiment_name = fullfile("comparisons","Volvox_switch_10","combo5");  % switch10s combo
+tag='V_switch_10';    experiment_name = fullfile("comparisons","Volvox_switch_10","combo5");  % switch10s combo
 % tag='V_255_ON';       experiment_name = fullfile("comparisons","Volvox_255_ON","combo");  % OFF-ON-OFF 255 combo
 % tag='V_OFF';          experiment_name = fullfile("comparisons","Volvox_OFF","combo");  % OFF combo
 
 % EUGLENA
 % id_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\identifications\2024_06_17_GB_absw_noalpha_narrow';  % folder with identification data
-id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5'; % switch10s
-identification_file_name = 'identification_GB_absw_noalpha_narrow.txt';
+% id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5'; % switch10s
+% identification_file_name = 'identification_GB_absw_noalpha_narrow.txt';
 
 %VOLVOX
-% id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Volvox_switch_10/combo5'; % switch10s
-% identification_file_name = 'identification_GB_absw_medianinit.txt';
+id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Volvox_switch_10/combo5'; % switch10s
+identification_file_name = 'identification_GB_medianinit.txt';
 
-tag = 'test';
+% tag = 'test';
 
 % outputDir = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\Simulations';
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';

@@ -5,47 +5,45 @@ close all
 % experiments_folder="C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\";    % DAVIDE
 experiments_folder="/Volumes/DOMEPEN/Experiments/comparisons";                                          % ANDREA
 
-% experiment_name=[fullfile("Euglena_switch_10","combo5")];
-experiment_name=[fullfile("Volvox_switch_10","combo5")];
+experiment_name=[fullfile("Euglena_switch_10","combo5")];
+% experiment_name=[fullfile("Volvox_switch_10","combo5")];
 
-identification_file_name = 'identification_GB_absw_medianinit.txt';
+identification_file_name = 'identification_GB_absw_meaninit.txt';
 identification_method = 'OLS+GB'; %OLS+GB
 downSampling = 1;
 
-% % EUGLENA PARAMETERS
-% min_duration = 10; %[s]
-% no_mu_w = true;
-% %parameters [theta, alpha, beta, mu]
-% init_v    = 'identification_GB_median.txt';%[0.15, 0, -45, 75];
-% init_w    = 'identification_GB_median.txt';%[0.15, 0, 0.6,  0];
-% init_wabs = 'identification_GB_median.txt';%[0.15, 0, 0.6,  0];
-% % limits_v = [init_v;init_v]; 
-% % limits_w = [init_w;init_w];
-% limits_v =    [  0    0 -inf   0; 
-%                inf    0   0   inf]; 
-% limits_w =    [  0    0   0    0; 
-%                inf    0  inf   0];
-% limits_wabs = [  0    0   0    0; 
-%                inf    0  inf  inf];
-           
-% VOLVOX PARAMETERS
+% EUGLENA PARAMETERS
 min_duration = 10; %[s]
 no_mu_w = true;
+use_wabs = true;   % use abs(w) for identification, then recover parameters for w
 %parameters [theta, alpha, beta, mu]
-init_v    = 'identification_GB_absw_median.txt'; %[0.15, 0, -45, 50];
-init_w    = 'identification_GB_absw_median.txt'; %[0.15, 0,   0,  0];
-init_wabs = 'identification_GB_absw_median.txt'; %[0.15, 0,   0,  0];
+init_v    = 'identification_GB_mean.txt';
+init_wabs = 'identification_GB_mean.txt';
+% init_v    = []; %[0.15, 0, -45, 75];
+% init_wabs = []; %[0.15, 0, 0.6,  0];
 % limits_v = [init_v;init_v]; 
 % limits_w = [init_w;init_w];
 limits_v =    [  0    0 -inf   0; 
                inf    0   0   inf]; 
-limits_w =    [  0    0   0    0; 
-               inf    0   0   0];
 limits_wabs = [  0    0   0    0; 
-               inf    0   0  inf];
+               inf    0  inf  inf];
+           
+% % VOLVOX PARAMETERS
+% min_duration = 10; %[s]
+% no_mu_w = false;
+% use_wabs = false;  % use abs(w) for identification, then recover parameters for w
+% %parameters [theta, alpha, beta, mu]
+% % init_v    = 'identification_GB_mean.txt';
+% % init_w    = 'identification_GB_mean.txt';
+% init_v    = []; %[0.15, 0, -45, 50];
+% init_w    = []; %[0.15, 0,   0,  0];
+% limits_v =    [  0    0 -inf   0; 
+%                inf    0   0   inf]; 
+% limits_w =    [  0    0   0    0; 
+%                inf    0   0   inf];
         
-deltaT = 0.5;
-dT = 0.01;
+deltaT = 0.5;        % sampling time step
+dT = 0.01;           % integration time step (for simulation)
 thresholdfactor = 1; % parameters outliers detection
 
 current_folder = fileparts(which('AnalyseDOMEexp'));
@@ -54,43 +52,55 @@ addpath(genpath(current_folder));
 data_folder=fullfile(experiments_folder,experiment_name);
 
 %% Load data
-if ischar(init_v)
+% load init values from previous identification
+if exist('init_v','var') && ischar(init_v)
+    fprintf('Load init values of v from %s.\n', init_v)
     identification=readtable(fullfile(data_folder,init_v));
     init_v = median([identification.theta_s, identification.alpha_s, identification.beta_s, identification.mu_s],1);
 end
-if ischar(init_w)
+if exist('init_w','var') && ischar(init_w)
+    fprintf('Load init values of omega from %s.\n', init_w)
     identification=readtable(fullfile(data_folder,init_w));
     init_w = median([identification.theta_w, identification.alpha_w, identification.beta_w, identification.mu_w],1);
 end
-if ischar(init_wabs)
+if exist('init_wabs','var') && ischar(init_wabs)
+    fprintf('Load init values of abs(omega) from %s.\n', init_wabs)
     identification=readtable(fullfile(data_folder,init_wabs));
     init_wabs = median([identification.theta_w, identification.alpha_w, identification.beta_w, identification.sigma_w ./ sqrt(identification.theta_w*pi)],1);
 end
 
+% LOAD DATA AND INPUTS
 %identification=readtable(fullfile(current_folder,'identification.txt'));
 speed  = load(fullfile(data_folder,'speeds_smooth.txt'));
 omega  = load(fullfile(data_folder,'ang_vel_smooth.txt'));
+inputs = load(fullfile(data_folder,'inputs.txt'));
+u=inputs(:,1)/255;
 
+% SMOOTH AND AVERAGE DATA
 % speed = movmean(speed,5,'omitnan');
 % omega = movmean(omega,5,'omitnan');
+
 % speed = median(speed,2,'omitnan');
 % omega = median(abs(omega),2,'omitnan');
+% omega = median(omega,2,'omitnan');
+% speed = mean(speed,2,'omitnan');
+% omega = mean(abs(omega),2,'omitnan');
+% omega = mean(omega,2,'omitnan');
+
 % speed = movmean(speed,5,'omitnan');
 % omega = movmean(omega,5,'omitnan');
 
-inputs = load(fullfile(data_folder,'inputs.txt'));
-
+% DOWNSAMPLING
 speed  = speed(1:downSampling:end,:);
 omega  = omega(1:downSampling:end,:);
-inputs = inputs(1:downSampling:end,:);
+u = u(1:downSampling:end);
 deltaT = deltaT*downSampling;
 
 N = size(speed,2);
 timeInstants = [0:size(speed,1)-1] * deltaT;
 agents = [0:N-1]';
-u=inputs(:,1)/255;
 
-%Computing the derivative 
+% COMPUTE INPUT DERIVATIVE
 u_dot_BE = [0;diff(u)]/deltaT;
 u_dot_grad = gradient(u)/deltaT;
 %Setting the right derivative 
@@ -112,18 +122,24 @@ if strcmp(identification_method,'GA')
     [mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_matrix, deltaT, identification_method, min_duration, no_mu_w, @id_fcn_w, limits_w);
 else
     %Identification of v
+    fprintf('Identifying v ')
     [mu_s, theta_s, sigma_s, gains_s] = SDE_parameters_est(speed, u_matrix, deltaT, identification_method, min_duration, false, 'continouosSys', limits_v, init_v);
+    
     %Identification of w
-    %[mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_matrix, deltaT, identification_method, min_duration, no_mu_w, 'continouosSys_sgn', limits_w);
-%     [mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_signw, deltaT, identification_method, min_duration, no_mu_w, 'continouosSys', limits_w, init_w);
-    [mu_wabs, theta_w, sigma_w, gains_w] = SDE_parameters_est(abs(omega), u_matrix, deltaT, identification_method, min_duration, false, 'continouosSys', limits_wabs, init_wabs); % abs omega
-    sigma_w = mu_wabs .* sqrt(theta_w*pi); % from std of abs(w) to std of w
-    mu_w = mu_wabs * 0;                    % from mean of abs(w) to mean of w
+    fprintf('Identifying omega ')
+    if use_wabs
+        [mu_wabs, theta_w, sigma_w, gains_w] = SDE_parameters_est(abs(omega), u_matrix, deltaT, identification_method, min_duration, false, 'continouosSys', limits_wabs, init_wabs); % abs omega
+        sigma_w = mu_wabs .* sqrt(theta_w*pi); % from std of abs(w) to std of w
+        mu_w = mu_wabs * 0;                    % from mean of abs(w) to mean of w
+    else
+        %[mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_matrix, deltaT, identification_method, min_duration, no_mu_w, 'continouosSys_sgn', limits_w);
+        [mu_w, theta_w, sigma_w, gains_w] = SDE_parameters_est(omega, u_signw,  deltaT, identification_method, min_duration, no_mu_w, 'continouosSys', limits_w, init_w);
+    end
 end
 toc
 
 %% Save data
-%Approximate to the 4th
+%Approximate to the 4th figure
 mu_s=round(mu_s,4);
 theta_s=round(theta_s,4);
 sigma_s=round(sigma_s,4);
@@ -133,7 +149,7 @@ sigma_w=round(sigma_w,4);
 gains_w=round(gains_w,4); 
 gains_s=round(gains_s,4);
 
-% Gains(1)=alpha Gains(2) =beta
+% Gains(1)=alpha Gains(2)=beta
 alpha_s = gains_s(:,1); 
 beta_s = gains_s(:,2);
 alpha_w = gains_w(:,1);

@@ -1,5 +1,9 @@
 function highlightInputs(x, inputs, color, alpha, axis)
 
+if ischar(color)
+color = validatecolor(color);
+end
+
 if size(color,1)==1
     color=[1,1,1; color];
 end

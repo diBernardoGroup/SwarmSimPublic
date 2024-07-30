@@ -21,7 +21,7 @@ function line= plotWithShade(x,yLine,yShadeBottom,yShadeTop, color, alpha)
 %   Date:       2022
 %
     
-    assert(all(size(x)==size(yLine)),'x and yLine must have the same size!')
+    %assert(all(size(x)==size(yLine)),'x and yLine must have the same size!')
     
     yLine=yLine(~isnan(yLine));
     yShadeBottom=yShadeBottom(~isnan(yLine));
