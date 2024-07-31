@@ -5,42 +5,43 @@ close all
 % experiments_folder="C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\";    % DAVIDE
 experiments_folder="/Volumes/DOMEPEN/Experiments/comparisons";                                          % ANDREA
 
-experiment_name=[fullfile("Euglena_switch_10","combo5")];
+% experiment_name=[fullfile("Euglena_switch_10","combo5")];
 % experiment_name=[fullfile("Volvox_switch_10","combo5")];
+experiment_name=[fullfile("Volvox_255_ON","combo5")];
 
-identification_file_name = 'identification_GB_absw_meaninit.txt';
+identification_file_name = 'identification_GB.txt';
 identification_method = 'OLS+GB'; %OLS+GB
 downSampling = 1;
 
-% EUGLENA PARAMETERS
-min_duration = 10; %[s]
-no_mu_w = true;
-use_wabs = true;   % use abs(w) for identification, then recover parameters for w
-%parameters [theta, alpha, beta, mu]
-init_v    = 'identification_GB_mean.txt';
-init_wabs = 'identification_GB_mean.txt';
-% init_v    = []; %[0.15, 0, -45, 75];
-% init_wabs = []; %[0.15, 0, 0.6,  0];
-% limits_v = [init_v;init_v]; 
-% limits_w = [init_w;init_w];
-limits_v =    [  0    0 -inf   0; 
-               inf    0   0   inf]; 
-limits_wabs = [  0    0   0    0; 
-               inf    0  inf  inf];
-           
-% % VOLVOX PARAMETERS
+% % EUGLENA PARAMETERS
 % min_duration = 10; %[s]
-% no_mu_w = false;
-% use_wabs = false;  % use abs(w) for identification, then recover parameters for w
+% no_mu_w = true;
+% use_wabs = true;   % use abs(w) for identification, then recover parameters for w
 % %parameters [theta, alpha, beta, mu]
 % % init_v    = 'identification_GB_mean.txt';
-% % init_w    = 'identification_GB_mean.txt';
-% init_v    = []; %[0.15, 0, -45, 50];
-% init_w    = []; %[0.15, 0,   0,  0];
+% % init_wabs = 'identification_GB_mean.txt';
+% % init_v    = []; %[0.15, 0, -45, 75];
+% % init_wabs = []; %[0.15, 0, 0.6,  0];
+% % limits_v = [init_v;init_v]; 
+% % limits_w = [init_w;init_w];
 % limits_v =    [  0    0 -inf   0; 
 %                inf    0   0   inf]; 
-% limits_w =    [  0    0   0    0; 
-%                inf    0   0   inf];
+% limits_wabs = [  0    0   0    0; 
+%                inf    0  inf  inf];
+           
+% VOLVOX PARAMETERS
+min_duration = 10; %[s]
+no_mu_w = false;
+use_wabs = false;  % use abs(w) for identification, then recover parameters for w
+%parameters [theta, alpha, beta, mu]
+% init_v    = 'identification_GB_mean.txt';
+% init_w    = 'identification_GB_mean.txt';
+init_v    = []; %[0.15, 0, -45, 50];
+init_w    = []; %[0.15, 0,   0,  0];
+limits_v =    [  0    0 -inf   0; 
+               inf    0   0   inf]; 
+limits_w =    [  0    0   0    0; 
+               inf    0   0   inf];
         
 deltaT = 0.5;        % sampling time step
 dT = 0.01;           % integration time step (for simulation)

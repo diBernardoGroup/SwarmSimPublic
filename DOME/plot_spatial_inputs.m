@@ -3,10 +3,17 @@ clear
 
 defaultParamMicroorg;
 
-sim_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/media/model validation/Euglena/simulations/2024_06_25_BCLx36_1';
-
 experiments_folder = "/Volumes/DOMEPEN/Experiments";
-experiments_names = ["2023_07_10_E_30","2023_07_10_E_34","2023_07_10_E_35"];
+
+% EUGLENA
+% sim_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/media/model validation/Euglena/simulations/2024_06_25_BCLx36_1';
+% experiments_names = ["2023_07_10_E_30","2023_07_10_E_34","2023_07_10_E_35"];
+
+% VOLVOX
+% experiments_names = ["2023_07_04_V_19","2023_07_04_V_20","2023_07_05_V_11","2023_07_05_V_32","2023_07_05_V_33","2023_07_07_V_1","2023_07_07_V_2"];
+
+sim_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/2024_07_31_V_grad_lateral_2';
+experiments_names = ["2023_06_08_Volvox_14","2023_06_08_Volvox_16","2023_07_04_Volvox_21","2023_07_04_Volvox_22","2023_07_05_Volvox_12","2023_07_05_Volvox_30","2023_07_05_Volvox_31","2023_07_07_Volvox_3"];
 
 sim_data = load(fullfile(sim_folder,'data.mat'));
 Simulation = sim_data.Simulation;
@@ -22,8 +29,8 @@ Render.time_plot = [];
 Render.all_time  = 0:10:Simulation.Tmax;
 Render.window = [-Simulation.arena(1),Simulation.arena(1),-Simulation.arena(2),Simulation.arena(2)]/2; % size of the simulation window
 
-exp_setup_time = 30;     % initial time window to be discarded from the experiment [s] (set to 30 for BCL, 0 for other exp)
-n_bins         = 5;      % number of bins for light distribution (set to 5 for BCL, 3 for other exp)
+exp_setup_time = 0;     % initial time window to be discarded from the experiment [s] (set to 30 for BCL, 0 for other exp)
+n_bins         = 3;      % number of bins for light distribution (set to 5 for BCL, 3 for other exp)
 
 output_path = sim_folder;
 

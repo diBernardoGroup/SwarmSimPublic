@@ -9,18 +9,20 @@ defaultParamMicroorg;
 % experiments_folder="C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\";    % DAVIDE
 experiments_folder="/Volumes/DOMEPEN/Experiments/comparisons";                                          % ANDREA
 
+% EUGLENA
 % experiments_names=[fullfile("Euglena_75_ON","combo"),fullfile("Euglena_150_ON","combo"),fullfile("Euglena_255_ON","combo")];
 % experiments_names=[fullfile("Euglena_255_ON","combo")];
-experiments_names=[fullfile("Euglena_OFF","combo")];
+% experiments_names=[fullfile("Euglena_OFF","combo")];
 
-% experiments_names=[fullfile("Volvox_75_ON","combo"),fullfile("Volvox_150_ON","combo"),fullfile("Volvox_255_ON","combo")];
+% VOLVOX
+experiments_names=[fullfile("Volvox_75_ON","combo"),fullfile("Volvox_150_ON","combo"),fullfile("Volvox_255_ON","combo")];
 % experiments_names=[fullfile("Volvox_255_ON","combo")];
 % experiments_names=[fullfile("Volvox_switch_10","combo5")];
 % experiments_names=[fullfile("Volvox_OFF","combo")];
 
 
-plot_data = true;                                   % Plot the experimental data
-stat_an = false;                                      % Plot statistical analysis of light response
+plot_data = false;                                   % Plot the experimental data
+stat_an = true;                                      % Plot statistical analysis of light response
 avg_an = true;                                       % Use average values (over times) for stat analysis
 
 t_a = 12;                                            % Time window after the switch I want to analyse
@@ -29,13 +31,13 @@ t_b = 12;                                            % Time window before the sw
 
 deltaT = 0.5;
 
-% EUGLENA
-speed_lim = 150;
-omega_lim = 2;
+% % EUGLENA
+% speed_lim = 150;
+% omega_lim = 2;
 
-% % VOLVOX
-% speed_lim = 200;
-% omega_lim = 1.75;
+% VOLVOX
+speed_lim = 200;
+omega_lim = 1.75;
 
 
 % allocate vars

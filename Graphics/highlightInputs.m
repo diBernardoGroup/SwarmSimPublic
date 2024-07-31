@@ -13,6 +13,8 @@ inputs = fillmissing(inputs, 'constant', NaN);
 
 if size(inputs,1) > size(inputs,2); inputs=inputs'; end
 
+inputs=round(inputs,2);
+
 input_differences = [0,diff(inputs)];
 input_differences(isnan(input_differences)) = 0;
 

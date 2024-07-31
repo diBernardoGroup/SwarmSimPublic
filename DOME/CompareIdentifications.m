@@ -5,8 +5,8 @@ close all
 % experiments_folder="C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\";    % DAVIDE
 experiments_folder="/Volumes/DOMEPEN/Experiments/comparisons";                                          % ANDREA
 
-id_folder = fullfile(experiments_folder,"Euglena_switch_10","combo5"); %Euglena
-%id_folder = fullfile(experiments_folder,"Volvox_switch_10","combo5"); %Volvox
+% id_folder = fullfile(experiments_folder,"Euglena_switch_10","combo5"); %Euglena
+id_folder = fullfile(experiments_folder,"Volvox_switch_10","combo5"); %Volvox
 
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Euglena Identifications/id_comp_init';
 % outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Volvox identifications/id_comp_init';
@@ -65,8 +65,11 @@ outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFede
 % identification_file_names =    ["identification_GB_median";"identification_GB_absw_noalpha"; "identification_GB_absw_noalpha_narrow"; "identification_GB_absw_noalpha_narrow05"];
 % tags = ["median","no_alpha","noalpha_narrow1","noalpha_narrow05"];
 
-identification_file_names =    ["identification_GB_absw_noalpha_narrow"; "identification_GB_absw_meaninit"; "identification_GB_absw_noinit"];
-tags = ["medianinit", "meaninit", "noinit"];
+% identification_file_names =    ["identification_GB_absw_noalpha_narrow"; "identification_GB_absw_meaninit"; "identification_GB_absw_noinit"];
+% tags = ["medianinit", "meaninit", "noinit"];
+
+identification_file_names =    ["identification_GB_meaninit"; "identification_GB_60s"];
+tags = ["10s", "60s"];
 
 dT = 0.01;
 deltaT = 0.5;

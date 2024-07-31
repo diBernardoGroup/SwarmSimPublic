@@ -39,9 +39,22 @@ experiments_folder="/Volumes/DOMEPEN/Experiments";                              
 % tag='E_BCLx36';             experiment_name = "2023_07_10_E_34";   N=N*2; Simulation.arena=Simulation.arena*2.5; Environment.boundary = Simulation.arena * 2; x0=randRect(N, Simulation.arena*2, D);
 
 % VOLVOX
-tag='V_switch_10';    experiment_name = fullfile("comparisons","Volvox_switch_10","combo5");  % switch10s combo
+% tag='V_switch_10';    experiment_name = fullfile("comparisons","Volvox_switch_10","combo5");  % switch10s combo
+% tag='V_switch_5';          experiment_name = fullfile("comparisons","Volvox_switch_5","combo");  % switch 5s
+% tag='V_switch_1';          experiment_name = fullfile("comparisons","Volvox_switch_1","combo");  % switch 1s
 % tag='V_255_ON';       experiment_name = fullfile("comparisons","Volvox_255_ON","combo");  % OFF-ON-OFF 255 combo
+% tag='V_150_ON';       experiment_name = fullfile("comparisons","Volvox_150_ON","combo");  % OFF-ON-OFF 150 combo
+% tag='V_75_ON';       experiment_name = fullfile("comparisons","Volvox_75_ON","combo");  % OFF-ON-OFF 150 combo
+% tag='V_ramp';       experiment_name = fullfile("comparisons","Volvox_ramp","combo");  % ramp combo
 % tag='V_OFF';          experiment_name = fullfile("comparisons","Volvox_OFF","combo");  % OFF combo
+
+% tag='V_half_half';          experiment_name = "2023_07_05_V_33";    Environment.boundary = Simulation.arena * 2;
+% tag='V_grad_centr_light';   experiment_name = "2023_07_05_Volvox_29";    Environment.boundary = Simulation.arena * 2;
+% tag='V_grad_centr_dark';    experiment_name = "2023_07_05_Volvox_26";   Environment.boundary = Simulation.arena * 2;
+tag='V_grad_lateral';       experiment_name = "2023_07_05_Volvox_30";   Environment.boundary = Simulation.arena * 2;
+% tag='V_circle_light';        experiment_name = "2023_07_05_Volvox_22";   Environment.boundary = Simulation.arena * 2;
+% tag='V_circle_dark';        experiment_name = "2023_07_05_Volvox_24";   Environment.boundary = Simulation.arena * 2;
+
 
 % EUGLENA
 % id_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\identifications\2024_06_17_GB_absw_noalpha_narrow';  % folder with identification data
@@ -50,7 +63,7 @@ tag='V_switch_10';    experiment_name = fullfile("comparisons","Volvox_switch_10
 
 %VOLVOX
 id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Volvox_switch_10/combo5'; % switch10s
-identification_file_name = 'identification_GB_medianinit.txt';
+identification_file_name = 'identification_GB_60s.txt';
 
 % tag = 'test';
 
@@ -218,9 +231,9 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     end
     if Render.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Render.drawTraj); end
     if isfield(LocalIntFunction, 'DistanceRange')
-        plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Render.window, [Render.window(2)-Render.window(1), Render.window(4)-Render.window(3)]/2, false, false, false, Render.agentShape, Render.agentSize, squeeze(xVec(2,:,:)), Render.agentsColor);
+        plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Render.window, [Render.window(2)-Render.window(1), Render.window(4)-Render.window(3)]/2, false, false, false, Render.agentShape, Render.agentSize, Render.agentsColor, squeeze(xVec(2,:,:)));
     else
-        plotSwarmInit(x0, 0, inf, inf, Render.window, [Render.window(2)-Render.window(1), Render.window(4)-Render.window(3)]/2, false, false, false, Render.agentShape, Render.agentSize, squeeze(xVec(2,:,:)), Render.agentsColor);
+        plotSwarmInit(x0, 0, inf, inf, Render.window, [Render.window(2)-Render.window(1), Render.window(4)-Render.window(3)]/2, false, false, false, Render.agentShape, Render.agentSize, Render.agentsColor, squeeze(xVec(2,:,:)));
     end
     if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
     if outputDir
@@ -235,9 +248,9 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     end
     if Render.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Render.drawTraj); end
     if isfield(LocalIntFunction, 'DistanceRange')
-        plotSwarmInit(xFinal_inWindow, Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Render.window, [Render.window(2)-Render.window(1), Render.window(4)-Render.window(3)]/2, false, false, false, Render.agentShape, Render.agentSize, xSemiFinal_inWindow, Render.agentsColor);
+        plotSwarmInit(xFinal_inWindow, Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Render.window, [Render.window(2)-Render.window(1), Render.window(4)-Render.window(3)]/2, false, false, false, Render.agentShape, Render.agentSize, Render.agentsColor, xSemiFinal_inWindow);
     else
-        plotSwarmInit(xFinal_inWindow, Simulation.Tmax, inf, inf, Render.window, [Render.window(2)-Render.window(1), Render.window(4)-Render.window(3)]/2, false, false, false, Render.agentShape, Render.agentSize, xSemiFinal_inWindow, Render.agentsColor);
+        plotSwarmInit(xFinal_inWindow, Simulation.Tmax, inf, inf, Render.window, [Render.window(2)-Render.window(1), Render.window(4)-Render.window(3)]/2, false, false, false, Render.agentShape, Render.agentSize, Render.agentsColor, xSemiFinal_inWindow);
     end
     if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
     if outputDir
@@ -246,34 +259,36 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     end
 end
 
-figure % colored trajectories
-hold on
-colors = get(gca, 'ColorOrder');
-final = Simulation.Tmax;
-x_inWindow = xVec(:,indices_inWindow,:);
-for i=1:size(x_inWindow,2)
-    c = colors(mod(i-1,7)+1,:);
-    plot(x_inWindow(1:final,i,1),x_inWindow(1:final,i,2), 'color', c, 'LineWidth',1.25);
-    ang = atan2(x_inWindow(final,i,2)-x_inWindow(final-1,i,2),x_inWindow(final,i,1)-x_inWindow(final-1,i,1));
-    plot_singleRod(x_inWindow(final,i,:), ang, Render.agentSize, Render.agentSize/2, c);
-    %plot(x_inWindow(final,i,1),x_inWindow(final,i,2),'o', 'color', c, 'MarkerFaceColor', c);
-end
-xticks([])
-yticks([])
-axis('equal')
-axis(Render.window)
-box on
-set(gca,'Color',[0.05, 0.05, 0.05]); set(gcf, 'InvertHardCopy', 'off'); % dark background
-if outputDir
-    fig=gcf; fig.Units = fig.PaperUnits; fig.PaperSize = fig.Position(3:4); % set correct pdf size
-    saveas(fig,fullfile(output_path, 'trajectories_colored'))
-    saveas(fig,fullfile(output_path, 'trajectories_colored'),'pdf')
-    saveas(fig,fullfile(output_path, 'trajectories_colored'),'png')
-end
+% figure % colored trajectories
+% hold on
+% colors = get(gca, 'ColorOrder');
+% final = Simulation.Tmax;
+% x_inWindow = xVec(:,indices_inWindow,:);
+% for i=1:size(x_inWindow,2)
+%     c = colors(mod(i-1,7)+1,:);
+%     plot(x_inWindow(1:final,i,1),x_inWindow(1:final,i,2), 'color', c, 'LineWidth',1.25);
+%     ang = atan2(x_inWindow(final,i,2)-x_inWindow(final-1,i,2),x_inWindow(final,i,1)-x_inWindow(final-1,i,1));
+%     plot_singleRod(x_inWindow(final,i,:), ang, Render.agentSize, Render.agentSize/2, c);
+%     %plot(x_inWindow(final,i,1),x_inWindow(final,i,2),'o', 'color', c, 'MarkerFaceColor', c);
+% end
+% xticks([])
+% yticks([])
+% axis('equal')
+% axis(Render.window)
+% box on
+% set(gca,'Color',[0.05, 0.05, 0.05]); set(gcf, 'InvertHardCopy', 'off'); % dark background
+% if outputDir
+%     fig=gcf; fig.Units = fig.PaperUnits; fig.PaperSize = fig.Position(3:4); % set correct pdf size
+%     saveas(fig,fullfile(output_path, 'trajectories_colored'))
+%     saveas(fig,fullfile(output_path, 'trajectories_colored'),'pdf')
+%     saveas(fig,fullfile(output_path, 'trajectories_colored'),'png')
+% end
 
 % SPATIAL INPUTS
 if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
-    [density_by_input_sim, bins, norm_slope_sim, c_coeff_sim, coefficents, ~,~, u_values_sim] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, xFinal_inWindow, Render.window);
+%     [density_by_input_sim, bins, norm_slope_sim, c_coeff_sim, coefficents, ~,~, u_values_sim] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, xFinal_inWindow, Render.window);
+    [density_by_input_sim, bins] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, xFinal_inWindow, Render.window, n_bins);
+    [c_coeff_sim, norm_slope_sim, coefficents] = linearDependence((bins(1:end-1)+bins(2:end))'/2, density_by_input_sim');
     
     figure % simulation light distribution
     bar((bins(1:end-1)+bins(2:end))/2,density_by_input_sim, 1)
@@ -295,7 +310,9 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     
     % experimental positions get distribution wrt light intensity
     mask = detectObjects(data_folder, background_sub, brightness_thresh);
-    [density_by_input_exp, bins, norm_slope_exp, c_coeff_exp, coefficents, ~,~, u_values_exp] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, mask, Render.window);
+    %[density_by_input_exp, bins, norm_slope_exp, c_coeff_exp, coefficents, ~,~, u_values_exp] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, mask, Render.window);
+    [density_by_input_exp, bins] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, mask, Render.window, n_bins);
+    [c_coeff_exp, norm_slope_exp, coefficents] = linearDependence((bins(1:end-1)+bins(2:end))'/2, density_by_input_exp');
     
     figure
     x_vec = linspace(Render.window(1),Render.window(2),size(mask,2));

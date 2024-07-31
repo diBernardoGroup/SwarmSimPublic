@@ -21,7 +21,7 @@ outputDir='./Output';
 %outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 outputDir='';
 
-N=400;                      % number of agents (N)
+N=500;                      % number of agents (N)
 D=2;                        % number of dimensions [2 or 3]
 
 %% Analysis options
@@ -29,7 +29,10 @@ smoothing = false;          % smooth temporal data with moving average
 brightness_thresh = 0.3;    % brightness threshold for object detection (spatial experiments)
 background_sub = true;      % use background subtraction for object detection (spatial experiments)
 pattern_blurring = 15;      % blurring of the spatial input pattern (spatial experiments)
-px_size = 1.25;             % size of a pixel [um]
+n_bins = 3;
+px_size = 1.25;             % size of a pixel [um] EUGLENA
+px_size = 4.44;             % size of a pixel [um] VOLVOX
+
 
 %% Simulation parameters
 % All these fields are mandatory
@@ -112,11 +115,16 @@ Render.drawON=false;                % draw swarm during simulation (if N is larg
 Render.drawTraj=0;                  % draw trajectories of the agents (if N is large slows down the simulation)
 Render.recordVideo=false;           % record video of the simulation (if true drawON must be true)
 Render.frameRate = 1/Simulation.deltaT * 6;
-Render.agentShape = "rod";          % shape to plot the agents "rod" or any defualt marker key ('.','+','diamond',...)
-Render.agentSize = 30; 
 Render.time_plot = 0:45:Simulation.Tmax;
 Render.all_time = 0:Simulation.deltaT:Simulation.Tmax;
 Render.shaded = true;
+
+% % Euglena
+% Render.agentShape = "rod";          % shape to plot the agents "rod" or any defualt marker key ('.','+','diamond',...)
+% Render.agentSize = 30; 
+% Volvox
+Render.agentShape = ".";          % shape to plot the agents "rod" or any defualt marker key ('.','+','diamond',...)
+Render.agentSize = 75; 
 
 % % Dark palette
 % Render.agentsColor = [1 0 0];

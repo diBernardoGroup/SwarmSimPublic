@@ -46,40 +46,44 @@ experiments_names = ["2023_06_15_Euglena_2", "2023_06_26_Euglena_15", "2023_07_1
 
 %% Volvox
 
-% Volvox OFF
-tag = 'Volvox_OFF';
-experiments_names = ["2023_07_04_V_2", "2023_07_05_V_1", "2023_07_06_V_10"]; 
+% % Volvox OFF
+% tag = 'Volvox_OFF';
+% experiments_names = ["2023_07_04_V_2", "2023_07_05_V_1", "2023_07_06_V_10"]; 
 
-% Volvox OFF-ON-OFF 75
-tag = 'Volvox_75_ON';
-experiments_names = ["2023_06_08_V_7", "2023_07_04_V_4", "2023_07_06_V_18"];
+% % Volvox OFF-ON-OFF 75
+% tag = 'Volvox_75_ON';
+% % experiments_names = ["2023_06_08_V_7", "2023_07_04_V_4", "2023_07_06_V_18"]; % old
+% experiments_names = ["2023_07_04_V_4", "2023_07_05_V_3", "2023_07_06_V_18"];
+% 
+% % Volvox OFF-ON-OFF 150
+% tag = 'Volvox_150_ON';
+% % experiments_names = ["2023_06_08_V_6", "2023_07_05_V_4", "2023_07_06_V_20"]; % old
+% experiments_names = ["2023_07_04_V_7", "2023_07_05_V_4", "2023_07_06_V_20"];
 
-% Volvox OFF-ON-OFF 150
-tag = 'Volvox_150_ON';
-experiments_names = ["2023_06_08_V_6", "2023_07_05_V_4", "2023_07_06_V_20"];
-
-% Volvox OFF-ON-OFF 255
-tag = 'Volvox_255_ON';
-% experiments_names = ["2023_06_08_V_3", "2023_07_05_V_5", "2023_07_06_V_21"];
-% experiments_names = ["2023_07_04_V_9", "2023_07_05_V_5", "2023_07_06_V_21"];
-experiments_names = ["2023_07_04_V_9", "2023_07_05_V_5", "2023_07_06_V_23"];
+% % Volvox OFF-ON-OFF 255
+% tag = 'Volvox_255_ON';
+% % experiments_names = ["2023_06_08_V_3", "2023_07_05_V_5", "2023_07_06_V_21"];
+% % experiments_names = ["2023_07_04_V_9", "2023_07_05_V_5", "2023_07_06_V_21"];
+% experiments_names = ["2023_07_04_V_9", "2023_07_05_V_5", "2023_07_06_V_23"];
+% experiments_names = ["2023_07_04_V_9", "2023_07_05_V_5", "2023_07_06_V_21", "2023_07_06_V_22", "2023_07_06_V_23"]; % combo5
 
 % Volvox ramp
-tag = 'Volvox_ramp';
-experiments_names = ["2023_06_08_V_13", "2023_07_05_V_6", "2023_07_06_V_14"];
+% tag = 'Volvox_ramp';
+% % experiments_names = ["2023_06_08_V_13", "2023_07_05_V_6", "2023_07_06_V_14"]; % old
+% experiments_names = ["2023_07_04_V_11", "2023_07_05_V_6", "2023_07_06_V_14"];
 
-% Volvox switch 10s
-tag = 'Volvox_switch_10';
-experiments_names = ["2023_07_04_V_13","2023_07_05_V_2","2023_07_06_V_3","2023_07_06_V_5","2023_07_06_V_11"];
-experiments_names = ["2023_07_04_V_13","2023_07_05_V_2","2023_07_06_V_5"];
-
-% Volvox switch 5s
-tag = 'Volvox_switch_5';
-experiments_names = ["2023_07_04_V_14","2023_07_05_V_8","2023_07_06_V_12"];
-
-% Volvox switch 1s
-tag = 'Volvox_switch_1';
-experiments_names = ["2023_07_04_V_16","2023_07_05_V_9","2023_07_06_V_13"];
+% % Volvox switch 10s
+% tag = 'Volvox_switch_10';
+% experiments_names = ["2023_07_04_V_13","2023_07_05_V_2","2023_07_06_V_3","2023_07_06_V_5","2023_07_06_V_11"];
+% experiments_names = ["2023_07_04_V_13","2023_07_05_V_2","2023_07_06_V_5"];
+% 
+% % Volvox switch 5s
+% tag = 'Volvox_switch_5';
+% experiments_names = ["2023_07_04_V_14","2023_07_05_V_8","2023_07_06_V_12"];
+% 
+% % Volvox switch 1s
+% tag = 'Volvox_switch_1';
+% experiments_names = ["2023_07_04_V_16","2023_07_05_V_9","2023_07_06_V_13"];
 
 output_folder = fullfile("/Volumes/DOMEPEN/Experiments/comparisons/",tag,"/combo");
 

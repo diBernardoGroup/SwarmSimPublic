@@ -3,18 +3,30 @@ close all
 
 experiments_folder = '/Volumes/DOMEPEN/Experiments';
 
-tag='half_half';        experiments = {'2023_06_12_E_2','2023_06_14_E_6','2023_06_15_E_12','2023_06_26_E_29','2023_06_26_E_30','2023_06_23_E_1','2023_06_23_E_2','2023_06_26_E_2'};
-tag='grad_centr_light'; experiments = {'2023_06_12_E_4','2023_06_14_E_7','2023_06_15_E_14','2023_06_23_E_5','2023_06_23_E_6','2023_06_26_E_5','2023_06_26_E_6','2023_06_26_E_33'};
-tag='grad_centr_dark';  experiments = {'2023_06_23_E_7','2023_06_23_E_8','2023_06_23_E_9','2023_06_26_E_7','2023_06_26_E_8','2023_06_26_E_34','2023_06_26_E_35','2023_07_10_E_23'};
-tag='grad_lateral';     experiments = {'2023_06_13_E_16','2023_06_14_E_8','2023_06_15_E_13','2023_06_23_E_3','2023_06_26_E_3','2023_06_26_E_4','2023_06_26_E_31','2023_06_26_E_32'};
-tag='circle_light';     experiments = {'2023_06_15_E_16','2023_06_23_E_10','2023_06_23_E_11','2023_06_26_E_9','2023_06_26_E_10','2023_06_26_E_36','2023_06_26_E_37','2023_07_10_E_26'};
-tag='circle_dark';      experiments = {'2023_06_13_E_15','2023_06_15_E_17','2023_06_23_E_13','2023_06_26_E_11','2023_06_26_E_12','2023_06_26_E_39','2023_07_10_E_25','2023_07_10_E_22'};
-tag='BCL_dark_x36';     experiments = {"2023_07_10_E_30","2023_07_10_E_34","2023_07_10_E_35"};
-% tag='BCL_light_x36';    experiments = {"2023_07_10_E_36","2023_07_10_E_37","2023_07_10_E_38"};
-% tag='spatial_mix';      experiments = {'2023_07_10_E_34','2023_06_26_E_11','2023_07_10_E_26','2023_06_23_E_9','2023_06_14_E_7','2023_06_14_E_6'};
+% EUGLENA
+% tag='E_half_half';        experiments = {'2023_06_12_E_2','2023_06_14_E_6','2023_06_15_E_12','2023_06_26_E_29','2023_06_26_E_30','2023_06_23_E_1','2023_06_23_E_2','2023_06_26_E_2'};
+% tag='E_grad_centr_light'; experiments = {'2023_06_12_E_4','2023_06_14_E_7','2023_06_15_E_14','2023_06_23_E_5','2023_06_23_E_6','2023_06_26_E_5','2023_06_26_E_6','2023_06_26_E_33'};
+% tag='E_grad_centr_dark';  experiments = {'2023_06_23_E_7','2023_06_23_E_8','2023_06_23_E_9','2023_06_26_E_7','2023_06_26_E_8','2023_06_26_E_34','2023_06_26_E_35','2023_07_10_E_23'};
+% tag='E_grad_lateral';     experiments = {'2023_06_13_E_16','2023_06_14_E_8','2023_06_15_E_13','2023_06_23_E_3','2023_06_26_E_3','2023_06_26_E_4','2023_06_26_E_31','2023_06_26_E_32'};
+% tag='E_circle_light';     experiments = {'2023_06_15_E_16','2023_06_23_E_10','2023_06_23_E_11','2023_06_26_E_9','2023_06_26_E_10','2023_06_26_E_36','2023_06_26_E_37','2023_07_10_E_26'};
+% tag='E_circle_dark';      experiments = {'2023_06_13_E_15','2023_06_15_E_17','2023_06_23_E_13','2023_06_26_E_11','2023_06_26_E_12','2023_06_26_E_39','2023_07_10_E_25','2023_07_10_E_22'};
+% tag='E_BCL_dark_x36';     experiments = {"2023_07_10_E_30","2023_07_10_E_34","2023_07_10_E_35"};
+% tag='E_BCL_light_x36';    experiments = {"2023_07_10_E_36","2023_07_10_E_37","2023_07_10_E_38"};
+% tag='E_spatial_mix';      experiments = {'2023_07_10_E_34','2023_06_26_E_11','2023_07_10_E_26','2023_06_23_E_9','2023_06_14_E_7','2023_06_14_E_6'};
+
+% VOLVOX
+tag='V_half_half';        experiments = {'2023_07_04_V_19','2023_07_04_V_20','2023_07_05_V_11','2023_07_05_V_32','2023_07_05_V_33','2023_07_07_V_1','2023_07_07_V_2'};
+% tag='V_grad_lateral';     experiments = {'2023_06_08_Volvox_14','2023_06_08_Volvox_16','2023_07_04_Volvox_21','2023_07_04_Volvox_22','2023_07_05_Volvox_12','2023_07_05_Volvox_30','2023_07_05_Volvox_31','2023_07_07_Volvox_3'};
+% tag='V_grad_centr_light'; experiments = {'2023_06_08_Volvox_17','2023_07_04_Volvox_23','2023_07_04_Volvox_24','2023_07_05_Volvox_13','2023_07_05_Volvox_28','2023_07_05_Volvox_29','2023_07_06_Volvox_6','2023_07_07_Volvox_4'};
+% tag='V_grad_centr_dark';  experiments = {'2023_07_04_Volvox_25','2023_07_04_Volvox_26','2023_07_05_Volvox_14','2023_07_05_Volvox_26','2023_07_05_Volvox_27','2023_07_06_Volvox_7','2023_07_07_Volvox_5'};
+% tag='V_circle_light';     experiments = {'2023_06_08_Volvox_19','2023_06_08_Volvox_20','2023_07_04_Volvox_27','2023_07_04_Volvox_28','2023_07_05_Volvox_15','2023_07_05_Volvox_16','2023_07_05_Volvox_21','2023_07_05_Volvox_22','2023_07_05_Volvox_23','2023_07_05_Volvox_34','2023_07_07_Volvox_6'};
+% tag='V_circle_dark';      experiments = {'2023_07_04_Volvox_29','2023_07_04_Volvox_30','2023_07_05_Volvox_17','2023_07_05_Volvox_18','2023_07_05_Volvox_19','2023_07_05_Volvox_20','2023_07_05_Volvox_24','2023_07_05_Volvox_25','2023_07_05_Volvox_35','2023_07_07_Volvox_7'};
+
 
 defaultParamMicroorg;
 background_sub = true;      % use background subtraction for object detection (spatial experiments)
+
+n_bins         = 3;      % number of bins for light distribution (set to 5 for BCL, 3 for other exp)
 
 deltaT = 0.5;
 dT = 0.01;
@@ -29,6 +41,7 @@ cmap = linspace2([1,1,1], [1,0.5,0.5], 100)';
 
 for i = 1:length(experiments)
     experiments{i} = strrep(experiments{i},'_E_','_Euglena_');
+    experiments{i} = strrep(experiments{i},'_V_','_Volvox_');
     data_folder = fullfile(experiments_folder,experiments{i});
     
     % get final agents positions and inputs
@@ -38,7 +51,9 @@ for i = 1:length(experiments)
     Inputs.Values = flip(u,2);
     
     % get distribution wrt light intensity
-    [density_by_input(i,:), bins, norm_slope(i), c_coeff(i), coefficents, agents_by_input(i,:), pixels_by_input(i,:)] = agentsDensityByInput(Inputs.Points, Inputs.Values, mask, window);
+    [density_by_input(i,:), bins, agents_by_input(i,:), pixels_by_input(i,:)] = agentsDensityByInput(Inputs.Points, Inputs.Values, mask, window, n_bins);
+    [c_coeff(i), norm_slope(i), coefficents] = linearDependence((bins(1:end-1)+bins(2:end))'/2, density_by_input(i,:)');
+
     
     
     %% PLOTS
