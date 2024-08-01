@@ -31,15 +31,20 @@ seed=0;                % seed for random generator, if negative it is not set
 
 makeSimFolders = true; % save data of individual simulations
 
-N = 12000;
-Environment.boundary = Simulation.arena * 2;
+N = 200;
 
 %% Loads DOME experiment data
 experiments_folder = '/Volumes/DOMEPEN/Experiments';
-experiment = '/comparisons/Euglena_switch_10/combo5';
 
-id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % folder with identification data
-identification_file_name = 'identification_GB_absw_noalpha_narrow.txt';
+% EUGLENA
+% experiment = '/comparisons/Euglena_switch_10/combo5';
+% id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % folder with identification data
+% identification_file_name = 'identification_GB_absw_noalpha_narrow.txt';
+
+% VOLVOX
+experiment = '/comparisons/Volvox_switch_10/combo5';
+id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Volvox_switch_10/combo5';  % folder with identification data
+identification_file_name = 'identification_GB_meaninit.txt';
 
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 
@@ -51,9 +56,19 @@ outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFede
 % parameters(1).name = 'identification_file_name';
 % parameters(1).values = ["identification_GB_absw_noalpha_narrow.txt","identification_manual.txt"];
 
+% % Euglena spatial experiments
+% parameters(1).name = 'experiment';
+% parameters(1).values = ["2023_06_14_E_6","2023_06_12_E_3","2023_06_14_E_10","2023_06_13_E_16","2023_07_10_E_26","2023_06_13_E_15"];
+% parameters(1).tags = ["half_half", "grad_centr_light","grad_centr_dark","grad_lateral","circle_light","circle_dark"];
+% Environment.boundary = Simulation.arena * 2;
+
+% Volvox spatial experiments
 parameters(1).name = 'experiment';
-parameters(1).values = ["2023_06_14_E_6","2023_06_12_E_3","2023_06_14_E_10","2023_06_13_E_16","2023_07_10_E_26","2023_06_13_E_15"];
+parameters(1).values = ["2023_07_05_V_33","2023_07_05_V_29","2023_07_05_V_26","2023_07_05_V_30","2023_07_05_V_22","2023_07_05_V_24"];
 parameters(1).tags = ["half_half", "grad_centr_light","grad_centr_dark","grad_lateral","circle_light","circle_dark"];
+Environment.boundary = Simulation.arena * 2;
+% parameters(1).values = [fullfile("V_switch_10","combo3"),fullfile("V_switch_5","combo"),fullfile("V_switch_1","combo"),fullfile("V_255_ON","combo"),fullfile("V_150_ON","combo"),fullfile("V_75_ON","combo"),fullfile("V_off","combo"),fullfile("V_ramp","combo")];
+% parameters(1).tags = ["V_switch_10", "V_switch_5", "V_switch_1","V_255_ON","V_150_ON","V_75_ON","V_off","V_ramp"];
 
 %% Preallocate
 p=cartesianProduct({parameters.values});
@@ -121,6 +136,7 @@ for i_times=1:Nconfig
     
     % load inputs data
     experiment = strrep(experiment,'_E_','_Euglena_');
+    experiment = strrep(experiment,'_V_','_Volvox_');
     data_folder = fullfile(experiments_folder, experiment);
     if isfile(fullfile(data_folder,'inputs.txt'))   % time varying inputs
         inputs    = load(fullfile(data_folder,'inputs.txt'));
@@ -163,12 +179,16 @@ for i_times=1:Nconfig
         
         
         if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
-            [density_by_input_sim, bins, norm_sl, c_coeff] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, xFinal_inWindow, window);
-            norm_slope(i_times,k_times) = norm_sl;
+            %[density_by_input_sim, bins, norm_sl, c_coeff] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, xFinal_inWindow, window);
+            [density_by_input_sim, bins] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, xFinal_inWindow, window, n_bins);
+            [~, norm_slope_sim(i_times,k_times), ~] = linearDependence((bins(1:end-1)+bins(2:end))'/2, density_by_input_sim');
             
             % compare with experimental result
             mask = detectObjects(data_folder, background_sub, brightness_thresh);
-            [density_by_input_exp, bins, norm_slope, c_coeff, coefficents, agents_by_input, pixels_by_input] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, mask, window);
+            %[density_by_input_exp, bins, norm_slope, c_coeff, coefficents, agents_by_input, pixels_by_input] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, mask, window);
+            [density_by_input_exp, bins] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, mask, window, n_bins);
+            [~, norm_slope_exp, ~] = linearDependence((bins(1:end-1)+bins(2:end))'/2, density_by_input_exp');
+        
             tvd(i_times,k_times) = 0.5 * norm(density_by_input_sim-squeeze(density_by_input_exp),1); % Total Variation Distance
             
         else
@@ -200,19 +220,19 @@ for i_times=1:Nconfig
             save(fullfile(sim_ouput_path, 'data'),'xVec','Simulation', 'Dynamics', 'GlobalIntFunction', 'LocalIntFunction', 'Environment');
             
             % SWARM final
-            [~,indices_inWindow] = getInWindow(squeeze(xVec(end,:,:)), Simulation.arena);
+            [~,indices_inWindow] = getInWindow(squeeze(xVec(end,:,:)), Render.window);
             xFinal_inWindow = squeeze(xVec(end,indices_inWindow,:));
             xSemiFinal_inWindow = squeeze(xVec(end-1,indices_inWindow,:));
             figure(1)
             cla
             if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
-                plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Simulation.arena)
+                plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Render.window)
             end
-            if Simulation.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
+            if Render.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
             if isfield(LocalIntFunction, 'DistanceRange')
-                plotSwarmInit(xFinal_inWindow, Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, xSemiFinal_inWindow);
+                plotSwarmInit(xFinal_inWindow, Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Render.window, Simulation.arena, false, false, false, Render.agentShape, Render.agentSize, Render.agentsColor, xSemiFinal_inWindow);
             else
-                plotSwarmInit(xFinal_inWindow, Simulation.Tmax, inf, inf, Simulation.arena, Simulation.arena, false, false, false, Simulation.agentShape, Simulation.agentSize, xSemiFinal_inWindow);
+                plotSwarmInit(xFinal_inWindow, Simulation.Tmax, inf, inf, Render.window, Simulation.arena, false, false, false, Render.agentShape, Render.agentSize, Render.agentsColor, xSemiFinal_inWindow);
             end
             if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
             saveas(gcf, fullfile(sim_ouput_path, 'x_final'))
@@ -304,6 +324,8 @@ if outputDir
     fprintStruct(fileID,Dynamics)
     fprintf(fileID,'Environment:\n');
     fprintStruct(fileID,Environment)
+    fprintf(fileID,'Render:\n');
+    fprintStruct(fileID,Render)
     fprintf(fileID,'GlobalIntFunction:\n');
     fprintStruct(fileID,GlobalIntFunction)
     fprintf(fileID,'LocalIntFunction:\n');

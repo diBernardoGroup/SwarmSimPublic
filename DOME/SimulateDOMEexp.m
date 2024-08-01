@@ -39,14 +39,14 @@ experiments_folder="/Volumes/DOMEPEN/Experiments";                              
 % tag='E_BCLx36';             experiment_name = "2023_07_10_E_34";   N=N*2; Simulation.arena=Simulation.arena*2.5; Environment.boundary = Simulation.arena * 2; x0=randRect(N, Simulation.arena*2, D);
 
 % VOLVOX
-% tag='V_switch_10';    experiment_name = fullfile("comparisons","Volvox_switch_10","combo5");  % switch10s combo
-% tag='V_switch_5';          experiment_name = fullfile("comparisons","Volvox_switch_5","combo");  % switch 5s
-% tag='V_switch_1';          experiment_name = fullfile("comparisons","Volvox_switch_1","combo");  % switch 1s
-% tag='V_255_ON';       experiment_name = fullfile("comparisons","Volvox_255_ON","combo");  % OFF-ON-OFF 255 combo
-% tag='V_150_ON';       experiment_name = fullfile("comparisons","Volvox_150_ON","combo");  % OFF-ON-OFF 150 combo
-% tag='V_75_ON';       experiment_name = fullfile("comparisons","Volvox_75_ON","combo");  % OFF-ON-OFF 150 combo
-% tag='V_ramp';       experiment_name = fullfile("comparisons","Volvox_ramp","combo");  % ramp combo
-% tag='V_OFF';          experiment_name = fullfile("comparisons","Volvox_OFF","combo");  % OFF combo
+% tag='V_switch_10';        experiment_name = fullfile("comparisons","Volvox_switch_10","combo5");  % switch10s combo
+% tag='V_switch_5';         experiment_name = fullfile("comparisons","Volvox_switch_5","combo");  % switch 5s
+% tag='V_switch_1';         experiment_name = fullfile("comparisons","Volvox_switch_1","combo");  % switch 1s
+% tag='V_255_ON';           experiment_name = fullfile("comparisons","Volvox_255_ON","combo");  % OFF-ON-OFF 255 combo
+% tag='V_150_ON';           experiment_name = fullfile("comparisons","Volvox_150_ON","combo");  % OFF-ON-OFF 150 combo
+% tag='V_75_ON';            experiment_name = fullfile("comparisons","Volvox_75_ON","combo");  % OFF-ON-OFF 150 combo
+% tag='V_ramp';             experiment_name = fullfile("comparisons","Volvox_ramp","combo");  % ramp combo
+% tag='V_OFF';              experiment_name = fullfile("comparisons","Volvox_OFF","combo");  % OFF combo
 
 % tag='V_half_half';          experiment_name = "2023_07_05_V_33";    Environment.boundary = Simulation.arena * 2;
 % tag='V_grad_centr_light';   experiment_name = "2023_07_05_Volvox_29";    Environment.boundary = Simulation.arena * 2;
@@ -286,7 +286,6 @@ end
 
 % SPATIAL INPUTS
 if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
-%     [density_by_input_sim, bins, norm_slope_sim, c_coeff_sim, coefficents, ~,~, u_values_sim] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, xFinal_inWindow, Render.window);
     [density_by_input_sim, bins] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, xFinal_inWindow, Render.window, n_bins);
     [c_coeff_sim, norm_slope_sim, coefficents] = linearDependence((bins(1:end-1)+bins(2:end))'/2, density_by_input_sim');
     

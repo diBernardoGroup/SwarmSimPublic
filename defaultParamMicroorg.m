@@ -122,15 +122,10 @@ Render.shaded = true;
 % % Euglena
 % Render.agentShape = "rod";          % shape to plot the agents "rod" or any defualt marker key ('.','+','diamond',...)
 % Render.agentSize = 30; 
+
 % Volvox
 Render.agentShape = ".";          % shape to plot the agents "rod" or any defualt marker key ('.','+','diamond',...)
 Render.agentSize = 75; 
-
-% % Dark palette
-% Render.agentsColor = [1 0 0];
-% Render.sim_c = [255 166 48]/255;
-% Render.exp_c = [32 191 85]/255;
-% Render.cmap_inputs = linspace2([42,35,31]/255, [0,71,143]/255, 100)'; 
 
 % Light palette - red inputs
 Render.agentsColor = [0 0 1]; % blue
@@ -145,3 +140,8 @@ Render.cmap_inputs = linspace2([1,1,1], [1,0.5,0.5], 100)';  % light red
 % Render.exp_c =      std_colors(7,:); % dark red
 % Render.cmap_inputs = linspace2([1,1,1], [0.5,0.5,1], 100)'; % light blue
 
+% % Dark palette
+% Render.agentsColor = [1 0 0];
+% Render.sim_c = [255 166 48]/255;
+% Render.exp_c = [32 191 85]/255;
+% Render.cmap_inputs = linspace2([42,35,31]/255, [0,71,143]/255, 100)'; 
