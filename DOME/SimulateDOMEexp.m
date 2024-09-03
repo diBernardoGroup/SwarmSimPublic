@@ -62,10 +62,15 @@ tag='V_grad_lateral';       experiment_name = "2023_07_05_Volvox_30";   Environm
 % identification_file_name = 'identification_GB_absw_noalpha_narrow.txt';
 
 %VOLVOX
-id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Volvox_switch_10/combo5'; % switch10s
+id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Volvox_255_ON/combo5'; % switch10s
 identification_file_name = 'identification_GB_60s.txt';
 
-% tag = 'test';
+% TEST
+tag = 'test';
+Simulation.Tmax = 10;                  % maximum simulation time
+Simulation.timeInstants = [0:Simulation.deltaT:Simulation.Tmax];
+Render.drawON=true;                % draw swarm during simulation (if N is large slows down the simulation)
+
 
 % outputDir = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\Simulations';
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
@@ -109,7 +114,9 @@ if isfile(fullfile(data_folder,'inputs.txt'))   % time varying inputs
 else                                            % spatial inputs
     u = loadInputPattern(data_folder, pattern_blurring);
     Environment.Inputs.Points = {linspace(-Simulation.arena(1),Simulation.arena(1),size(u,1))/2, linspace(-Simulation.arena(2),Simulation.arena(2),size(u,2))/2};
-    Environment.Inputs.Values = flip(u,2);
+    Environment.Inputs.Values = {flip(u,2)};
+    %Environment.Inputs.Times = [0];
+    Environment.Inputs.Times = [5];
 end
 
 %% Create Initial Conditions
@@ -227,7 +234,7 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     % SWARM initial
     figure
     if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
-        plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Render.window)
+        plotEnvField(Environment.Inputs.Points(1,:), Environment.Inputs.Values{1}, Render.window)
     end
     if Render.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Render.drawTraj); end
     if isfield(LocalIntFunction, 'DistanceRange')
@@ -244,7 +251,7 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     % SWARM final
     figure
     if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
-        plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Render.window)
+        plotEnvField(Environment.Inputs.Points(end,:), Environment.Inputs.Values{end}, Render.window)
     end
     if Render.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Render.drawTraj); end
     if isfield(LocalIntFunction, 'DistanceRange')
@@ -286,7 +293,7 @@ end
 
 % SPATIAL INPUTS
 if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
-    [density_by_input_sim, bins] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, xFinal_inWindow, Render.window, n_bins);
+    [density_by_input_sim, bins] = agentsDensityByInput(Environment.Inputs.Points(end,:), Environment.Inputs.Values{end}, xFinal_inWindow, Render.window, n_bins);
     [c_coeff_sim, norm_slope_sim, coefficents] = linearDependence((bins(1:end-1)+bins(2:end))'/2, density_by_input_sim');
     
     figure % simulation light distribution
@@ -310,7 +317,7 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     % experimental positions get distribution wrt light intensity
     mask = detectObjects(data_folder, background_sub, brightness_thresh);
     %[density_by_input_exp, bins, norm_slope_exp, c_coeff_exp, coefficents, ~,~, u_values_exp] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, mask, Render.window);
-    [density_by_input_exp, bins] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, mask, Render.window, n_bins);
+    [density_by_input_exp, bins] = agentsDensityByInput(Environment.Inputs.Points(end,:), Environment.Inputs.Values{end}, mask, Render.window, n_bins);
     [c_coeff_exp, norm_slope_exp, coefficents] = linearDependence((bins(1:end-1)+bins(2:end))'/2, density_by_input_exp');
     
     figure

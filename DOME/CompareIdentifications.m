@@ -8,8 +8,7 @@ experiments_folder="/Volumes/DOMEPEN/Experiments/comparisons";                  
 % id_folder = fullfile(experiments_folder,"Euglena_switch_10","combo5"); %Euglena
 id_folder = fullfile(experiments_folder,"Volvox_switch_10","combo5"); %Volvox
 
-outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Euglena Identifications/id_comp_init';
-% outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison/Volvox identifications/id_comp_init';
+outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/comparison';
 
 % identification_file_names = ["identification_OLS_ds1_sign.txt","identification_OLS_ds2_sign.txt","identification_OLS_ds3_sign.txt";
 %                              %"identification_OLS_ds1_abs.txt","identification_OLS_ds2_abs.txt","identification_OLS_ds3_abs.txt";
@@ -68,8 +67,13 @@ outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFede
 % identification_file_names =    ["identification_GB_absw_noalpha_narrow"; "identification_GB_absw_meaninit"; "identification_GB_absw_noinit"];
 % tags = ["medianinit", "meaninit", "noinit"];
 
-identification_file_names =    ["identification_GB_meaninit"; "identification_GB_60s"];
-tags = ["10s", "60s"];
+% identification_file_names =    ["identification_GB_meaninit"; "identification_GB_60s"];
+% tags = ["10s", "60s"];
+
+id_folder = [fullfile(experiments_folder,"Euglena_switch_10","combo5"); fullfile(experiments_folder,"Volvox_switch_10","combo5")];
+identification_file_names =    ["identification_GB_absw_noalpha_narrow"; "identification_GB_60s"];
+tags = ["Euglena", "Volvox"];
+
 
 dT = 0.01;
 deltaT = 0.5;
@@ -78,13 +82,17 @@ deltaT = 0.5;
 identifications={};
 for i=1:size(identification_file_names,2)   % for each down sampling value
     for j=1:size(identification_file_names,1)   % for each technique
-        identifications{j,i}=readtable(fullfile(id_folder,identification_file_names(j,i)));
+        if size(id_folder,1) == 1
+            identifications{j,i}=readtable(fullfile(id_folder,identification_file_names(j,i)));
+        else
+            identifications{j,i}=readtable(fullfile(id_folder(j),identification_file_names(j,i)));
+        end
     end
 end
 
-speed=load(fullfile(id_folder,'speeds_smooth.txt'));
-omega=load(fullfile(id_folder,'ang_vel_smooth.txt'));
-inputs=load(fullfile(id_folder,'inputs.txt'));
+speed=load(fullfile(id_folder(j),'speeds_smooth.txt'));
+omega=load(fullfile(id_folder(j),'ang_vel_smooth.txt'));
+inputs=load(fullfile(id_folder(j),'inputs.txt'));
 timeInstants = [0:size(speed,1)-1] * deltaT;
 u=inputs(:,1)/255;
 u_dot = [0;diff(u)]/deltaT;
@@ -219,7 +227,7 @@ else % if considering a single down sampling value
         ax=subplot(2,5,k);
         
         for j=1:size(identification_file_names,1); data_to_plot{j} = identifications{j,1}{:,k+1}; end
-        myboxplot(data_to_plot, true, 3);
+        myboxplot(data_to_plot, false, 3);
         xticks([])
         set(ax,'PositionConstraint','innerposition')
         yline(0,'Color',[0.5,0.5,0.5])
@@ -231,8 +239,9 @@ else % if considering a single down sampling value
     legend('Position',[0.1 0.95 0.8 0.04])
     legend('Box','off')
     if outputDir
+        fig=gcf; fig.Units = fig.PaperUnits; fig.PaperSize = fig.Position(3:4); % set correct pdf size
         saveas(gcf, fullfile(outputDir, 'id_comparison_parameters'))
-        saveas(gcf, fullfile(outputDir, 'id_comparison_parameters'),'png')
+        saveas(gcf, fullfile(outputDir, 'id_comparison_parameters'),'pdf')
     end
     
     figure('Position',[100 100 500 350]); % NUMBER OF PARAMETERS SETS
@@ -242,11 +251,13 @@ else % if considering a single down sampling value
         bar(j,len(j))
         text(j, len(j)*0.5, num2str(len(j)), HorizontalAlignment='center', FontSize=12)
     end
+    box
     xticks([1:j])    
     xticklabels(tags)   
     if outputDir
+        fig=gcf; fig.Units = fig.PaperUnits; fig.PaperSize = fig.Position(3:4); % set correct pdf size
         saveas(gcf, fullfile(outputDir, 'id_comparison_number'))
-        saveas(gcf, fullfile(outputDir, 'id_comparison_number'),'png')
+        saveas(gcf, fullfile(outputDir, 'id_comparison_number'),'pdf')
     end
     
 %     figure('Position',[100 100 1900 600]); % metrics scatter comparison

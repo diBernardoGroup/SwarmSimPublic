@@ -9,13 +9,13 @@ end
 
     F = griddedInterpolant(points,values, 'linear', 'nearest');
     
-    if size(x,2)>2  % estimate from experimental images
+    if size(x,2)>2  % estimate from experimental images, x is a binary mask
         mask=x;
         x_vec = linspace(window(1),window(2),size(mask,2));
         y_vec = linspace(window(3),window(4),size(mask,1));
         [x_mesh, y_mesh] = meshgrid(x_vec, y_vec);
         u_values = F(x_mesh(mask),y_mesh(mask));
-    else            % estimate from simulated positions
+    else            % estimate from simulated positions, x is a vecxtor of positions
         x_vec = linspace(window(1),window(2),1000);
         y_vec = linspace(window(3),window(4),1000);
         [x_mesh, y_mesh] = meshgrid(x_vec, y_vec);

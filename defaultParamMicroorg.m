@@ -30,7 +30,7 @@ brightness_thresh = 0.3;    % brightness threshold for object detection (spatial
 background_sub = true;      % use background subtraction for object detection (spatial experiments)
 pattern_blurring = 15;      % blurring of the spatial input pattern (spatial experiments)
 n_bins = 3;
-px_size = 1.25;             % size of a pixel [um] EUGLENA
+% px_size = 1.25;             % size of a pixel [um] EUGLENA
 px_size = 4.44;             % size of a pixel [um] VOLVOX
 
 
@@ -101,10 +101,10 @@ LocalIntFunction=struct('function','None');
 Environment = struct();
 Environment.Inputs.InterpMethod = 'previous';
 % Environment.Inputs.InterpMethod = 'linear';
-% Environment.Inputs.Times  = 'None'; 
-% Environment.Inputs.Values = 'None'; 
-Environment.Inputs.Times  = [0, 5, 10, Simulation.Tmax]; 
-Environment.Inputs.Values = [0, 1, 0, 0];
+Environment.Inputs.Times  = 'None'; 
+Environment.Inputs.Values = 'None'; 
+% Environment.Inputs.Times  = [0, 5, 10, Simulation.Tmax]; 
+% Environment.Inputs.Values = [0, 1, 0, 0];
 
 % Environment.boundary = Simulation.arena * 2;
 
@@ -125,7 +125,7 @@ Render.shaded = true;
 
 % Volvox
 Render.agentShape = ".";          % shape to plot the agents "rod" or any defualt marker key ('.','+','diamond',...)
-Render.agentSize = 75; 
+Render.agentSize = 60; 
 
 % Light palette - red inputs
 Render.agentsColor = [0 0 1]; % blue

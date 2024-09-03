@@ -62,8 +62,12 @@ if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
     x_vec = linspace(-Simulation.arena(1)/2,Simulation.arena(1)/2,1000);
     y_vec = linspace(-Simulation.arena(2)/2,Simulation.arena(2)/2,1000);
     [x_mesh, y_mesh] = meshgrid(x_vec, y_vec);
-    %F=scatteredInterpolant(Environment.Inputs.Points, Environment.Inputs.Values, 'linear', 'nearest');
-    F = griddedInterpolant(Environment.Inputs.Points,Environment.Inputs.Values, 'linear', 'nearest');
+    
+    if Environment.Inputs.Times(1) > 0
+        Environment.Inputs.Points = {[0,1], [0,1]; Environment.Inputs.Points{:,:}};
+        Environment.Inputs.Values = {zeros(2); Environment.Inputs.Values{:}};
+        Environment.Inputs.Times = [0, Environment.Inputs.Times];
+    end
 end
 
 %% Instantiate Simulation Window
@@ -71,14 +75,10 @@ end
 if Render.drawON
     figure
     if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
+        F = griddedInterpolant(Environment.Inputs.Points(1,:),Environment.Inputs.Values{1}, 'linear', 'nearest');
         imagesc(x_vec,y_vec,F(x_mesh',y_mesh')')
         colormap(cmap)
     end
-    %     if isfield(LocalIntFunction, 'DistanceRange')
-    %         plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena, thenDelete=true);
-    %     else
-    %         plotSwarmInit(x0, 0, inf, inf, Simulation.arena, thenDelete=true);
-    %     end
     if isfield(LocalIntFunction, 'DistanceRange')
         plotSwarmInit(x0, 0, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Render.window, [Render.window(2)-Render.window(1), Render.window(4)-Render.window(3)]/2, false, false, true, Render.agentShape, Render.agentSize, Render.agentsColor, x0-v0);
     else
@@ -114,7 +114,9 @@ end
 log_txt = ['- Simulating ',num2str(N),' ',Dynamics.model, ' agents in ', num2str(size(x0,2)),'D space'];
 if ~strcmp(GlobalIntFunction.function, 'None'); log_txt = [log_txt,' with ',GlobalIntFunction.function,' interaction']; end
 if isfield(Environment,'Inputs')
-    if isfield(Environment.Inputs,'Points')
+    if isfield(Environment.Inputs,'Points') && isfield(Environment.Inputs,'Times')
+        log_txt = [log_txt,' with spatiotemporal inputs'];    
+    elseif isfield(Environment.Inputs,'Points')
         log_txt = [log_txt,' with spatial inputs'];
     else
         log_txt = [log_txt,' with temporal inputs'];
@@ -135,6 +137,8 @@ while t<Simulation.Tmax
     % Compute environmental inputs
     if isfield(Environment,'Inputs')
         if isfield(Environment.Inputs,'Points')
+            inputIndex = find(Environment.Inputs.Times <= t, 1, 'last')
+            F = griddedInterpolant(Environment.Inputs.Points(inputIndex,:),Environment.Inputs.Values{inputIndex}, 'linear', 'nearest');
             envInput = F(x(:,1),x(:,2));
         elseif isfield(Environment.Inputs,'Times')
             envInput = ones(N,1) * interp1(Environment.Inputs.Times, Environment.Inputs.Values, t, Environment.Inputs.InterpMethod);

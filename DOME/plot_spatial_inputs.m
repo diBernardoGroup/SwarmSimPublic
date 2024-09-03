@@ -22,7 +22,7 @@ inputs = sim_data.Environment.Inputs;
 xVec = sim_data.xVec;
 data_folder = sim_data.data_folder;
 
-make_videos = true;
+make_videos = false;
 % Render.time_plot = 0:45:Simulation.Tmax;
 Render.time_plot = [];
 % Render.all_time  = 0:Simulation.deltaT:Simulation.Tmax;

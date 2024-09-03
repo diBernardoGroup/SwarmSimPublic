@@ -25,6 +25,8 @@ for i=1:number_of_exp
         d = load(data_path);
         omega = d.omega';
         speed = d.speed';
+%         fprintf('compareRes omega_sim = \t%.4f\n',median(abs(omega),'all','omitnan'))
+        
         if isfield(d,'timeInstants')
             timeInstants = d.timeInstants;
         else
@@ -42,6 +44,7 @@ for i=1:number_of_exp
         end
         speed = load(fullfile(exp,'speeds_smooth.txt'))';
         omega = load(fullfile(exp,'ang_vel_smooth.txt'))';
+%         fprintf('compareRes omega_exp = \t%.4f\n',median(abs(omega),'all','omitnan'))
         inputs=load(fullfile(exp,'inputs.txt'));
         if i==1
             u=inputs(:,1)/255;              %select blue channel and scale in [0,1]
@@ -51,8 +54,8 @@ for i=1:number_of_exp
     end
     
     data = table(speed, omega);
-    data(all(isnan(data.speed),2),:) = [];
     experiments{i}=data;
+    %fprintf('table omega = \t%.4f\n',median(abs(experiments{i}.omega),'all','omitnan'))
 end
 
 if number_of_exp>2
@@ -87,9 +90,9 @@ else
     metrics_of_interest = {wmape_speed, wmape_omega, wmape_total}; metrics_tags = ["wmape_v", "wmape_\omega", "wmape_{tot}"];
     % metrics_of_interest = {NMSE_total, mape_total, wmape_total}; metrics_tags = ["NMSE_{tot}", "mape_{tot}", "wmape_{tot}"];
     
-    for m=1:length(metrics_tags)
-        disp(metrics_tags(m)+" = "+num2str(metrics_of_interest{m},'%.2f'))
-    end
+%     for m=1:length(metrics_tags)
+%          disp(metrics_tags(m)+" = "+num2str(metrics_of_interest{m},'%.2f'))
+%     end
 end
 
 %% POLTS
@@ -190,7 +193,7 @@ if make_plots
     %%%%%%%%%%%%% Speed plot %%%%%%%%%%%%%%%
     subplot(2,1,1)
     xlim([0,max(timeInstants)])
-    ylim([0,120])
+    ylim([0,150])
     %Plot temporal inputs
     if isvarname('u')
         highlightInputs(timeInstants, u, Render.cmap_inputs, 0.7);
@@ -231,8 +234,10 @@ if make_plots
     rng=ylim;
     box on
     if outputDir
-        saveas(gcf,fullfile(outputDir, 'comparison_time_plot'))
-        saveas(gcf,fullfile(outputDir, 'comparison_time_plot'),'png')
+        fig=gcf; fig.Units = fig.PaperUnits; fig.PaperSize = fig.Position(3:4); % set correct pdf size
+        saveas(fig,fullfile(outputDir, 'comparison_time_plot'))
+        %saveas(fig,fullfile(outputDir, 'comparison_time_plot'),'png')
+        saveas(fig,fullfile(outputDir, 'comparison_time_plot'),'pdf')
     end
     
     

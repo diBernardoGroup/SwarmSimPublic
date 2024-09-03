@@ -7,7 +7,8 @@ defaultParamMicroorg;
 
 % Add the path to your data
 % experiments_folder="C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\";    % DAVIDE
-experiments_folder="/Volumes/DOMEPEN/Experiments/comparisons";                                          % ANDREA
+experiments_folder="/Volumes/DOMEPEN/Experiments";                                          % ANDREA
+experiments_folder = fullfile(experiments_folder,'comparisons');
 
 % EUGLENA
 % experiments_names=[fullfile("Euglena_75_ON","combo"),fullfile("Euglena_150_ON","combo"),fullfile("Euglena_255_ON","combo")];
@@ -15,14 +16,15 @@ experiments_folder="/Volumes/DOMEPEN/Experiments/comparisons";                  
 % experiments_names=[fullfile("Euglena_OFF","combo")];
 
 % VOLVOX
-experiments_names=[fullfile("Volvox_75_ON","combo"),fullfile("Volvox_150_ON","combo"),fullfile("Volvox_255_ON","combo")];
+% experiments_names=[fullfile("Volvox_75_ON","combo"),fullfile("Volvox_150_ON","combo"),fullfile("Volvox_255_ON","combo")];
 % experiments_names=[fullfile("Volvox_255_ON","combo")];
 % experiments_names=[fullfile("Volvox_switch_10","combo5")];
-% experiments_names=[fullfile("Volvox_OFF","combo")];
+experiments_names=[fullfile("Volvox_OFF","combo")];
+%experiments_names="2023_07_04_Volvox_11";
 
 
-plot_data = false;                                   % Plot the experimental data
-stat_an = true;                                      % Plot statistical analysis of light response
+plot_data = true;                                   % Plot the experimental data
+stat_an = false;                                      % Plot statistical analysis of light response
 avg_an = true;                                       % Use average values (over times) for stat analysis
 
 t_a = 12;                                            % Time window after the switch I want to analyse
@@ -61,6 +63,9 @@ for exp=1:length(experiments_names)
     % addpath(genpath(current_folder));
     
     data_folder = fullfile(experiments_folder,experiments_names(exp));
+%     tracking = getLastTracking(data_folder);
+%     data_folder = fullfile(data_folder,tracking);
+
     % Load longitudinal, angular velocities and the light inputs in time
     speed  = load(fullfile(data_folder,'speeds_smooth.txt'));
     omega  = load(fullfile(data_folder,'ang_vel_smooth.txt'));

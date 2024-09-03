@@ -27,24 +27,26 @@ Ntimes=1;              % How many simulations are launched for each configuratio
 
 defaultParamMicroorg;  % load default parameters
 
-seed=0;                % seed for random generator, if negative it is not set
+seed=1;                % seed for random generator, if negative it is not set
 
 makeSimFolders = true; % save data of individual simulations
 
-N = 200;
+N = 2000;
 
 %% Loads DOME experiment data
 experiments_folder = '/Volumes/DOMEPEN/Experiments';
 
 % EUGLENA
-% experiment = '/comparisons/Euglena_switch_10/combo5';
-% id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % folder with identification data
-% identification_file_name = 'identification_GB_absw_noalpha_narrow.txt';
+experiment = '/comparisons/Euglena_switch_10/combo5';
+id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Euglena_switch_10/combo5';  % folder with identification data
+identification_file_name = 'identification_GB_absw_noalpha_narrow.txt';
 
-% VOLVOX
-experiment = '/comparisons/Volvox_switch_10/combo5';
-id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Volvox_switch_10/combo5';  % folder with identification data
-identification_file_name = 'identification_GB_meaninit.txt';
+% % VOLVOX
+% experiment = '/comparisons/Volvox_switch_10/combo5';
+% % id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Volvox_switch_10/combo5';  % folder with identification data
+% % identification_file_name = 'identification_GB_meaninit.txt';
+% id_folder = '/Volumes/DOMEPEN/Experiments/comparisons/Volvox_255_ON/combo5';  % folder with identification data
+% identification_file_name = 'identification_GB_60s.txt';
 
 outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 
@@ -56,19 +58,28 @@ outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFede
 % parameters(1).name = 'identification_file_name';
 % parameters(1).values = ["identification_GB_absw_noalpha_narrow.txt","identification_manual.txt"];
 
-% % Euglena spatial experiments
-% parameters(1).name = 'experiment';
+parameters(1).name = 'experiment';
+
+% % EUGLENA 
+% % spatial experiments
 % parameters(1).values = ["2023_06_14_E_6","2023_06_12_E_3","2023_06_14_E_10","2023_06_13_E_16","2023_07_10_E_26","2023_06_13_E_15"];
 % parameters(1).tags = ["half_half", "grad_centr_light","grad_centr_dark","grad_lateral","circle_light","circle_dark"];
 % Environment.boundary = Simulation.arena * 2;
+% temporal experiments
+experiments_folder = fullfile(experiments_folder,'comparisons');           % select subfolder
+parameters(1).values = [fullfile("E_switch_10","combo3"),fullfile("E_switch_5","combo"),fullfile("E_switch_1","combo"),fullfile("E_255_ON","combo"),fullfile("E_150_ON","combo"),fullfile("E_75_ON","combo"),fullfile("E_off","combo"),fullfile("E_ramp","combo")];
+parameters(1).tags = ["switch_10", "switch_5", "switch_1","255_ON","150_ON","75_ON","off","ramp"];
 
-% Volvox spatial experiments
-parameters(1).name = 'experiment';
-parameters(1).values = ["2023_07_05_V_33","2023_07_05_V_29","2023_07_05_V_26","2023_07_05_V_30","2023_07_05_V_22","2023_07_05_V_24"];
-parameters(1).tags = ["half_half", "grad_centr_light","grad_centr_dark","grad_lateral","circle_light","circle_dark"];
-Environment.boundary = Simulation.arena * 2;
+
+% % VOLVOX
+% % spatial experiments
+% parameters(1).values = ["2023_07_05_V_33","2023_07_05_V_29","2023_07_05_V_26","2023_07_05_V_30","2023_07_05_V_22","2023_07_05_V_24"];
+% parameters(1).tags = ["half_half", "grad_centr_light","grad_centr_dark","grad_lateral","circle_light","circle_dark"];
+% Environment.boundary = Simulation.arena * 2;
+% % temporal experiments
+% experiments_folder = fullfile(experiments_folder,'comparisons');           % select subfolder
 % parameters(1).values = [fullfile("V_switch_10","combo3"),fullfile("V_switch_5","combo"),fullfile("V_switch_1","combo"),fullfile("V_255_ON","combo"),fullfile("V_150_ON","combo"),fullfile("V_75_ON","combo"),fullfile("V_off","combo"),fullfile("V_ramp","combo")];
-% parameters(1).tags = ["V_switch_10", "V_switch_5", "V_switch_1","V_255_ON","V_150_ON","V_75_ON","V_off","V_ramp"];
+% parameters(1).tags = ["switch_10", "switch_5", "switch_1","255_ON","150_ON","75_ON","off","ramp"];
 
 %% Preallocate
 p=cartesianProduct({parameters.values});
@@ -135,9 +146,10 @@ for i_times=1:Nconfig
         'omega', normrnd(0,agents.std_w,N,1), 'oldInput', zeros(N,1));
     
     % load inputs data
-    experiment = strrep(experiment,'_E_','_Euglena_');
-    experiment = strrep(experiment,'_V_','_Volvox_');
+    experiment = strrep(experiment,'E_','Euglena_');
+    experiment = strrep(experiment,'V_','Volvox_');
     data_folder = fullfile(experiments_folder, experiment);
+    assert(isfolder(data_folder), 'data_folder not found!')
     if isfile(fullfile(data_folder,'inputs.txt'))   % time varying inputs
         inputs    = load(fullfile(data_folder,'inputs.txt'));
         speed_exp = load(fullfile(data_folder,'speeds_smooth.txt'));
@@ -179,37 +191,39 @@ for i_times=1:Nconfig
         
         
         if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
-            %[density_by_input_sim, bins, norm_sl, c_coeff] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, xFinal_inWindow, window);
             [density_by_input_sim, bins] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, xFinal_inWindow, window, n_bins);
             [~, norm_slope_sim(i_times,k_times), ~] = linearDependence((bins(1:end-1)+bins(2:end))'/2, density_by_input_sim');
             
             % compare with experimental result
             mask = detectObjects(data_folder, background_sub, brightness_thresh);
-            %[density_by_input_exp, bins, norm_slope, c_coeff, coefficents, agents_by_input, pixels_by_input] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, mask, window);
             [density_by_input_exp, bins] = agentsDensityByInput(Environment.Inputs.Points, Environment.Inputs.Values, mask, window, n_bins);
             [~, norm_slope_exp, ~] = linearDependence((bins(1:end-1)+bins(2:end))'/2, density_by_input_exp');
-        
+            
             tvd(i_times,k_times) = 0.5 * norm(density_by_input_sim-squeeze(density_by_input_exp),1); % Total Variation Distance
             
         else
-            [~, vVec] = gradient(xVec, 1, Simulation.deltaT, 1);
-            speed = vecnorm(vVec,2,3);
-            theta = atan2(vVec(:,:,2), vVec(:,:,1));
-            for i=1:length(timeInstants)-1
-                % angular velocity
-                omega(i,:) = angleBetweenVectors(squeeze(vVec(i,:,:)),squeeze(vVec(i+1,:,:)))';
+            % derivate quantities
+            vVec_be = [xVec(2,:,:)-xVec(1,:,:); diff(xVec)]/Simulation.deltaT;
+            speed_be = vecnorm(vVec_be,2,3);
+            speed = speed_be;
+            
+            % angular velocity - Backward Euler
+            omega_be(1,:) = angleBetweenVectors(squeeze(xVec(2,:,:)-xVec(1,:,:)),squeeze(xVec(3,:,:)-xVec(2,:,:)))';
+            omega_be(2,:) = angleBetweenVectors(squeeze(xVec(2,:,:)-xVec(1,:,:)),squeeze(xVec(3,:,:)-xVec(2,:,:)))';
+            for i=3:length(Simulation.timeInstants)
+                omega_be(i,:) = angleBetweenVectors(squeeze(vVec_be(i-1,:,:)),squeeze(vVec_be(i,:,:)))';
             end
-            omega(length(timeInstants),:) = angleBetweenVectors(squeeze(vVec(length(timeInstants)-1,:,:)),squeeze(vVec(length(timeInstants),:,:)))';
-            omega=omega/Simulation.deltaT;
+            omega_be=omega_be/Simulation.deltaT;
+            omega = omega_be;
             
             overlap = min(size(omega,1),size(omega_exp,1));
             %             NMSE_speed(i_times,k_times) = goodnessOfFit(median(speed,2,'omitnan'), median(speed_exp,2,'omitnan'), 'NMSE');
             %             NMSE_omega(i_times,k_times) = goodnessOfFit(median(abs(omega(1:end-1,:)),2,'omitnan'), median(abs(omega_exp),2,'omitnan'), 'NMSE');
             %             NMSE_total(i_times,k_times) = mean([NMSE_speed(i_times,k_times), NMSE_omega(i_times,k_times)]);
             
-            wmape_speed(i_times,k_times) = mape(median(speed(1:overlap,:),2,'omitnan'), median(speed_exp(1:overlap,:),2,'omitnan'),'wMAPE');
-            wmape_omega(i_times,k_times) = mape(median(abs(omega(1:overlap,:)),2,'omitnan'), median(abs(omega_exp(1:overlap,:)),2,'omitnan'),'wMAPE');
-            wmape_total(i_times,k_times) = mean([wmape_speed(i_times,k_times), wmape_omega(i_times,k_times)]);
+            %             wmape_speed(i_times,k_times) = mape(median(speed(1:overlap,:),2,'omitnan'), median(speed_exp(1:overlap,:),2,'omitnan'),'wMAPE');
+            %             wmape_omega(i_times,k_times) = mape(median(abs(omega(1:overlap,:)),2,'omitnan'), median(abs(omega_exp(1:overlap,:)),2,'omitnan'),'wMAPE');
+            %             wmape_total(i_times,k_times) = mean([wmape_speed(i_times,k_times), wmape_omega(i_times,k_times)]);
         end
         
         % save single simulation results
@@ -217,45 +231,56 @@ for i_times=1:Nconfig
             %sim_ouput_path = fullfile(output_path,[datestr(now, 'yyyy_mm_dd_'), char(parameters(1).name),'_',char(parameters(1).tags(i_times)),'_',num2str(k_times)]);
             sim_ouput_path = fullfile(output_path,[strrep(char(parameters(1).name),'.','_'),'_',char(parameters(1).tags(i_times)),'_',num2str(k_times)]);
             mkdir(sim_ouput_path);
-            save(fullfile(sim_ouput_path, 'data'),'xVec','Simulation', 'Dynamics', 'GlobalIntFunction', 'LocalIntFunction', 'Environment');
-            
-            % SWARM final
-            [~,indices_inWindow] = getInWindow(squeeze(xVec(end,:,:)), Render.window);
-            xFinal_inWindow = squeeze(xVec(end,indices_inWindow,:));
-            xSemiFinal_inWindow = squeeze(xVec(end-1,indices_inWindow,:));
-            figure(1)
-            cla
-            if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
-                plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Render.window)
-            end
-            if Render.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
-            if isfield(LocalIntFunction, 'DistanceRange')
-                plotSwarmInit(xFinal_inWindow, Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Render.window, Simulation.arena, false, false, false, Render.agentShape, Render.agentSize, Render.agentsColor, xSemiFinal_inWindow);
+            if exist('omega','var')
+                save(fullfile(sim_ouput_path, 'data'),'xVec','omega','speed','u','Simulation', 'Dynamics', 'GlobalIntFunction', 'LocalIntFunction', 'Environment');
             else
-                plotSwarmInit(xFinal_inWindow, Simulation.Tmax, inf, inf, Render.window, Simulation.arena, false, false, false, Render.agentShape, Render.agentSize, Render.agentsColor, xSemiFinal_inWindow);
+                save(fullfile(sim_ouput_path, 'data'),'xVec','Simulation', 'Dynamics', 'GlobalIntFunction', 'LocalIntFunction', 'Environment');
             end
-            if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
-            saveas(gcf, fullfile(sim_ouput_path, 'x_final'))
-            saveas(gcf, fullfile(sim_ouput_path, 'x_final'),'png')
             
-            % difference between light distribution
-            figure(2) 
-            cla
-            hold on
-            b_exp = bar((bins(1:end-1)+bins(2:end))/2,density_by_input_exp, 1, FaceColor = 'b', FaceAlpha = 0.5);
-            b_sim = bar((bins(1:end-1)+bins(2:end))/2,density_by_input_sim, 1, FaceColor = 'k', FaceAlpha = 0.4);
-            legend({'REAL','SIMULATED'},'FontSize',14)
-            xlabel('Input intensity','FontSize',14)
-            ylabel('Density of agents','FontSize',14)
-            yticks([0:0.25:1]);
-            text(mean(bins),max(density_by_input_exp)*1.10,['TVD=',num2str(tvd(i_times,k_times),'%.2f')],'HorizontalAlignment','center','FontSize',14)
-            ylim([0,max(density_by_input_exp)*1.15])
-            xlim([-0.1,1.1])
-            xticks(round(bins,2))
-            box
+            if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')  % spatial inputs
+                % SWARM final
+                [~,indices_inWindow] = getInWindow(squeeze(xVec(end,:,:)), Render.window);
+                xFinal_inWindow = squeeze(xVec(end,indices_inWindow,:));
+                xSemiFinal_inWindow = squeeze(xVec(end-1,indices_inWindow,:));
+                figure(1)
+                cla
+                if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
+                    plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Render.window)
+                end
+                if Render.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Simulation.drawTraj); end
+                if isfield(LocalIntFunction, 'DistanceRange')
+                    plotSwarmInit(xFinal_inWindow, Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Render.window, Simulation.arena, false, false, false, Render.agentShape, Render.agentSize, Render.agentsColor, xSemiFinal_inWindow);
+                else
+                    plotSwarmInit(xFinal_inWindow, Simulation.Tmax, inf, inf, Render.window, Simulation.arena, false, false, false, Render.agentShape, Render.agentSize, Render.agentsColor, xSemiFinal_inWindow);
+                end
+                if isfield(Environment,'boundary'); plotBoundary(Environment.boundary); end
+                saveas(gcf, fullfile(sim_ouput_path, 'x_final'))
+                saveas(gcf, fullfile(sim_ouput_path, 'x_final'),'png')
+                
+                % difference between light distribution
+                figure(2)
+                cla
+                hold on
+                b_exp = bar((bins(1:end-1)+bins(2:end))/2,density_by_input_exp, 1, FaceColor = 'b', FaceAlpha = 0.5);
+                b_sim = bar((bins(1:end-1)+bins(2:end))/2,density_by_input_sim, 1, FaceColor = 'k', FaceAlpha = 0.4);
+                legend({'REAL','SIMULATED'},'FontSize',14)
+                xlabel('Input intensity','FontSize',14)
+                ylabel('Density of agents','FontSize',14)
+                yticks([0:0.25:1]);
+                text(mean(bins),max(density_by_input_exp)*1.10,['TVD=',num2str(tvd(i_times,k_times),'%.2f')],'HorizontalAlignment','center','FontSize',14)
+                ylim([0,max(density_by_input_exp)*1.15])
+                xlim([-0.1,1.1])
+                xticks(round(bins,2))
+                box
                 saveas(gcf, fullfile(sim_ouput_path, 'difference_light_distribution'))
                 saveas(gcf, fullfile(sim_ouput_path, 'difference_light_distribution'),'png')
-            
+                
+            else % temporal inputs
+                [metrics_of_interest] = compareResults({data_folder,sim_ouput_path}, sim_ouput_path, true, Render);
+                wmape_speed(i_times,k_times) = metrics_of_interest{1};
+                wmape_omega(i_times,k_times) = metrics_of_interest{2};
+                wmape_total(i_times,k_times) = metrics_of_interest{3};
+            end
             
         end
         

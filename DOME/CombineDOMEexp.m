@@ -7,30 +7,30 @@ experiments_folder = '/Volumes/DOMEPEN/Experiments';
 % experiments must have the same inputs
 
 %% Euglena
-% switch 10s all
-tag = 'Euglena_switch_10';
-experiments_names = ["2023_06_15_Euglena_7", "2023_06_26_Euglena_23","2023_06_26_Euglena_24", "2023_07_10_Euglena_15", "2023_07_10_Euglena_16"];
-
-% switch 10s selected
-tag = 'Euglena_switch_10';
-experiments_names = ["2023_06_15_Euglena_7", "2023_06_26_Euglena_24", "2023_07_10_Euglena_15"];
-
-% switch 5s
-tag = 'Euglena_switch_5';
-experiments_names = ["2023_06_15_Euglena_8", "2023_06_26_Euglena_25", "2023_07_10_Euglena_18"];
-
-% switch 1s
-tag = 'Euglena_switch_1';
-experiments_names = ["2023_06_15_Euglena_11", "2023_06_26_Euglena_28", "2023_07_10_Euglena_19"];
-
-% off
-tag = 'Euglena_OFF';
-experiments_names = ["2023_06_15_Euglena_1", "2023_06_26_Euglena_13", "2023_07_10_Euglena_6"];
-
-% OFF-ON-OFF 75
-tag = 'Euglena_75_ON';
-experiments_names = ["2023_06_15_Euglena_2", "2023_06_26_Euglena_16", "2023_07_10_Euglena_8"]; % old
-experiments_names = ["2023_06_15_Euglena_2", "2023_06_26_Euglena_15", "2023_07_10_Euglena_8"]; % old
+% % switch 10s all
+% tag = 'Euglena_switch_10';
+% experiments_names = ["2023_06_15_Euglena_7", "2023_06_26_Euglena_23","2023_06_26_Euglena_24", "2023_07_10_Euglena_15", "2023_07_10_Euglena_16"];
+% 
+% % switch 10s selected
+% tag = 'Euglena_switch_10';
+% experiments_names = ["2023_06_15_Euglena_7", "2023_06_26_Euglena_24", "2023_07_10_Euglena_15"];
+% 
+% % switch 5s
+% tag = 'Euglena_switch_5';
+% experiments_names = ["2023_06_15_Euglena_8", "2023_06_26_Euglena_25", "2023_07_10_Euglena_18"];
+% 
+% % switch 1s
+% tag = 'Euglena_switch_1';
+% experiments_names = ["2023_06_15_Euglena_11", "2023_06_26_Euglena_28", "2023_07_10_Euglena_19"];
+% 
+% % off
+% tag = 'Euglena_OFF';
+% experiments_names = ["2023_06_15_Euglena_1", "2023_06_26_Euglena_13", "2023_07_10_Euglena_6"];
+% 
+% % OFF-ON-OFF 75
+% tag = 'Euglena_75_ON';
+% experiments_names = ["2023_06_15_Euglena_2", "2023_06_26_Euglena_16", "2023_07_10_Euglena_8"]; % old
+% experiments_names = ["2023_06_15_Euglena_2", "2023_06_26_Euglena_15", "2023_07_10_Euglena_8"]; % old
 
 % % OFF-ON-OFF 150
 % tag = 'Euglena_150_ON';

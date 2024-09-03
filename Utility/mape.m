@@ -8,12 +8,12 @@ arguments
     option = 'default'
 end
 
-if strcmp(option,'default')
-    error = mean(abs((x_ref-x)./x_ref));
-elseif strcmp(option,'wMAPE')
-    error = mean(abs(x_ref-x))/mean(x_ref);
-elseif strcmp(option,'symmetric')
-    error = 2*mean(abs(x_ref-x)./(abs(x_ref)+abs(x)));
+if strcmp(option,'default')     % MAPE
+    error = mean(abs((x_ref-x)./x_ref),'omitnan');
+elseif strcmp(option,'wMAPE')   % Weighted MAPE (on refernece signal average)
+    error = mean(abs(x_ref-x),'omitnan')/mean(x_ref,'omitnan');
+elseif strcmp(option,'symmetric') % Symmetric MAPE (on both signals averages)
+    error = 2*mean(abs(x_ref-x)./(abs(x_ref)+abs(x)),'omitnan');
 end
 
 end

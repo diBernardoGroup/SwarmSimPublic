@@ -1,4 +1,4 @@
-function [] = myboxplot(data, significance, whisker, colors, out_threshold)
+function [p] = myboxplot(data, significance, whisker, colors, out_threshold)
 
 arguments
     data
