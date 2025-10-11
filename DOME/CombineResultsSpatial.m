@@ -32,8 +32,18 @@ diustr_up_lim  = 0.75;     % ylim of the distribution plot
 %                      ["2023_06_23_E_7","2023_06_23_E_8","2023_06_23_E_9","2023_06_26_E_7","2023_06_26_E_8","2023_06_26_E_34","2023_06_26_E_35","2023_07_10_E_23"];
 %                      ["2023_06_13_E_16","2023_06_14_E_8","2023_06_15_E_13","2023_06_23_E_3","2023_06_26_E_3","2023_06_26_E_4","2023_06_26_E_31","2023_06_26_E_32"];
 %                      ["2023_06_15_E_16","2023_06_23_E_10","2023_06_23_E_11","2023_06_26_E_9","2023_06_26_E_10","2023_06_26_E_36","2023_06_26_E_37","2023_07_10_E_26"];
-%                      ["2023_06_13_E_15","2023_06_15_E_17","2023_06_23_E_13","2023_06_26_E_11","2023_06_26_E_12","2023_06_26_E_39","2023_07_10_E_25","2023_07_10_E_22"]};
+%                      ["2023_06_13_E_15","2023_06_15_E_17","2023_06_23_E_13","2023_06_26_E_11","2023_06_26_E_12","2023_06_26_E_39","2023_07_10_E_22","2023_07_10_E_25"]};
 % output_folder = simulations_folder;
+
+% % BCL
+% tags = ["BCL"];
+% sim_names = ["2024_06_25_BCLx36_1"];
+% experiments_names = {["2023_07_10_E_30","2023_07_10_E_34","2023_07_10_E_35"]};
+% output_folder = fullfile(simulations_folder,sim_names(1));
+% time_to_plot   = 180;   % time of simulation and experiment to look at [s]
+% exp_setup_time = 30;     % initial time window to be discarded from the experiment [s] (set to 30 for BCL, 0 for other exp)
+% n_bins         = 5;     % number of bins for light distribution
+% diustr_up_lim  = 0.4;     % ylim of the distribution plot
 
 % Volvox
 tags = ["half_half","grad_centr_light","grad_centr_dark","grad_lateral","circle_light","circle_dark"];
@@ -45,16 +55,6 @@ experiments_names = {["2023_07_04_V_19","2023_07_04_V_20","2023_07_05_V_11","202
                      ["2023_07_04_V_27","2023_07_04_V_28","2023_07_05_V_16","2023_07_05_V_23","2023_07_05_V_34","2023_07_07_V_6"];
                      ["2023_07_05_V_17","2023_07_05_V_18","2023_07_05_V_24","2023_07_05_V_25","2023_07_05_V_35","2023_07_07_V_7"]};
 output_folder = simulations_folder;
-
-% % BCL
-% tags = ["BCL"];
-% sim_names = ["2024_06_25_BCLx36_1"];
-% experiments_names = {["2023_07_10_E_30","2023_07_10_E_34","2023_07_10_E_35"]};
-% output_folder = fullfile(simulations_folder,sim_names(1));
-% time_to_plot   = 180;   % time of simulation and experiment to look at [s]
-% exp_setup_time = 30;     % initial time window to be discarded from the experiment [s] (set to 30 for BCL, 0 for other exp)
-% n_bins         = 5;     % number of bins for light distribution
-% diustr_up_lim  = 0.4;     % ylim of the distribution plot
 
 %% LOAD DATA
 combo_mask = cell(1,length(experiments_names));

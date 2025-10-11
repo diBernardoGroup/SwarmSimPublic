@@ -10,12 +10,12 @@ experiments_folder = '/Volumes/DOMEPEN/Experiments';
 % tag='Euglena_grad_lateral';     experiments = {'2023_06_13_E_16','2023_06_14_E_8','2023_06_15_E_13','2023_06_23_E_3','2023_06_26_E_3','2023_06_26_E_4','2023_06_26_E_31','2023_06_26_E_32'};
 % tag='Euglena_circle_light';     experiments = {'2023_06_15_E_16','2023_06_23_E_10','2023_06_23_E_11','2023_06_26_E_9','2023_06_26_E_10','2023_06_26_E_36','2023_06_26_E_37','2023_07_10_E_26'};
 % tag='Euglena_circle_dark';      experiments = {'2023_06_13_E_15','2023_06_15_E_17','2023_06_23_E_13','2023_06_26_E_11','2023_06_26_E_12','2023_06_26_E_39','2023_07_10_E_25','2023_07_10_E_22'};
-% tag='Euglena_BCL_dark_x36';     experiments = {"2023_07_10_E_30","2023_07_10_E_34","2023_07_10_E_35"};
+tag='Euglena_BCL_dark_x36';     experiments = {"2023_07_10_E_30","2023_07_10_E_34","2023_07_10_E_35"};
 % tag='Euglena_BCL_light_x36';    experiments = {"2023_07_10_E_36","2023_07_10_E_37","2023_07_10_E_38"};
 % tag='Euglena_spatial_mix';      experiments = {'2023_07_10_E_34','2023_06_26_E_11','2023_07_10_E_26','2023_06_23_E_9','2023_06_14_E_7','2023_06_14_E_6'};
 
 % VOLVOX
-tag='Volvox_half_half';        experiments = {'2023_07_04_V_19','2023_07_04_V_20','2023_07_05_V_11','2023_07_05_V_32','2023_07_05_V_33','2023_07_07_V_1','2023_07_07_V_2'};
+% tag='Volvox_half_half';        experiments = {'2023_07_04_V_19','2023_07_04_V_20','2023_07_05_V_11','2023_07_05_V_32','2023_07_05_V_33','2023_07_07_V_1','2023_07_07_V_2'};
 % tag='Volvox_grad_lateral';     experiments = {'2023_06_08_V_14','2023_06_08_V_16','2023_07_04_V_21','2023_07_04_V_22','2023_07_05_V_12','2023_07_05_V_30','2023_07_05_V_31','2023_07_07_V_3'};
 % tag='Volvox_grad_centr_light'; experiments = {'2023_06_08_V_17','2023_07_04_V_23','2023_07_04_V_24','2023_07_05_V_13','2023_07_05_V_28','2023_07_05_V_29','2023_07_06_V_6','2023_07_07_V_4'};
 % tag='Volvox_grad_centr_dark';  experiments = {'2023_07_04_V_25','2023_07_04_V_26','2023_07_05_V_14','2023_07_05_V_26','2023_07_05_V_27','2023_07_06_V_7','2023_07_07_V_5'};
@@ -107,8 +107,8 @@ for i = 1:length(experiments)
         axis(window)
         xticks([])
         yticks([])
-        saveas(gcf,fullfile(data_folder,'plots', 'final_positions'))
-        saveas(gcf,fullfile(data_folder,'plots', 'final_positions'),'png')
+%         saveas(gcf,fullfile(data_folder,'plots', 'final_positions'))
+%         saveas(gcf,fullfile(data_folder,'plots', 'final_positions'),'png')
         
         figure % single exp light distribution
         bar((bins(1:end-1)+bins(2:end))/2,density_by_input(i,:), 1)
@@ -123,8 +123,8 @@ for i = 1:length(experiments)
         ylim([0,max(density_by_input(i,:))*1.15])
         xlim([-0.1,1.1])
         xticks(round(bins,2))
-        saveas(gcf,fullfile(data_folder,'plots', 'light_distribution'))
-        saveas(gcf,fullfile(data_folder,'plots', 'light_distribution'),'png')
+%         saveas(gcf,fullfile(data_folder,'plots', 'light_distribution'))
+%         saveas(gcf,fullfile(data_folder,'plots', 'light_distribution'),'png')
     end
 end
 
@@ -134,8 +134,8 @@ if ~exist(comparison_output_folder , 'dir'); mkdir(comparison_output_folder); en
 
 % save comparison figure
 set(0, 'CurrentFigure', main_fig)
-saveas(gcf,fullfile(comparison_output_folder,'all'))
-saveas(gcf,fullfile(comparison_output_folder,'all'),'png')
+% saveas(gcf,fullfile(comparison_output_folder,'all'))
+% saveas(gcf,fullfile(comparison_output_folder,'all'),'png')
 
 figure % mean light distribution
 mean_dist = sum(agents_by_input./pixels_by_input,1);
@@ -153,8 +153,8 @@ ylim([0,max(mean_dist)*1.15])
 xlim([-0.1,1.1])
 xticks(round(bins,2))
 title('Weighted mean distribution w.r.t. light intensity')
-saveas(gcf,fullfile(comparison_output_folder,'mean_light_distribution'))
-saveas(gcf,fullfile(comparison_output_folder,'mean_light_distribution'),'png')
+% saveas(gcf,fullfile(comparison_output_folder,'mean_light_distribution'))
+% saveas(gcf,fullfile(comparison_output_folder,'mean_light_distribution'),'png')
 
 % figure % mean light distribution
 % mean_dist = mean(density_by_input,1);
