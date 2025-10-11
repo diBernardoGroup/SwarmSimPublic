@@ -1,8 +1,8 @@
 %
-%defaultParam Set the default values of the parameters.
-%   It is called by launcher scripts such as Launcher.
+%defaultParam Set the default values of the parameters to simulate microorganisms.
+%   It is called by launcher scripts such as LauncherMicroorg.
 %
-%   See also: Launcher, SequentialLauncher
+%   See also: LauncherMicroorg.
 %   
 %   Authors:    Andrea Giusti
 %   Date:       2023
@@ -18,7 +18,6 @@ addpath(genpath(cur_dir));
 % Directory to save the results of the simulations.
 % Set outputDir='' to prevent automatic saving.
 outputDir='./Output';
-%outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
 outputDir='';
 
 N=500;                      % number of agents (N)
@@ -30,8 +29,8 @@ brightness_thresh = 0.3;    % brightness threshold for object detection (spatial
 background_sub = true;      % use background subtraction for object detection (spatial experiments)
 pattern_blurring = 15;      % blurring of the spatial input pattern (spatial experiments)
 n_bins = 3;
-% px_size = 1.25;             % size of a pixel [um] EUGLENA
-px_size = 4.44;             % size of a pixel [um] VOLVOX
+px_size = 1.25;             % size of a pixel [um] EUGLENA
+% px_size = 4.44;             % size of a pixel [um] VOLVOX
 
 
 %% Simulation parameters
@@ -119,29 +118,16 @@ Render.time_plot = 0:45:Simulation.Tmax;
 Render.all_time = 0:Simulation.deltaT:Simulation.Tmax;
 Render.shaded = true;
 
-% % Euglena
-% Render.agentShape = "rod";          % shape to plot the agents "rod" or any defualt marker key ('.','+','diamond',...)
-% Render.agentSize = 30; 
+% Euglena
+Render.agentShape = "rod";          % shape to plot the agents "rod" or any defualt marker key ('.','+','diamond',...)
+Render.agentSize = 30; 
 
-% Volvox
-Render.agentShape = ".";          % shape to plot the agents "rod" or any defualt marker key ('.','+','diamond',...)
-Render.agentSize = 60; 
+% % Volvox
+% Render.agentShape = ".";          % shape to plot the agents "rod" or any defualt marker key ('.','+','diamond',...)
+% Render.agentSize = 60; 
 
 % Light palette - red inputs
 Render.agentsColor = [0 0 1]; % blue
 Render.sim_c =      [0 0 0]; % black
 Render.exp_c =      [0 0 1]; % blue
 Render.cmap_inputs = linspace2([1,1,1], [1,0.5,0.5], 100)';  % light red
-
-% % Light palette - blue inputs
-% std_colors = colororder();
-% Render.agentsColor = std_colors(1,:); % blue
-% Render.sim_c =      [0 0 0]; % black
-% Render.exp_c =      std_colors(7,:); % dark red
-% Render.cmap_inputs = linspace2([1,1,1], [0.5,0.5,1], 100)'; % light blue
-
-% % Dark palette
-% Render.agentsColor = [1 0 0];
-% Render.sim_c = [255 166 48]/255;
-% Render.exp_c = [32 191 85]/255;
-% Render.cmap_inputs = linspace2([42,35,31]/255, [0,71,143]/255, 100)'; 

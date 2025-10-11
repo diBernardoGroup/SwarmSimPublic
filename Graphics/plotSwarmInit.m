@@ -32,7 +32,7 @@ arguments
     RMin        double {mustBeNonnegative}
     RMax        double {mustBeNonnegative}
     %windowSize  double {mustBePositive}     = 10
-    window      double      = [-5 5, -5, 5]
+    window      double                      = [-5 5, -5, 5]
     tickStep    double                      = [window(2)-window(1), window(4)-window(3)]/2
     showGrid    logical                     = false
     gradColor   logical                     = false
@@ -47,6 +47,10 @@ end
 %     if length(windowSize)==1
 %         windowSize = [windowSize, windowSize];
 %     end
+
+    if isempty(tickStep)
+        tickStep = [window(2)-window(1), window(4)-window(3)]/2;
+    end
     
     if length(tickStep)==1
         tickStep = [tickStep, tickStep];

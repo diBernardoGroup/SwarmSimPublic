@@ -8,12 +8,15 @@
 %   Date:       2023
 %
 
+%% Add subfolders to the Matlab path
+current_folder = fileparts(which('defaultParam'));
+addpath(genpath(current_folder));
+
 %% Default Parameters
 
 % Directory to save the results of the simulations.
 % Set outputDir='' to prevent automatic saving.
 outputDir='./Output';
-outputDir='/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/SwarmSim/simulations';
 % outputDir='';
 
 N=40;                      % number of agents
@@ -35,15 +38,12 @@ Simulation.Tmax =   5;     % maximum simulation time (simulation is stopped earl
 Simulation.deltaT = 0.1;    % sampling time step
 Simulation.dT =     0.001;  % integration time step
 Simulation.arena =  [10,10];% size of the simulation window
-Simulation.drawON=false;    % draw swarm during simulation (if N is large slows down the simulation)
-Simulation.drawTraj=0;      % draw trajectories of the agents (if N is large slows down the simulation)
-Simulation.recordVideo=false;% record video of the simulation (if true drawON must be true)
 Simulation.timeInstants = [0:Simulation.deltaT:Simulation.Tmax];
 
 %% Initial conditions
 % Initial positions
 delta=(Rmax-1) * 0.5;               % maximum displacement of the initial positions. delta<=(Rmax-1)/2 preserves all the links
-x0=randCircle(N, 4, D);             % initial conditions drawn from a uniform disc
+x0=randCircle(N, 3, D);             % initial conditions drawn from a uniform disc
 %x0 = normrnd(0,0.1*sqrt(N),N,D);    % initial conditions drawn from a normal distribution
 %x0 = perfectLactice(N, LinkNumber, D, true, true, (floor(nthroot(N,D)+1))^D); % initial conditions on a correct lattice
 %x0 = perfectLactice(N, LinkNumber, D) + randCircle(N, delta, D); % initial conditions on a deformed lattice
@@ -105,7 +105,22 @@ Environment = struct();
 % Environment.Inputs.Values = linspace(-1,1,length(Environment.Inputs.Points{1}))' * ones(1,length(Environment.Inputs.Points{2}));
 
 
-%% Add subfolders to the Matlab path
-current_folder = fileparts(which('defaultParam'));
-addpath(genpath(current_folder));
+%% Render parameters
+Render.window = [-Simulation.arena(1),Simulation.arena(1),-Simulation.arena(2),Simulation.arena(2)]/2; % size of the simulation window
+Render.drawON=false;                % draw swarm during simulation (if N is large slows down the simulation)
+Render.drawTraj=0;                  % draw trajectories of the agents (if N is large slows down the simulation)
+Render.recordVideo=false;           % record video of the simulation (if true drawON must be true)
+Render.frameRate = 1/Simulation.deltaT * 6;
+Render.time_plot = 0:45:Simulation.Tmax;
+Render.all_time = 0:Simulation.deltaT:Simulation.Tmax;
+Render.shaded = true;
 
+% Light palette - red inputs
+Render.agentsColor = [0 0 1]; % blue
+Render.sim_c =      [0 0 0]; % black
+Render.exp_c =      [0 0 1]; % blue
+Render.cmap_inputs = linspace2([1,1,1], [1,0.5,0.5], 100)';  % light red
+
+% Agents
+Render.agentShape = ".";          % shape to plot the agents "rod" or any defualt marker key ('.','+','diamond',...)
+Render.agentSize = 20; 

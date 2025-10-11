@@ -136,11 +136,11 @@ while t<Simulation.Tmax
     
     % Compute environmental inputs
     if isfield(Environment,'Inputs')
-        if isfield(Environment.Inputs,'Points')
+        if isfield(Environment.Inputs,'Points') && ~strcmp(Environment.Inputs.Points,'None')
             inputIndex = find(Environment.Inputs.Times <= t, 1, 'last')
             F = griddedInterpolant(Environment.Inputs.Points(inputIndex,:),Environment.Inputs.Values{inputIndex}, 'linear', 'nearest');
             envInput = F(x(:,1),x(:,2));
-        elseif isfield(Environment.Inputs,'Times')
+        elseif isfield(Environment.Inputs,'Times') && ~strcmp(Environment.Inputs.Times,'None')
             envInput = ones(N,1) * interp1(Environment.Inputs.Times, Environment.Inputs.Values, t, Environment.Inputs.InterpMethod);
         end
     end
@@ -160,9 +160,9 @@ while t<Simulation.Tmax
             cla
             hold on
             if isfield(Environment,'Inputs')
-                if isfield(Environment.Inputs,'Points')
+                if isfield(Environment.Inputs,'Points') && ~strcmp(Environment.Inputs.Points,'None') 
                     imagesc(x_vec,y_vec,F(x_mesh',y_mesh')')
-                elseif isfield(Environment.Inputs,'Times')
+                elseif isfield(Environment.Inputs,'Times') && ~strcmp(Environment.Inputs.Times,'None')
                     set(gca,'Color',interp1(linspace(0,1,100),cmap,interp1(Environment.Inputs.Times, Environment.Inputs.Values, t, Environment.Inputs.InterpMethod)))
                 end
             end
@@ -211,7 +211,7 @@ if Render.drawON
     end
     if Render.drawTraj; plotTrajectory(xVec, false, [0,0.7,0.9], Render.drawTraj); end
     if isfield(LocalIntFunction, 'DistanceRange')
-        plotSwarm(squeeze(xVec(end,:,:)), t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), flase, ones(size(x,1), 1), false, Render.agentShape, Render.agentSize, Render.agentsColor, x-v);
+        plotSwarm(squeeze(xVec(end,:,:)), t, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), false, ones(size(x,1), 1), false, Render.agentShape, Render.agentSize, Render.agentsColor, x-v);
     else
         plotSwarm(squeeze(xVec(end,:,:)), t, inf, inf, false, ones(size(x,1), 1), false, Render.agentShape, Render.agentSize, Render.agentsColor, x-v);
     end
