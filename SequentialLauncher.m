@@ -18,28 +18,28 @@
 
 %% Clear environment
 clear
-%close all
-%clc
+close all
+clc
 
 %% Parameters
 
-Ntimes=2;              % How many simulations are launched for each configuration
+Ntimes=4;              % How many simulations are launched for each configuration
 
 defaultParam;           % load default parameters
 
 seed=1;                 % seed for random generator, if negative it is not set
 
 %% Loads DOME experiment data
-outputDir = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/SwarmSim/simulations';
+outputDir = '';
 
 %% variable parameters
 % One or multiple parameters can be modified at the same time.
 % Parameters must be existing variables.
 % The values specified here overwrite the default ones.
 parameters(1).name='delta';
-parameters(1).values=[0:0.5:1];
-parameters(2).name='N';
-parameters(2).values=[25, 50];
+parameters(1).values=[0:0.25:1];
+% parameters(2).name='N';
+% parameters(2).values=[25, 50];
 
 % parameters(1).name='Dynamics.gainDerSpeed';
 % parameters(1).values=[-10,-5,-2,-1,0,1,2,5,10]*5;
@@ -57,16 +57,16 @@ Nconfig=size(p, 1);
 timeInstants = 0:Simulation.deltaT:Simulation.Tmax;
 window = [-Simulation.arena(1),Simulation.arena(1),-Simulation.arena(2),Simulation.arena(2)]/2;
 
-xVec=nan(length(timeInstants),N,D);
-x_f = cell(Nconfig,Ntimes);
-e_L=nan(Nconfig,Ntimes);
-e_theta=nan(Nconfig,Ntimes);
-Tr_vec=nan(Nconfig,Ntimes);
+xVec        = nan(length(timeInstants),N,D);
+x_f         = cell(Nconfig,Ntimes);
+e_L         = nan(Nconfig,Ntimes);
+e_theta     = nan(Nconfig,Ntimes);
+Tr_vec      = nan(Nconfig,Ntimes);
 success_vec = nan(Nconfig,Ntimes);
 e_d_max_vec = nan(Nconfig, Ntimes);
-V_vec = nan(Nconfig, Ntimes);
-rigid_vec = nan(Nconfig, Ntimes);
-norm_slope = nan(Nconfig, Ntimes);
+V_vec       = nan(Nconfig, Ntimes);
+rigid_vec   = nan(Nconfig, Ntimes);
+norm_slope  = nan(Nconfig, Ntimes);
 
 %% Simulation
 % for each configuration...
@@ -103,8 +103,8 @@ for i_times=1:Nconfig
     
     parfor k_times=1:Ntimes
         % run simulation
-        [xVec] = Simulator(squeeze(x0Data(k_times,:,:)), v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction, Environment);
-        
+        [xVec, uVec, vVec] = Simulator(squeeze(x0Data(k_times,:,:)), v0, Simulation, Dynamics, Render, GlobalIntFunction, LocalIntFunction, Environment);
+
         % analyse final configuration
         xFinal=squeeze(xVec(end,:,:));
         x_f{i_times,k_times} = xFinal;
@@ -251,7 +251,7 @@ elseif Nparameters==2
             if isfield(Environment,'Inputs') && isfield(Environment.Inputs,'Points')
             plotEnvField(Environment.Inputs.Points, Environment.Inputs.Values, Simulation.arena)
             end
-            plotSwarmInit(squeeze(x_f{sub2ind([length(parameters(1).values), length(parameters(2).values)], i_x, i_y),1}), Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Simulation.arena);
+            plotSwarmInit(squeeze(x_f{sub2ind([length(parameters(1).values), length(parameters(2).values)], i_x, i_y),1}), Simulation.Tmax, LocalIntFunction.DistanceRange(1), LocalIntFunction.DistanceRange(2), Render.window);
             xticks([]); yticks([])
             title([parameters(1).name,'=' num2str(parameters(1).values(i_x)),' ', parameters(2).name,'=' num2str(parameters(2).values(i_y))])
         end

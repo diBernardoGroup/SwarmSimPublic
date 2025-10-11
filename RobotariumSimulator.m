@@ -90,7 +90,12 @@ SafetyRad=0.11;
 
 % create initial conditions
 rng(0,'twister'); % reproducible results
-initial_positions = generate_initial_conditions(N, 'Spacing', 0.3, 'Width', 2.8, 'Height', 1.5);
+
+try
+    initial_positions = generate_initial_conditions(N, 'Spacing', 0.3, 'Width', 2.8, 'Height', 1.5);
+catch
+    error("To run this script you need to download the Robotarium source code form https://www.robotarium.gatech.edu/downloads and add it to your Matlab path.")
+end
 
 % robotarium object
 r = Robotarium('NumberOfRobots', N, 'ShowFigure', true, 'InitialConditions', initial_positions);
