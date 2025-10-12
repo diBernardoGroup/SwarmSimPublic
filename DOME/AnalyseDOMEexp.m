@@ -1,3 +1,19 @@
+%
+%AnalyseDOMEexp Analyse microorganisms behaviour from a DOME experiment.
+%   This script helps you studying the motion of the microorganisms and 
+%   which photo-movement response they are exibitying.
+%
+%   To run this script you need the kinematic data of the microorganisms genereted 
+%   from DOME_experiment_analysis of DOME-software.
+%
+%   DOME-software is available at https://github.com/andreagiusti96/DOME-software.
+%
+%   See also: IdentifyDOMEexp.
+%
+%   Authors:    Andrea Giusti and Davide Salzano
+%   Date:       2024
+%
+
 clear
 close all
 
@@ -6,20 +22,19 @@ close all
 defaultParamMicroorg;
 
 % Add the path to your data
-% experiments_folder="C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\";    % DAVIDE
 experiments_folder="/Volumes/DOMEPEN/Experiments";                                          % ANDREA
 experiments_folder = fullfile(experiments_folder,'comparisons');
 
 % EUGLENA
 % experiments_names=[fullfile("Euglena_75_ON","combo"),fullfile("Euglena_150_ON","combo"),fullfile("Euglena_255_ON","combo")];
-% experiments_names=[fullfile("Euglena_255_ON","combo")];
+experiments_names=[fullfile("Euglena_255_ON","combo")];
 % experiments_names=[fullfile("Euglena_OFF","combo")];
 
 % VOLVOX
 % experiments_names=[fullfile("Volvox_75_ON","combo"),fullfile("Volvox_150_ON","combo"),fullfile("Volvox_255_ON","combo")];
 % experiments_names=[fullfile("Volvox_255_ON","combo")];
 % experiments_names=[fullfile("Volvox_switch_10","combo5")];
-experiments_names=[fullfile("Volvox_OFF","combo")];
+% experiments_names=[fullfile("Volvox_OFF","combo")];
 %experiments_names="2023_07_04_Volvox_11";
 
 
@@ -75,16 +90,14 @@ for exp=1:length(experiments_names)
     % speed = speed./median(median(speed(1:60,:),2,'omitnan'),'omitnan');
     % omega = abs(omega)./median(median(abs(omega(1:60,:)),2,'omitnan'),'omitnan');
     
-    N = size(speed,2);                                  %Number of Agents
-    timeInstants = [0:size(speed,1)-1] * deltaT;        %Time vecor
-    agents = [0:N-1]';                                  %Agents ID
-    u=inputs(:,1)/255;                                  %Normalized input (0,1)
-    u_dot_BE = [0;diff(u)]/deltaT;                      %Derivative of the control input
-    % u_dot_grad = gradient(u)/deltaT;
-    u_dot = u_dot_BE;                                   %Standardise notation
-    u_dotn = min(u_dot,0);                              %Study step-down response
-    u_dotp = max(u_dot,0);                              %Study step-up response
-    u_matrix = [u, u_dot];                              %Input vecotrization
+    N = size(speed,2);                                  % Number of Agents
+    timeInstants = [0:size(speed,1)-1] * deltaT;        % Time vecor
+    agents = [0:N-1]';                                  % Agents ID
+    u=inputs(:,1)/255;                                  % Normalized input (0,1)
+    u_dot = [0;diff(u)]/deltaT;                         % Derivative of the control input
+    u_dotn = min(u_dot,0);                              % Study step-down response
+    u_dotp = max(u_dot,0);                              % Study step-up response
+    u_matrix = [u, u_dot];                              % Input vecotrization
     
     
     
@@ -125,12 +138,12 @@ for exp=1:length(experiments_names)
         
         
         %Parameters of the plots
-        k_est = true;                                   %Show continous densities
-        n_bins = 16;                                    %Bins of the Histogram
-        Pix_SS = get(0,'screensize');                   %Get screen n of pixels
-        sc_w = Pix_SS(3);                               %Get screen width
-        sc_h = Pix_SS(4);                               %Get screen heigt
-        offs = 50;                                      %Offset to compensate windows bar
+        k_est = true;                                   % Show continous densities
+        n_bins = 16;                                    % Bins of the Histogram
+        Pix_SS = get(0,'screensize');                   % Get screen n of pixels
+        sc_w = Pix_SS(3);                               % Get screen width
+        sc_h = Pix_SS(4);                               % Get screen heigt
+        offs = 50;                                      % Offset to compensate windows bar
         sc_h = sc_h-offs;
         
         

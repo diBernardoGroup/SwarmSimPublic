@@ -1,47 +1,65 @@
+%
+%IdentifyDOMEexp Fit model's parameters to match microorganisms behaviour from a DOME experiment.
+%   This script generates the identification data with the kinematic 
+%   parameters of the digital twins.
+%
+%   To run this script you need the kinematic data of the microorganisms genereted 
+%   from DOME_experiment_analysis of DOME-software.
+%   To study which terms of the model should be active use AnalyseDOMEexp.
+%   After generating the identification data you can simulate the digital
+%   twins with SimulateDOMEexp.
+%
+%   DOME-software is available at https://github.com/andreagiusti96/DOME-software.
+%
+%   See also: SimulateDOMEexp, AnalyseDOMEexp, .
+%
+%   Authors:    Andrea Giusti and Davide Salzano
+%   Date:       2024
+%
+
 clear
 close all
 
 % Add the path to your data
-% experiments_folder="C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\";    % DAVIDE
 experiments_folder="/Volumes/DOMEPEN/Experiments/comparisons";                                          % ANDREA
 
-% experiment_name=[fullfile("Euglena_switch_10","combo5")];
-% experiment_name=[fullfile("Volvox_switch_10","combo5")];
-experiment_name=[fullfile("Volvox_255_ON","combo5")];
+experiment_name=[fullfile("Euglena_switch_10","combo5")];   % Euglena
+% experiment_name=[fullfile("Volvox_switch_10","combo5")];  % Volvox
+% experiment_name=[fullfile("Volvox_255_ON","combo5")];     % Volvox
 
 identification_file_name = 'identification_GB.txt';
-identification_method = 'OLS+GB'; %OLS+GB
+identification_method = 'OLS+GB';
 downSampling = 1;
 
-% % EUGLENA PARAMETERS
-% min_duration = 10; %[s]
-% no_mu_w = true;
-% use_wabs = true;   % use abs(w) for identification, then recover parameters for w
-% %parameters [theta, alpha, beta, mu]
-% % init_v    = 'identification_GB_mean.txt';
-% % init_wabs = 'identification_GB_mean.txt';
-% % init_v    = []; %[0.15, 0, -45, 75];
-% % init_wabs = []; %[0.15, 0, 0.6,  0];
-% % limits_v = [init_v;init_v]; 
-% % limits_w = [init_w;init_w];
-% limits_v =    [  0    0 -inf   0; 
-%                inf    0   0   inf]; 
-% limits_wabs = [  0    0   0    0; 
-%                inf    0  inf  inf];
-           
-% VOLVOX PARAMETERS
-min_duration = 10; %[s]
-no_mu_w = false;
-use_wabs = false;  % use abs(w) for identification, then recover parameters for w
+% EUGLENA PARAMETERS
+min_duration = 10;  % Minimum trajectory duration [s] 
+no_mu_w = true;     % Set average angular velocity to zero
+use_wabs = true;    % Use abs(w) for identification, then recover parameters for w
 %parameters [theta, alpha, beta, mu]
 % init_v    = 'identification_GB_mean.txt';
-% init_w    = 'identification_GB_mean.txt';
-init_v    = []; %[0.15, 0, -45, 50];
-init_w    = []; %[0.15, 0,   0,  0];
+% init_wabs = 'identification_GB_mean.txt';
+init_v    = []; %[0.15, 0, -45, 75];
+init_wabs = []; %[0.15, 0, 0.6,  0];
+% limits_v = [init_v;init_v]; 
+% limits_w = [init_w;init_w];
 limits_v =    [  0    0 -inf   0; 
                inf    0   0   inf]; 
-limits_w =    [  0    0   0    0; 
-               inf    0   0   inf];
+limits_wabs = [  0    0   0    0; 
+               inf    0  inf  inf];
+           
+% % VOLVOX PARAMETERS
+% min_duration = 10;    % Minimum trajectory duration [s] 
+% no_mu_w = false;      % Set average angular velocity to zero
+% use_wabs = false;     % Use abs(w) for identification, then recover parameters for w
+% %parameters [theta, alpha, beta, mu]
+% % init_v    = 'identification_GB_mean.txt';
+% % init_w    = 'identification_GB_mean.txt';
+% init_v    = []; %[0.15, 0, -45, 50];
+% init_w    = []; %[0.15, 0,   0,  0];
+% limits_v =    [  0    0 -inf   0; 
+%                inf    0   0   inf]; 
+% limits_w =    [  0    0   0    0; 
+%                inf    0   0   inf];
         
 deltaT = 0.5;        % sampling time step
 dT = 0.01;           % integration time step (for simulation)
