@@ -30,7 +30,7 @@ if ~strcmp(inputs,'None')
     in_max=max(inputs);
     
     switches = find(abs(input_differences) > (in_max/100));
-    switches = [1,switches,length(x)];
+    switches = [1,switches,length(input_differences)];
     
     if in_max>0
         for i = 1:length(switches)-1

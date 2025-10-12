@@ -115,7 +115,7 @@ log_txt = ['- Simulating ',num2str(N),' ',Dynamics.model, ' agents in ', num2str
 if ~strcmp(GlobalIntFunction.function, 'None'); log_txt = [log_txt,' with ',GlobalIntFunction.function,' interaction']; end
 if isfield(Environment,'Inputs')
     if isfield(Environment.Inputs,'Points') && isfield(Environment.Inputs,'Times')
-        log_txt = [log_txt,' with spatiotemporal inputs'];    
+        log_txt = [log_txt,' with spatiotemporal inputs'];
     elseif isfield(Environment.Inputs,'Points')
         log_txt = [log_txt,' with spatial inputs'];
     else
@@ -136,11 +136,11 @@ while t<Simulation.Tmax
     
     % Compute environmental inputs
     if isfield(Environment,'Inputs')
-        if isfield(Environment.Inputs,'Points') && ~strcmp(Environment.Inputs.Points,'None')
-            inputIndex = find(Environment.Inputs.Times <= t, 1, 'last')
+        if isfield(Environment.Inputs,'Points') && ~all(strcmp(Environment.Inputs.Points,'None'),'all')
+            inputIndex = find(Environment.Inputs.Times <= t, 1, 'last');
             F = griddedInterpolant(Environment.Inputs.Points(inputIndex,:),Environment.Inputs.Values{inputIndex}, 'linear', 'nearest');
             envInput = F(x(:,1),x(:,2));
-        elseif isfield(Environment.Inputs,'Times') && ~strcmp(Environment.Inputs.Times,'None')
+        elseif isfield(Environment.Inputs,'Times') && ~all(strcmp(Environment.Inputs.Times,'None'),'all')
             envInput = ones(N,1) * interp1(Environment.Inputs.Times, Environment.Inputs.Values, t, Environment.Inputs.InterpMethod);
         end
     end
@@ -160,9 +160,9 @@ while t<Simulation.Tmax
             cla
             hold on
             if isfield(Environment,'Inputs')
-                if isfield(Environment.Inputs,'Points') && ~strcmp(Environment.Inputs.Points,'None') 
+                if isfield(Environment.Inputs,'Points') && ~all(strcmp(Environment.Inputs.Points,'None'),'all')
                     imagesc(x_vec,y_vec,F(x_mesh',y_mesh')')
-                elseif isfield(Environment.Inputs,'Times') && ~strcmp(Environment.Inputs.Times,'None')
+                elseif isfield(Environment.Inputs,'Times') && ~all(strcmp(Environment.Inputs.Times,'None'),'all')
                     set(gca,'Color',interp1(linspace(0,1,100),cmap,interp1(Environment.Inputs.Times, Environment.Inputs.Values, t, Environment.Inputs.InterpMethod)))
                 end
             end
