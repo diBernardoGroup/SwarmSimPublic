@@ -22,7 +22,7 @@ close all
 defaultParamMicroorg;
 
 % Add the path to your data
-experiments_folder="/Volumes/DOMEPEN/Experiments";                                          
+experiments_folder = "/PATH/TO/THE/EXPERIMENTS";         % path to the DOME experiments data
 experiments_folder = fullfile(experiments_folder,'comparisons');
 
 % EUGLENA

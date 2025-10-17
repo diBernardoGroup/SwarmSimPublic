@@ -17,8 +17,8 @@ clear
 close all
 
 % Add the path to your data
-% experiments_folder="C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\";    % DAVIDE
-experiments_folder="/Volumes/DOMEPEN/Experiments/comparisons";                                          % ANDREA
+experiments_folder = "/PATH/TO/THE/EXPERIMENTS";         % path to the DOME experiments data
+experiments_folder = fullfile(experiments_folder,"comparisons");                                          % ANDREA
 
 outputDir = experiments_folder;
 

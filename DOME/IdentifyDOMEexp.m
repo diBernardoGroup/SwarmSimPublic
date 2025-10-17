@@ -21,7 +21,8 @@ clear
 close all
 
 % Add the path to your data
-experiments_folder="/Volumes/DOMEPEN/Experiments/comparisons";                                          % ANDREA
+experiments_folder = "/PATH/TO/THE/EXPERIMENTS";         % path to the DOME experiments data
+experiments_folder = fullfile(experiments_folder,"comparisons");                                          % ANDREA
 
 experiment_name=[fullfile("Euglena_switch_10","combo5")];   % Euglena
 % experiment_name=[fullfile("Volvox_switch_10","combo5")];  % Volvox

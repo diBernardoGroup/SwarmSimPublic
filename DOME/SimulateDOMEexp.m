@@ -18,7 +18,7 @@ clear
 
 defaultParamMicroorg;               % load default parameters to simulate microorganisms
 
-experiments_folder="/Volumes/DOMEPEN/Experiments";         % path to the DOME experiments data
+experiments_folder="/PATH/TO/THE/EXPERIMENTS";         % path to the DOME experiments data
 
 % Select the DOME experiment to be simulated
 % EUGLENA

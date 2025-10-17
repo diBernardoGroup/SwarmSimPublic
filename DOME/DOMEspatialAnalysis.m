@@ -17,7 +17,7 @@
 clear
 close all
 
-experiments_folder = '/Volumes/DOMEPEN/Experiments';
+experiments_folder = "/PATH/TO/THE/EXPERIMENTS";         % path to the DOME experiments data
 
 % EUGLENA
 % tag='Euglena_half_half';        experiments = {'2023_06_12_E_2','2023_06_14_E_6','2023_06_15_E_12','2023_06_26_E_29','2023_06_26_E_30','2023_06_23_E_1','2023_06_23_E_2','2023_06_26_E_2'};

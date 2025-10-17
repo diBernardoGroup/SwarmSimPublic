@@ -39,7 +39,7 @@ makeSimFolders = true; % save data of individual simulations
 N = 2000;
 
 %% Loads DOME experiment data
-experiments_folder = '/Volumes/DOMEPEN/Experiments';
+experiments_folder="/PATH/TO/THE/EXPERIMENTS";         % path to the DOME experiments data
 
 % EUGLENA
 experiment = '/comparisons/Euglena_switch_10/combo5';

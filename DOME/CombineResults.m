@@ -14,7 +14,7 @@ defaultParamMicroorg;
 
 % ANDREA
 simulations_folder = 'Output';
-experiments_folder = "/Volumes/DOMEPEN/Experiments";
+experiments_folder = "/PATH/TO/THE/EXPERIMENTS";         % path to the DOME experiments data
 
 
 %% EUGLENA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
