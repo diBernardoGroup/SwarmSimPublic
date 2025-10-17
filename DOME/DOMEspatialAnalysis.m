@@ -1,3 +1,19 @@
+%
+%DOMEspatialAnalysis Analyse microorganisms behaviour (e.g. photoaccumulation) 
+%   from a DOME experiment with spatial inputs.
+%   This script helps you studying the collective photo-response of the microorganisms.
+%
+%   To run this script you need experimental data from a DOME experiment with 
+%   spatial inputs. For more info see DOME-software.
+%
+%   DOME-software is available at https://github.com/andreagiusti96/DOME-software.
+%
+%   See also: AnalyseDOMEexp.
+%
+%   Authors:    Andrea Giusti and Davide Salzano
+%   Date:       2024
+%
+
 clear
 close all
 

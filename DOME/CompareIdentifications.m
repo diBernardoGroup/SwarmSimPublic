@@ -20,10 +20,10 @@ close all
 % experiments_folder="C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\";    % DAVIDE
 experiments_folder="/Volumes/DOMEPEN/Experiments/comparisons";                                          % ANDREA
 
-% id_folder = fullfile(experiments_folder,"Euglena_switch_10","combo5"); %Euglena
-id_folder = fullfile(experiments_folder,"Volvox_switch_10","combo5"); %Volvox
-
 outputDir = experiments_folder;
+
+% id_folder = fullfile(experiments_folder,"Euglena_switch_10","combo5"); %Euglena
+% id_folder = fullfile(experiments_folder,"Volvox_switch_10","combo5"); %Volvox
 
 % identification_file_names = ["identification_OLS_ds1_sign.txt","identification_OLS_ds2_sign.txt","identification_OLS_ds3_sign.txt";
 %                              %"identification_OLS_ds1_abs.txt","identification_OLS_ds2_abs.txt","identification_OLS_ds3_abs.txt";

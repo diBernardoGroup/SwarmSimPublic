@@ -1,3 +1,10 @@
+%
+%plot_spatial_inputs
+%
+%   Authors:    Andrea Giusti and Davide Salzano
+%   Date:       2024
+%
+
 close all;
 clear
 
@@ -6,14 +13,11 @@ defaultParamMicroorg;
 experiments_folder = "/Volumes/DOMEPEN/Experiments";
 
 % EUGLENA
-% sim_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/media/model validation/Euglena/simulations/2024_06_25_BCLx36_1';
-% experiments_names = ["2023_07_10_E_30","2023_07_10_E_34","2023_07_10_E_35"];
+sim_folder = 'Output';
+experiments_names = ["2023_07_10_E_30","2023_07_10_E_34","2023_07_10_E_35"];
 
 % VOLVOX
 % experiments_names = ["2023_07_04_V_19","2023_07_04_V_20","2023_07_05_V_11","2023_07_05_V_32","2023_07_05_V_33","2023_07_07_V_1","2023_07_07_V_2"];
-
-sim_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations/2024_07_31_V_grad_lateral_2';
-experiments_names = ["2023_06_08_Volvox_14","2023_06_08_Volvox_16","2023_07_04_Volvox_21","2023_07_04_Volvox_22","2023_07_05_Volvox_12","2023_07_05_Volvox_30","2023_07_05_Volvox_31","2023_07_07_Volvox_3"];
 
 sim_data = load(fullfile(sim_folder,'data.mat'));
 Simulation = sim_data.Simulation;

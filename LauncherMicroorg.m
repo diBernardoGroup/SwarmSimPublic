@@ -1,7 +1,7 @@
 %
 %LauncherMicroorg Set the parameters and launch a simulation of a swarm of microorganisms.
 %
-%   See also: Launcher
+%   See also: Launcher, SimulateDOMEexp.
 %
 %   Authors:    Andrea Giusti
 %   Date:       2023

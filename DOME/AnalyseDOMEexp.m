@@ -8,7 +8,7 @@
 %
 %   DOME-software is available at https://github.com/andreagiusti96/DOME-software.
 %
-%   See also: IdentifyDOMEexp.
+%   See also: IdentifyDOMEexp, DOMEspatialAnalysis.
 %
 %   Authors:    Andrea Giusti and Davide Salzano
 %   Date:       2024
@@ -22,7 +22,7 @@ close all
 defaultParamMicroorg;
 
 % Add the path to your data
-experiments_folder="/Volumes/DOMEPEN/Experiments";                                          % ANDREA
+experiments_folder="/Volumes/DOMEPEN/Experiments";                                          
 experiments_folder = fullfile(experiments_folder,'comparisons');
 
 % EUGLENA

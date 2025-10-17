@@ -18,7 +18,7 @@ addpath(genpath(cur_dir));
 % Directory to save the results of the simulations.
 % Set outputDir='' to prevent automatic saving.
 outputDir='./Output';
-outputDir='';
+% outputDir='';
 
 N=500;                      % number of agents (N)
 D=2;                        % number of dimensions [2 or 3]

@@ -3,15 +3,15 @@
 %   This script generates the identification data with the kinematic 
 %   parameters of the digital twins.
 %
-%   To run this script you need the kinematic data of the microorganisms genereted 
-%   from DOME_experiment_analysis of DOME-software.
+%   To run this script you need the kinematic data (speed and angular velocity)
+%   of the microorganisms genereted from DOME_experiment_analysis of DOME-software.
 %   To study which terms of the model should be active use AnalyseDOMEexp.
 %   After generating the identification data you can simulate the digital
 %   twins with SimulateDOMEexp.
 %
 %   DOME-software is available at https://github.com/andreagiusti96/DOME-software.
 %
-%   See also: SimulateDOMEexp, AnalyseDOMEexp, .
+%   See also: SimulateDOMEexp, AnalyseDOMEexp.
 %
 %   Authors:    Andrea Giusti and Davide Salzano
 %   Date:       2024

@@ -1,21 +1,30 @@
+%
+% CombineResultsSpatial
+%
+%   See also: CombineResults.
+%
+%   Authors:    Andrea Giusti and Davide Salzano
+%   Date:       2024
+%
+
 clear
 close all
 
 defaultParamMicroorg
 
 experiments_folder = "/Volumes/DOMEPEN/Experiments";
-simulations_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
+simulations_folder = 'Output';
 
 % % EUGLENA
 % simulations_folder = fullfile(simulations_folder,'2024_06_17_E_GB_absw_noalpha_narrow');% select subfolder
-% simulations_folder = fullfile(simulations_folder,'2024_06_21_spatial_8k');              % select subfolder
+simulations_folder = fullfile(simulations_folder,'2024_06_21_spatial_8k');              % select subfolder
 
 % VOLVOX
 % simulations_folder = fullfile(simulations_folder,'2024_08_01_V_GB_meaninit');           % select subfolder
 % simulations_folder = fullfile(simulations_folder,'2024_08_01_spatial_500');             % select subfolder
 
-simulations_folder = fullfile(simulations_folder,'2024_08_02_V_GB_60s');           % select subfolder
-simulations_folder = fullfile(simulations_folder,'2024_08_02_spatial_500');             % select subfolder
+% simulations_folder = fullfile(simulations_folder,'2024_08_02_V_GB_60s');           % select subfolder
+% simulations_folder = fullfile(simulations_folder,'2024_08_02_spatial_500');             % select subfolder
 
 
 time_to_plot   = 180;   % time of simulation and experiment to look at [s]
@@ -23,17 +32,17 @@ exp_setup_time = 0;     % initial time window to be discarded from the experimen
 n_bins         = 3;     % number of bins for light distribution
 diustr_up_lim  = 0.75;     % ylim of the distribution plot
 
-% % Euglena
-% tags = ["half_half","grad_centr_light","grad_centr_dark","grad_lateral","circle_light","circle_dark"];
-% %sim_names = ["2024_06_06_half_half_1";"2024_06_06_grad_centr_light_1";"2024_06_06_grad_centr_dark_1";"2024_06_06_grad_lateral_1";"2024_06_06_circle_light_1";"2024_06_06_circle_dark_1"];
-% sim_names = ["experiment_half_half_1";"experiment_grad_centr_light_1";"experiment_grad_centr_dark_1";"experiment_grad_lateral_1";"experiment_circle_light_1";"experiment_circle_dark_1"];
-% experiments_names = {["2023_06_12_E_2","2023_06_14_E_6","2023_06_15_E_12","2023_06_26_E_29","2023_06_26_E_30","2023_06_23_E_1","2023_06_23_E_2","2023_06_26_E_2"];
-%                      ["2023_06_12_E_4","2023_06_14_E_7","2023_06_15_E_14","2023_06_23_E_5","2023_06_23_E_6","2023_06_26_E_5","2023_06_26_E_6","2023_06_26_E_33"];
-%                      ["2023_06_23_E_7","2023_06_23_E_8","2023_06_23_E_9","2023_06_26_E_7","2023_06_26_E_8","2023_06_26_E_34","2023_06_26_E_35","2023_07_10_E_23"];
-%                      ["2023_06_13_E_16","2023_06_14_E_8","2023_06_15_E_13","2023_06_23_E_3","2023_06_26_E_3","2023_06_26_E_4","2023_06_26_E_31","2023_06_26_E_32"];
-%                      ["2023_06_15_E_16","2023_06_23_E_10","2023_06_23_E_11","2023_06_26_E_9","2023_06_26_E_10","2023_06_26_E_36","2023_06_26_E_37","2023_07_10_E_26"];
-%                      ["2023_06_13_E_15","2023_06_15_E_17","2023_06_23_E_13","2023_06_26_E_11","2023_06_26_E_12","2023_06_26_E_39","2023_07_10_E_22","2023_07_10_E_25"]};
-% output_folder = simulations_folder;
+% Euglena
+tags = ["half_half","grad_centr_light","grad_centr_dark","grad_lateral","circle_light","circle_dark"];
+%sim_names = ["2024_06_06_half_half_1";"2024_06_06_grad_centr_light_1";"2024_06_06_grad_centr_dark_1";"2024_06_06_grad_lateral_1";"2024_06_06_circle_light_1";"2024_06_06_circle_dark_1"];
+sim_names = ["experiment_half_half_1";"experiment_grad_centr_light_1";"experiment_grad_centr_dark_1";"experiment_grad_lateral_1";"experiment_circle_light_1";"experiment_circle_dark_1"];
+experiments_names = {["2023_06_12_E_2","2023_06_14_E_6","2023_06_15_E_12","2023_06_26_E_29","2023_06_26_E_30","2023_06_23_E_1","2023_06_23_E_2","2023_06_26_E_2"];
+                     ["2023_06_12_E_4","2023_06_14_E_7","2023_06_15_E_14","2023_06_23_E_5","2023_06_23_E_6","2023_06_26_E_5","2023_06_26_E_6","2023_06_26_E_33"];
+                     ["2023_06_23_E_7","2023_06_23_E_8","2023_06_23_E_9","2023_06_26_E_7","2023_06_26_E_8","2023_06_26_E_34","2023_06_26_E_35","2023_07_10_E_23"];
+                     ["2023_06_13_E_16","2023_06_14_E_8","2023_06_15_E_13","2023_06_23_E_3","2023_06_26_E_3","2023_06_26_E_4","2023_06_26_E_31","2023_06_26_E_32"];
+                     ["2023_06_15_E_16","2023_06_23_E_10","2023_06_23_E_11","2023_06_26_E_9","2023_06_26_E_10","2023_06_26_E_36","2023_06_26_E_37","2023_07_10_E_26"];
+                     ["2023_06_13_E_15","2023_06_15_E_17","2023_06_23_E_13","2023_06_26_E_11","2023_06_26_E_12","2023_06_26_E_39","2023_07_10_E_22","2023_07_10_E_25"]};
+output_folder = simulations_folder;
 
 % % BCL
 % tags = ["BCL"];
@@ -45,16 +54,16 @@ diustr_up_lim  = 0.75;     % ylim of the distribution plot
 % n_bins         = 5;     % number of bins for light distribution
 % diustr_up_lim  = 0.4;     % ylim of the distribution plot
 
-% Volvox
-tags = ["half_half","grad_centr_light","grad_centr_dark","grad_lateral","circle_light","circle_dark"];
-sim_names = ["experiment_half_half_1";"experiment_grad_centr_light_1";"experiment_grad_centr_dark_1";"experiment_grad_lateral_1";"experiment_circle_light_1";"experiment_circle_dark_1"];
-experiments_names = {["2023_07_04_V_19","2023_07_04_V_20","2023_07_05_V_11","2023_07_05_V_32","2023_07_05_V_33","2023_07_07_V_2"];
-                     ["2023_07_04_V_23","2023_07_04_V_24","2023_07_05_V_28","2023_07_05_V_29","2023_07_06_V_6","2023_07_07_V_4"];
-                     ["2023_07_04_V_26","2023_07_05_V_14","2023_07_05_V_26","2023_07_05_V_27","2023_07_06_V_7","2023_07_07_V_5"];
-                     ["2023_07_04_V_21","2023_07_04_V_22","2023_07_05_V_12","2023_07_05_V_30","2023_07_05_V_31","2023_07_07_V_3"];
-                     ["2023_07_04_V_27","2023_07_04_V_28","2023_07_05_V_16","2023_07_05_V_23","2023_07_05_V_34","2023_07_07_V_6"];
-                     ["2023_07_05_V_17","2023_07_05_V_18","2023_07_05_V_24","2023_07_05_V_25","2023_07_05_V_35","2023_07_07_V_7"]};
-output_folder = simulations_folder;
+% % Volvox
+% tags = ["half_half","grad_centr_light","grad_centr_dark","grad_lateral","circle_light","circle_dark"];
+% sim_names = ["experiment_half_half_1";"experiment_grad_centr_light_1";"experiment_grad_centr_dark_1";"experiment_grad_lateral_1";"experiment_circle_light_1";"experiment_circle_dark_1"];
+% experiments_names = {["2023_07_04_V_19","2023_07_04_V_20","2023_07_05_V_11","2023_07_05_V_32","2023_07_05_V_33","2023_07_07_V_2"];
+%                      ["2023_07_04_V_23","2023_07_04_V_24","2023_07_05_V_28","2023_07_05_V_29","2023_07_06_V_6","2023_07_07_V_4"];
+%                      ["2023_07_04_V_26","2023_07_05_V_14","2023_07_05_V_26","2023_07_05_V_27","2023_07_06_V_7","2023_07_07_V_5"];
+%                      ["2023_07_04_V_21","2023_07_04_V_22","2023_07_05_V_12","2023_07_05_V_30","2023_07_05_V_31","2023_07_07_V_3"];
+%                      ["2023_07_04_V_27","2023_07_04_V_28","2023_07_05_V_16","2023_07_05_V_23","2023_07_05_V_34","2023_07_07_V_6"];
+%                      ["2023_07_05_V_17","2023_07_05_V_18","2023_07_05_V_24","2023_07_05_V_25","2023_07_05_V_35","2023_07_07_V_7"]};
+% output_folder = simulations_folder;
 
 %% LOAD DATA
 combo_mask = cell(1,length(experiments_names));

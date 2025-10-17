@@ -3,19 +3,22 @@ function [xVec, uVec, vVec] = Simulator(x0, v0, Simulation, Dynamics, Render, Gl
 %Simulator executes a complete simulation of the swarm.
 %   This function is called by a launcher script (Launcher, SequentialLauncher...).
 %
-%   [xVec, uVec] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction)
+%   [xVec, uVec, vVec] = Simulator(x0, v0, Simulation, Dynamics, Render, GlobalIntFunction, LocalIntFunction, Environment)
 %
 %   Inputs:
 %       x0                  Initial positions of the agents     (NxD matrix)
 %       v0                  Initial velocities of the agents    (NxD matrix)
 %       Simulation          Simulation parameters               (struct)
 %       Dynamics            Dynamics of the agents              (struct)
-%       GlobalIntFunction   Long distance interaction           (struct = struct('function','None'))
-%       LocalIntFunction    Shorts distance interaction         (struct = struct('function','None'))
+%       Render              Visualization options               (struct)
+%       GlobalIntFunction   Long distance interaction           (struct)
+%       LocalIntFunction    Shorts distance interaction         (struct)
+%       Environment         Environmental inputs, obstacles...  (struct)
 %
 %   Outputs:
 %       xVec                Positions of the agents             (TIMExNxD matrix)
 %       uVec                Virtual forces acting on the agents (TIMExNxD matrix)
+%       vVec                Velocities of the agents            (TIMExNxD matrix)
 %
 %   See also: Simulator, Launcher
 %

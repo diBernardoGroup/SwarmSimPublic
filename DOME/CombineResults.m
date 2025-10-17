@@ -1,15 +1,21 @@
+%
+% CombineResults
+%
+%   See also: CombineResultsSpatial.
+%
+%   Authors:    Andrea Giusti and Davide Salzano
+%   Date:       2024
+%
+
 clear
-% close all
+close all
 
 defaultParamMicroorg;
 
 % ANDREA
-simulations_folder = '/Users/andrea/Library/CloudStorage/OneDrive-UniversitàdiNapoliFedericoII/Andrea_Giusti/Projects/DOME/simulations';
+simulations_folder = 'Output';
 experiments_folder = "/Volumes/DOMEPEN/Experiments";
 
-% DAVIDE
-% simulations_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME\Simulations';
-% experiments_folder = 'C:\Users\david\OneDrive - Università di Napoli Federico II\Research\Data\DOME';
 
 %% EUGLENA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
