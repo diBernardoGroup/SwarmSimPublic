@@ -1,5 +1,6 @@
 %
-%MultiLauncher Set the parameters and launch multiple simulations from different initial conditions.
+%MultiLauncher Set the parameters and launch repeated simulations from 
+%   different initial conditions or with randomized disturbances.
 %
 %   Notes:
 %       Running this script can take long time (up to hours)
@@ -49,8 +50,8 @@ for rep=1:Ntimes
     v0 = zeros(size(x0));
     
     %% Run Simulation
-    [xVec(rep,:,:,:)] = Simulator(x0, v0, Simulation, Dynamics, GlobalIntFunction, LocalIntFunction);
-    
+    [xVec(rep,:,:,:)] = Simulator(x0, v0, Simulation, Dynamics, Render, GlobalIntFunction, LocalIntFunction, Environment);
+
     %% ANALYSIS
     if smoothing
         xVec = movmean(xVec,3);

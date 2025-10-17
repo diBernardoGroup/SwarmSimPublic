@@ -7,9 +7,9 @@ function [angle] = angleBetweenVectors(v1,v2)
         v2=v2';
     end
     
-    if size(v1,1)==2
+    if size(v1,1)==2    % in 2D
         angle = atan2(dot(v1,[0 1; -1 0]*v2), dot(v1,v2));
-    else
+    else                % in 3D
         angle = atan2(norm(cross(v1,v2)), dot(v1,v2));
     end
 end

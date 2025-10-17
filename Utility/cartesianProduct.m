@@ -16,7 +16,11 @@ function result = cartesianProduct(sets)
 %
 
 if length(sets) == 1
-    result = cell2mat(sets)';
+    if isa(sets{1},'string')
+        result = sets{1}';
+    else
+        result = cell2mat(sets)';
+    end
 else
     c = cell(1, numel(sets));
     [c{:}] = ndgrid( sets{:} );

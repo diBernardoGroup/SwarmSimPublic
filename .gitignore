@@ -2,3 +2,9 @@
 *.asv
 .DS_Store
 *.icloud
+*.mp4
+*.avi
+*.png
+*.mat
+*.svg
+/Output
