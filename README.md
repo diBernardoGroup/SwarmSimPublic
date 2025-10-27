@@ -21,6 +21,10 @@ To execute your first simulation simply run `Launcher.m`.
   - Plots to visualise the simulation and the metrics.
   - Automatic save the results of the simulations.
 
+  <img src="https://github.com/user-attachments/assets/bb57d7d6-e805-4a75-8567-b29126084fb6" width="31%">
+  <img src="https://github.com/user-attachments/assets/9979db08-9035-47fa-a7d3-9d825f3fc8d3" width="30.8%">
+  <img src="https://github.com/user-attachments/assets/cf3c8c66-2634-4057-b042-2f3e1995fec1" width="31%">
+
 ## Versions & Releases
 **Copyrights**: If you use this code for research purposes and want to mention it in one of your publications, please cite [Giusti2023B].
   - [V3.0](https://github.com/diBernardoGroup/SwarmSimPublic/releases/tag/v3) - Authors: Andrea Giusti and Davide Salzano. Date: 2025
@@ -41,5 +45,5 @@ This project implements the algorithms described in [Giusti2023B] (see [SwarmSim
 
   - \[[Giusti2025](https://doi.org/10.1101/2025.02.21.639423)\] Giusti, A., Salzano, D., di Bernardo, M., & Gorochowski, T.E. (2025) Data-driven inference of digital twins for high-throughput phenotyping of motile and light-responsive microorganisms. BioRXiv preprint.
   - \[[Giusti2024](https://doi.org/10.48550/arXiv.2501.00110)\] Giusti, A. (2024) Modelling and Control of Spatial Behaviours in Multi-Agent Systems with Applications to Biology and Robotics. PhD Thesis.
-  - \[[Giusti2023B](https://www.frontiersin.org/journals/robotics-and-ai/articles/10.3389/frobt.2023.1219931)\] Giusti, A., Maffettone, G. C., Fiore, D., Coraggio, M., & di Bernardo, M. (2023). Distributed Control for Geometric Pattern Formation of Large-Scale Multirobot Systems. DOI: 10.3389/frobt.2023.1219931.
+  - \[[Giusti2023B](https://www.frontiersin.org/journals/robotics-and-ai/articles/10.3389/frobt.2023.1219931)\] Giusti, A., Maffettone, G. C., Fiore, D., Coraggio, M., & di Bernardo, M. (2023). Distributed Control for Geometric Pattern Formation of Large-Scale Multirobot Systems. Frontiers in Robotics and AI. DOI: 10.3389/frobt.2023.1219931.
   - \[[Giusti2023A](https://ieeexplore.ieee.org/abstract/document/10160116)\] Giusti, A., Coraggio, M., & di Bernardo, M. (2023). Local Convergence of Multi-Agent Systems Toward Rigid Lattices. IEEE Control Systems Letters. DOI:10.1109/LCSYS.2023.3289060.
