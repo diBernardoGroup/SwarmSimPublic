@@ -14,7 +14,7 @@ To execute your first simulation simply run `Launcher.m`.
   - Extensive simulations to study stochastic effects or different initial conditions (see `MultiLauncher.m`).
   - Extensive simulations to study the effects of the parameters (see `SequentialLauncher.m`).
   - Simulate swarms of photo-sensistive microorganisms (see `LauncherMicroorg.m`)
-  - Analize [DOME](https://theopendome.org/) experiments, generate digital twins on microorganisms and run virtual experiments (see `DOME` folder) 
+  - Analize [DOME](https://theopendome.org/) experiments, generate digital twins of microorganisms and run virtual experiments (see `DOME` folder) 
   - Local stability analysis of lattice configurations via linearization (see `CrystalStability.m`).
   - Interface with Robotarium code to perform advanced simulations and real life experiments (see `RobotariumSimulator.m`). 
     For more details refer to https://www.robotarium.gatech.edu.
